@@ -64,11 +64,10 @@ export function ProjectCreateDialog({ data, onClose, onCreated }: { data: Dashbo
       </div>
       <aside className="skill-recommend-picker">
         <div className="recommend-picker-heading"><span><Sparkles size={17} />추천 스킬</span><small>{tags.length ? "태그 일치와 팀 순위 반영" : "팀 평가 순위 기준"}</small></div>
-        {recommendations.length === 0 && <div className="empty-state">공유 스킬 등록 후 추천 표시</div>}
+        {recommendations.length === 0 && <div className="empty-state">추천할 공유 스킬 없음</div>}
         {recommendations.map((skill) => <button className={selected.has(skill.skill) ? "selected" : ""} type="button" onClick={() => toggleSkill(skill.skill)} key={skill.skill}>
           <span className="recommend-rank">{skill.rank}</span><div><strong>{skill.skill.split("/").at(-1)}</strong><p>{skill.description}</p><span>{skill.matchingTags.length ? skill.matchingTags.map((tag) => `#${tag}`).join(" ") : `팀 순위 ${skill.rank}위`}</span></div><em><Star size={12} fill="currentColor" />{skill.averageRating?.toFixed(1) ?? "—"}</em><i>{selected.has(skill.skill) && <Check size={15} />}</i>
         </button>)}
-        <p className="recommend-note">프로젝트 생성 후에도 스킬 연결 가능</p>
       </aside>
       {error && <p className="creation-error">{error}</p>}
       <footer><button className="button" type="button" onClick={onClose}>취소</button><button className="button primary" disabled={saving} type="submit">{saving ? "Git에 기록 중…" : `프로젝트 만들기${selected.size ? ` · 스킬 ${selected.size}개` : ""}`}</button></footer>

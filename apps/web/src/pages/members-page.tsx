@@ -14,14 +14,14 @@ export function MembersPage() {
   const { snapshot, member } = data;
 
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <header className="page-header directory-header"><div><span className="eyebrow">Members</span><h1>팀원</h1></div><PageMotif /></header>
+    <header className="page-header directory-header"><div><span className="eyebrow">Roster</span><h1>팀원</h1></div><PageMotif /></header>
     <section className="directory-stats" aria-label="팀원 통계">
       <article><Users size={20} /><span>팀원</span><strong>{snapshot.members.length}</strong></article>
-      <article><Sparkles size={20} /><span>발행된 스킬</span><strong>{snapshot.skills.length}</strong></article>
-      <article><MessageSquareText size={20} /><span>작성된 후기</span><strong>{snapshot.reviews.length}</strong></article>
+      <article><Sparkles size={20} /><span>공유 스킬</span><strong>{snapshot.skills.length}</strong></article>
+      <article><MessageSquareText size={20} /><span>작성된 평가</span><strong>{snapshot.reviews.length}</strong></article>
     </section>
     <section className="data-section member-directory">
-      <div className="panel-heading"><div><span className="eyebrow">구성원</span><h2>팀원별 활동</h2></div></div>
+      <div className="panel-heading"><div><span className="eyebrow">구성원</span><h2>팀원 현황</h2></div></div>
       {snapshot.members.map((item, index) => {
         const id = item.metadata.name;
         const owned = snapshot.skills.filter((skill) => skill.document.spec.owner === id).length;
@@ -30,7 +30,7 @@ export function MembersPage() {
         return <article className="member-directory-row" key={id}>
           <span className={`member-shape shape-${index % 3}`}>{item.spec.displayName.slice(0, 1)}</span>
           <div className="member-identity"><strong>{item.spec.displayName}{id === member && <small>나</small>}</strong><span>@{id} · {roleLabel[item.spec.role]}</span></div>
-          <div className="member-metrics"><span><b>{owned}</b>발행 스킬</span><span><b>{reviews}</b>작성 후기</span><span><b>{projects}</b>등록 프로젝트</span></div>
+          <div className="member-metrics"><span><b>{owned}</b>공유 스킬</span><span><b>{reviews}</b>작성 평가</span><span><b>{projects}</b>생성 프로젝트</span></div>
           <Shapes size={18} />
         </article>;
       })}

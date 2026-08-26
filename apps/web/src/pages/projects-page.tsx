@@ -18,7 +18,7 @@ export function ProjectsPage() {
   const { snapshot, member } = data;
   const connectedSkills = new Set(snapshot.skillsets.flatMap((set) => set.spec.skills.map((item) => item.skill)));
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <DirectoryActionHeader eyebrow="Projects" title="프로젝트" actionLabel="프로젝트 추가" onAction={() => setCreating(true)} />
+    <DirectoryActionHeader eyebrow="Roster" title="프로젝트" actionLabel="프로젝트 추가" onAction={() => setCreating(true)} />
     <section className="directory-stats" aria-label="프로젝트 통계">
       <article><FolderKanban size={20} /><span>등록된 프로젝트</span><strong>{snapshot.projects.length}</strong></article>
       <article><Link2 size={20} /><span>프로젝트 연결 스킬</span><strong>{connectedSkills.size}</strong></article>

@@ -135,7 +135,7 @@ export function SetupPage({ status, onComplete }: { status: SetupStatusPayload; 
       <main className="setup-page">
         <header className="setup-topbar"><div className="setup-brand"><span><img src="/skillroster-mark.svg" alt="" /></span><strong>SkillRoster</strong></div></header>
         <section className="setup-welcome">
-          <div className="welcome-copy"><span className="eyebrow">SkillRoster 시작하기</span><h1>로스터 시작하기</h1><p>새 로스터 만들기 또는 기존 로스터 연결</p></div>
+          <div className="welcome-copy"><span className="eyebrow">SkillRoster</span><h1>로스터 시작하기</h1></div>
           <div className="setup-choices">
             <button type="button" onClick={() => selectMode("create")}><span className="choice-icon"><Plus size={25} /></span><div><b>새로 시작</b><h2>새 로스터 만들기</h2><p>빈 Git 저장소로 팀 로스터 생성</p></div><strong>만들기 <ArrowRight size={18} /></strong></button>
             <button type="button" onClick={() => selectMode("join")}><span className="choice-icon blue"><LogIn size={25} /></span><div><b>기존 로스터 사용</b><h2>로스터 연결하기</h2><p>팀 Git 저장소 연결 및 사용자 등록</p></div><strong>연결 <ArrowRight size={18} /></strong></button>
@@ -153,7 +153,6 @@ export function SetupPage({ status, onComplete }: { status: SetupStatusPayload; 
         <aside className="setup-rail">
           <span className="eyebrow">{isCreate ? "새 로스터" : "기존 로스터"}</span>
           <h1>{isCreate ? <>새 로스터<br />만들기</> : <>로스터<br />연결하기</>}</h1>
-          <p>{isCreate ? "팀 정보와 Git 저장소 설정" : "Git 저장소와 사용자 정보 설정"}</p>
           <ol>{steps.map(([number, title, description]) => <li className={step === number ? "active" : step > Number(number) ? "done" : ""} key={String(number)}><span>{step > Number(number) ? <Check size={15} /> : number}</span><div><strong>{title}</strong><small>{description}</small></div></li>)}</ol>
           <div className="privacy-note"><ShieldCheck size={18} /><div><strong>로컬 정보 보호</strong><span>프롬프트와 소스 코드 수집 없음</span></div></div>
         </aside>
