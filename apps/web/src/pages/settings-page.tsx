@@ -19,18 +19,20 @@ export function SettingsPage() {
   return <SettingsContent
     key={`${connection.team}:${connection.directory}:${connection.member}`}
     status={status.data}
+    connection={connection}
+    profile={status.data.memberProfile}
     active={active}
     reload={() => { void status.reload(); void teams.reload(); }}
   />;
 }
 
-function SettingsContent({ status, active, reload }: {
+function SettingsContent({ status, connection, profile, active, reload }: {
   status: SetupStatusPayload;
+  connection: NonNullable<SetupStatusPayload["connection"]>;
+  profile: NonNullable<SetupStatusPayload["memberProfile"]>;
   active: TeamsPayload["teams"][number];
   reload: () => void;
 }) {
-  const connection = status.connection!;
-  const profile = status.memberProfile!;
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [email, setEmail] = useState(profile.email);
   const [gitName, setGitName] = useState(status.gitIdentity.name);
@@ -186,7 +188,7 @@ function SettingsContent({ status, active, reload }: {
         <label><span>로스터 역할</span><input value={roleLabel} disabled /></label>
         <label><span>커밋 작성자 이름</span><input value={gitName} onChange={(event) => setGitName(event.target.value)} required /><small>현재 로스터 clone의 Git 설정에만 적용</small></label>
         <label><span>커밋 작성자 이메일</span><input type="email" value={gitEmail} onChange={(event) => setGitEmail(event.target.value)} required /></label>
-        <div className="settings-form-footer"><span className="settings-note"><KeyRound size={14} />인증은 운영체제 Git Credential Manager 또는 SSH Agent 사용</span><FeedbackView value={profileFeedback} /><button className="button primary" disabled={busy === "profile"}><Save size={14} />{busy === "profile" ? "저장 중" : "사용자 정보 저장"}</button></div>
+        <div className="settings-form-footer"><span className="settings-note"><KeyRound size={14} />인증은 운영체제 Git Credential Manager 또는 SSH Agent 사용</span><FeedbackView value={profileFeedback} /><button className="button primary" type="submit" disabled={busy === "profile"}><Save size={14} />{busy === "profile" ? "저장 중" : "사용자 정보 저장"}</button></div>
       </form>}
     </section>
 
@@ -201,7 +203,7 @@ function SettingsContent({ status, active, reload }: {
       {!localEditing && <FeedbackView value={sourceFeedback ?? directoryFeedback} />}
       {localEditing && <div className="settings-edit-surface"><form className="path-settings-form" onSubmit={(event) => void moveDirectory(event)}>
         <label><span>로스터 clone</span><input value={directory} onChange={(event) => setDirectory(event.target.value)} disabled={connection.source !== "local-config"} /></label>
-        <button className="button" disabled={busy === "directory" || connection.source !== "local-config"}>{busy === "directory" ? "이동 중" : "경로 변경"}</button>
+        <button className="button" type="submit" disabled={busy === "directory" || connection.source !== "local-config"}>{busy === "directory" ? "이동 중" : "경로 변경"}</button>
       </form>
       <div className="settings-warning"><AlertTriangle size={18} /><div><strong>경로 변경 주의</strong><p>커밋되지 않은 변경이 없어야 함. 대상은 존재하지 않는 폴더여야 함. 실패 시 기존 위치 유지.</p></div></div>
       <FeedbackView value={directoryFeedback} />
@@ -209,7 +211,7 @@ function SettingsContent({ status, active, reload }: {
 
       <form className="source-settings-form" onSubmit={(event) => void saveSources(event)}>
         <label><span>개인 스킬 저장소</span><textarea rows={Math.max(3, status.localSources.sources.length + 1)} value={sources} onChange={(event) => setSources(event.target.value)} placeholder={"C:\\Users\\name\\.codex\\skills\n/Users/name/.config/opencode/skills"} /><small>한 줄에 경로 하나. 존재하는 폴더만 연결 가능.</small></label>
-        <div><FeedbackView value={sourceFeedback} /><button className="button" disabled={busy === "sources"}><Save size={14} />{busy === "sources" ? "저장 중" : "스킬 경로 저장"}</button></div>
+        <div><FeedbackView value={sourceFeedback} /><button className="button" type="submit" disabled={busy === "sources"}><Save size={14} />{busy === "sources" ? "저장 중" : "스킬 경로 저장"}</button></div>
       </form></div>}
     </section>
   </AppShell>;

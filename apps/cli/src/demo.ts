@@ -1,6 +1,6 @@
-import { mkdir, mkdtemp } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   addMember,
@@ -24,12 +24,19 @@ export interface DemoRegistry {
   directory: string;
   member: string;
   repository: GitTeamRepository;
+  sourcesConfig: string;
 }
 
 export async function createDemoRegistry(parentDirectory?: string): Promise<DemoRegistry> {
   const parent = resolve(parentDirectory ?? tmpdir());
   await mkdir(parent, { recursive: true });
   const directory = await mkdtemp(join(parent, "skillroster-demo-"));
+  const sourcesConfig = join(parent, `${basename(directory)}-sources.yaml`);
+  await writeFile(
+    sourcesConfig,
+    `version: 1\ncompleted: true\nsources:\n  - ${JSON.stringify(exampleSkillsDirectory())}\n`,
+    "utf8",
+  );
   const repository = await GitTeamRepository.initialize({
     directory,
     name: "platform-team",
@@ -91,6 +98,19 @@ export async function createDemoRegistry(parentDirectory?: string): Promise<Demo
     await addProjectSkill(directory, "checkout-api", "minjun/docker-debug", "1.0.0", DEMO_NOW);
   });
 
+  await repository.transaction("feat(project): register inventory-console", async () => {
+    await createProject(directory, {
+      name: "inventory-console",
+      displayName: "Inventory Console",
+      tags: ["spring", "java", "docker"],
+      verificationCommands: ["./gradlew test"],
+      createdBy: "jihoon",
+      now: DEMO_NOW,
+    });
+    await addProjectSkill(directory, "inventory-console", "minjun/spring-review", "1.0.0", DEMO_NOW);
+    await addProjectSkill(directory, "inventory-console", "minjun/docker-debug", "1.0.0", DEMO_NOW);
+  });
+
   await repository.transaction("docs(review): add team skill reviews", async () => {
     await writeReview(directory, {
       skill: "minjun/api-contract-check",
@@ -119,6 +139,15 @@ export async function createDemoRegistry(parentDirectory?: string): Promise<Demo
       project: "checkout-api",
       now: DEMO_NOW,
     });
+    await writeReview(directory, {
+      skill: "minjun/spring-review",
+      version: "1.0.0",
+      reviewer: "jihoon",
+      score: 5,
+      comment: "트랜잭션 경계와 예외 처리 누락을 일관된 순서로 확인 가능.",
+      project: "inventory-console",
+      now: DEMO_NOW,
+    });
   });
 
   await repository.transaction("test(evidence): record accepted skill use", async () => {
@@ -141,5 +170,25 @@ export async function createDemoRegistry(parentDirectory?: string): Promise<Demo
     );
   });
 
-  return { directory, member: "minjun", repository };
+  await repository.transaction("test(evidence): record inventory review use", async () => {
+    await writeEvidence(
+      directory,
+      createEvidence({
+        skill: "minjun/spring-review",
+        version: "1.0.0",
+        member: "jihoon",
+        project: "inventory-console",
+        sessionId: "demo-inventory-session",
+        status: "verified",
+        changedFiles: 5,
+        verificationCommand: "./gradlew test",
+        verificationPassed: true,
+        acceptedCommit: "fedcba9876543210fedcba9876543210fedcba98",
+        coUsedSkills: ["minjun/docker-debug"],
+        createdAt: DEMO_NOW.toISOString(),
+      }),
+    );
+  });
+
+  return { directory, member: "minjun", repository, sourcesConfig };
 }

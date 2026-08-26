@@ -13,9 +13,11 @@ pnpm demo
 
 - 팀원 3명
 - 공유 스킬 3개
-- 프로젝트 1개와 연결 스킬 2개
-- 평가 3개(동료 2개, 작성자 1개)
-- 개인정보를 담지 않은 verified 실행 기록 1개
+- 프로젝트 2개와 각 프로젝트의 연결 스킬 2개
+- 평가 4개(동료 3개, 작성자 1개)
+- 개인정보를 담지 않은 verified 실행 기록 2개
+
+데모는 별도 `sources.yaml`을 사용하고 `examples/skills`만 연결함. 심사자의 실제 `~/.codex/skills`, `~/.config/opencode/skills` 등은 탐색하지 않음.
 
 ## Before the demo
 
@@ -33,9 +35,9 @@ Initialize as Hong, then join as Kim. Show the remote Git tree: there is no data
 
 Publish `spring-review` as Hong and `api-contract-check` as Kim. Review the other person's exact version. 작성자도 자기평가를 남길 수 있지만 화면과 랭킹에서 동료 평가와 분리됨을 보여줌. 모든 평가는 Git 작성자와 파일 이력으로 추적 가능함.
 
-### 0:50–1:20 — Start a project
+### 0:50–1:20 — 프로젝트 생성과 추천
 
-Run `project init` in the shopping API. Show detected JavaScript, TypeScript, Spring, and Docker tags, then open the project page. Add the top recommendations and run `sync`; the skills appear under `.opencode/skills`.
+프로젝트 화면의 `프로젝트 추가`에서 표시 이름과 영문 ID를 입력함. `api`, `typescript` 태그를 선택하면 태그 일치와 팀 평가 순위가 함께 반영되는 추천을 확인함. `api-contract-check`, `docker-debug`를 선택해 프로젝트를 실제 생성하고 Git에 프로젝트 문서와 skillset이 함께 커밋됐는지 확인함.
 
 ### 1:20–1:45 — Evidence, not surveillance
 

@@ -25,6 +25,7 @@ export function ProjectTabs({
     <section className="data-section project-tabs-shell">
       <div className="tab-list" role="tablist" aria-label="프로젝트 스킬 보기">
         <button
+          type="button"
           aria-controls="recommendations-panel"
           aria-selected={tab === "recommendations"}
           onClick={() => setTab("recommendations")}
@@ -33,6 +34,7 @@ export function ProjectTabs({
           <Sparkles size={16} /> 스킬 찾기 <span>{recommendations.length}</span>
         </button>
         <button
+          type="button"
           aria-controls="loadout-panel"
           aria-selected={tab === "loadout"}
           onClick={() => setTab("loadout")}
@@ -85,15 +87,15 @@ export function ProjectTabs({
             <h2>이 프로젝트에 연결된 스킬</h2>
             <p>연결과 해제 내역은 팀 Git 저장소에 즉시 기록</p>
           </div>
-          <div className="loadout-table" role="table" aria-label="현재 프로젝트 스킬 구성">
-            <div className="loadout-table-head" role="row"><span>스킬</span><span>버전</span><span>연결</span></div>
+          <section className="loadout-table" aria-label="현재 프로젝트 스킬 구성">
+            <div className="loadout-table-head"><span>스킬</span><span>버전</span><span>연결</span></div>
             {selected.length === 0 && <div className="empty-state">연결된 스킬 없음 · ‘스킬 찾기’ 탭에서 선택 가능</div>}
             {selected.map((item) => (
-              <div className="loadout-row" role="row" key={item.skill}>
+              <article className="loadout-row" key={item.skill}>
                 <Link to={`/skills/${item.skill}`}><strong>{item.skill}</strong></Link><span>v{item.version}</span><ProjectSkillAction project={project} skill={item.skill} version={item.version} selected onChanged={() => onChanged()} />
-              </div>
+              </article>
             ))}
-          </div>
+          </section>
           <ProjectSyncPanel project={project} selectedCount={selected.length} />
         </div>
       )}

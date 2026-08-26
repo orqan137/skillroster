@@ -30,7 +30,9 @@ jobs:
           persist-credentials: false
       - name: Validate branch and linked Issue
         env:
-          PR_ACTOR: ${{ github.actor }}
+          # synchronize can be triggered by a maintainer updating a bot branch.
+          # The PR author remains Dependabot even when github.actor changes.
+          PR_ACTOR: ${{ github.event.pull_request.user.login }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_BRANCH: ${{ github.head_ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}

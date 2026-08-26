@@ -1,3 +1,4 @@
+// biome-ignore-all lint/a11y/noAutofocus: 단계 전환마다 현재 단계의 첫 입력으로 초점을 안내하는 설정 마법사
 import { useMemo, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
@@ -162,7 +163,7 @@ export function SetupPage({ status, onComplete }: { status: SetupStatusPayload; 
 
         <form className="setup-workspace" onSubmit={submit}>
           <div className="setup-heading">
-            <div className="setup-progress" aria-label={`전체 3단계 중 ${step}단계`}><strong>{step}단계</strong><span><i style={{ width: `${(step / 3) * 100}%` }} /></span><small>총 3단계</small></div>
+            <div className="setup-progress" role="progressbar" aria-label="로스터 설정 진행률" aria-valuemin={1} aria-valuemax={3} aria-valuenow={step}><strong>{step}단계</strong><span><i style={{ width: `${(step / 3) * 100}%` }} /></span><small>총 3단계</small></div>
             {isCreate && step === 1 && <><h2>새 팀 정보</h2><p>팀 이름과 첫 관리자 정보 입력</p></>}
             {isCreate && step === 2 && <><h2>팀 저장소 연결</h2><p>빈 원격 Git 주소 입력 후 자동 설정</p></>}
             {isCreate && step === 3 && <><h2>입력 내용 확인</h2><p>확인 후 로스터 생성 및 원격 저장소 기록</p></>}

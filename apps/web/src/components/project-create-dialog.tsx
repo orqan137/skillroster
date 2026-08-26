@@ -20,7 +20,9 @@ export function ProjectCreateDialog({ data, onClose, onCreated }: { data: Dashbo
   const [error, setError] = useState("");
   const tagCatalog = useMemo(() => {
     const counts = new Map<string, number>();
-    data.ranked.forEach((skill) => skill.tags.forEach((tag) => counts.set(tag, (counts.get(tag) ?? 0) + 1)));
+    for (const skill of data.ranked) {
+      for (const tag of skill.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
     return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 12);
   }, [data.ranked]);
   const recommendations = useMemo(() => data.ranked.map((skill, index) => {
@@ -47,12 +49,12 @@ export function ProjectCreateDialog({ data, onClose, onCreated }: { data: Dashbo
     finally { setSaving(false); }
   }
 
-  return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><section className="creation-modal project-creation-modal" role="dialog" aria-modal="true" aria-label="새 프로젝트 만들기">
+  return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="새 프로젝트 창 닫기" /><section className="creation-modal project-creation-modal" role="dialog" aria-modal="true" aria-label="새 프로젝트 만들기">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
     <header><span className="creation-symbol blue"><FolderKanban size={24} /></span><div><span className="eyebrow">새 프로젝트</span><h2>프로젝트와 스킬 구성 만들기</h2><p>모든 팀원 생성 가능 · 작성자는 Git 변경 이력에 기록</p></div></header>
     <form className="creation-layout" onSubmit={submit}>
       <div className="creation-fields">
-        <label><span>프로젝트 이름</span><input autoFocus value={displayName} onChange={(event) => { setDisplayName(event.target.value); setName(slug(event.target.value)); }} placeholder="예: 결제 API 개편" /></label>
+        <label><span>프로젝트 이름</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setName(slug(event.target.value)); }} placeholder="예: 결제 API 개편" /></label>
         <label><span>프로젝트 ID</span><div className="field-with-icon"><Hash size={15} /><input value={name} onChange={(event) => setName(slug(event.target.value))} placeholder="payment-api" /></div><small>Git에 저장되는 영문 식별자</small></label>
         <div className="tag-picker"><span>기술 태그</span><div className="tag-entry"><input value={tagInput} onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addTag(tagInput); } }} placeholder="react, spring, docker" /><button type="button" onClick={() => addTag(tagInput)}>각각 추가</button></div><small>쉼표 또는 공백으로 여러 태그 구분 가능</small>
           <div className="selected-tags">{tags.map((tag) => <button type="button" onClick={() => setTags((current) => current.filter((item) => item !== tag))} key={tag}>#{tag}<X size={11} /></button>)}</div>

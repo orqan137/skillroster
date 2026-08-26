@@ -36,22 +36,38 @@ SkillRoster는 이 사이를 연결합니다.
 | 누가 무엇을 바꿨는가? | YAML·Markdown 변경을 Git commit, diff, blame으로 추적 |
 | 개인 프롬프트와 소스도 서버에 올라가는가? | 기본 비수집. 명시적으로 발행한 스킬 패키지만 공유 |
 
-## 대표 화면
+## 실제 동작 화면
+
+아래 이미지는 별도 목업이 아니라 `pnpm demo`의 임시 Git 레지스트리를 1440×900 브라우저에서 직접 조작해 캡처한 화면입니다.
 
 <p align="center">
-  <img src="./docs/images/dashboard.svg" width="820" alt="SkillRoster 로스터 홈 — 팀 스킬 평가 순위와 프로젝트 연결 현황">
+  <img src="./docs/images/screenshots/01-start.png" width="900" alt="새 로스터 만들기와 기존 로스터 들어가기를 선택하는 SkillRoster 첫 화면">
 </p>
+
+<p align="center"><b>처음 사용</b> · 팀장은 빈 원격 Git으로 새 로스터 생성, 팀원은 기존 로스터 참여.</p>
+
+<p align="center">
+  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="동료 평가와 프로젝트 연결을 보여주는 SkillRoster 개요 화면">
+</p>
+
+<p align="center"><b>로스터 개요</b> · 스킬 평가 순위, 최근 후기, 프로젝트 연결을 한 화면에서 확인.</p>
 
 <table>
   <tr>
-    <td width="50%"><img src="./docs/images/skills.svg" alt="공유 스킬과 로컬 스킬 목록"></td>
-    <td width="50%"><img src="./docs/images/project.svg" alt="프로젝트별 추천 스킬 연결"></td>
+    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="팀 공유 스킬과 로컬 스킬을 구분하는 스킬 화면"></td>
+    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="태그와 평가 순위로 추천된 스킬을 선택하는 프로젝트 생성 화면"></td>
   </tr>
   <tr>
-    <td><b>팀 스킬과 내 로컬 스킬</b><br>발행된 스킬, 개인 저장소, 작성한 평가를 같은 화면에서 구분해 확인.</td>
-    <td><b>프로젝트별 스킬 구성</b><br>태그 일치와 팀 평가 순위를 참고해 필요한 버전을 프로젝트에 연결.</td>
+    <td><b>공유 스킬과 로컬 스킬</b><br>팀에 발행한 스킬과 이 컴퓨터에만 있는 스킬 구분.</td>
+    <td><b>프로젝트 생성과 추천</b><br>기술 태그 일치와 팀 평가 순위를 함께 보고 스킬 선택.</td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="추천 스킬 두 개가 연결된 신규 프로젝트 화면">
+</p>
+
+<p align="center"><b>생성 완료</b> · 프로젝트와 선택한 스킬 세트가 실제 Git 문서로 함께 커밋됨.</p>
 
 ## 동작 방식
 
@@ -96,7 +112,7 @@ pnpm install
 pnpm demo
 ```
 
-3명의 팀원, 3개의 스킬, 평가, 프로젝트 연결, 검증된 실행 기록을 임시 로컬 Git에 만들고 `http://127.0.0.1:3211`에서 엽니다. 생성 경로는 terminal에 표시되며 운영 데이터에는 접근하지 않습니다.
+3명의 팀원, 3개의 스킬, 2개의 프로젝트, 4개의 평가, 2개의 실행 기록을 임시 로컬 Git에 만들고 `http://127.0.0.1:3211`에서 엽니다. 데모 전용 설정과 `examples/skills`만 사용하므로 사용자의 실제 에이전트 스킬이나 운영 데이터에는 접근하지 않습니다.
 
 직접 새 로스터를 구성하려면:
 

@@ -43,7 +43,7 @@ export function ReviewForm({
 
   return (
     <form className="review-form" onSubmit={submit}>
-      <div className="stars" aria-label="평점">
+      <fieldset className="stars" aria-label="평점">
         {[1, 2, 3, 4, 5].map((value) => (
           <button
             aria-label={`${value}점`}
@@ -55,7 +55,7 @@ export function ReviewForm({
             <Star size={20} fill={value <= score ? "currentColor" : "none"} />
           </button>
         ))}
-      </div>
+      </fieldset>
       <select aria-label="프로젝트 기준" onChange={(event) => setProject(event.target.value)} value={project}>
         <option value="">프로젝트 지정 안 함</option>
         {projects.map((item) => <option key={item.name} value={item.name}>{item.displayName}</option>)}

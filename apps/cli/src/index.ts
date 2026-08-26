@@ -319,11 +319,13 @@ program
   .option("--web-directory <path>", "web client directory override")
   .action(async (options) => {
     const demo = await createDemoRegistry(options.directory ? resolve(options.directory) : undefined);
+    const snapshot = await demo.repository.snapshot();
     console.log(`Demo registry: ${demo.directory}`);
-    console.log("Sample data: 3 members · 3 skills · 1 project · 3 reviews · 1 verified run");
+    console.log(`Sample data: ${snapshot.members.length} members · ${snapshot.skills.length} skills · ${snapshot.projects.length} projects · ${snapshot.reviews.length} reviews · ${snapshot.evidence.filter((item) => item.spec.status === "verified").length} verified runs`);
     await launchDashboard({
       registry: demo.directory,
       member: demo.member,
+      sourcesConfig: demo.sourcesConfig,
       hostname: options.hostname,
       port: options.port,
       open: options.open,

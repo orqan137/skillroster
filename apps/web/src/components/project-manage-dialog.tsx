@@ -30,7 +30,7 @@ export function ProjectManageDialog({ project, displayName: initialDisplayName, 
     } catch (caught) { setError(caught instanceof Error ? caught.message : String(caught)); setSaving(false); }
   }
 
-  return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><section className="project-manage-modal" role="dialog" aria-modal="true" aria-label="프로젝트 설정">
+  return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="프로젝트 설정 닫기" /><section className="project-manage-modal" role="dialog" aria-modal="true" aria-label="프로젝트 설정">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
     <span className="eyebrow">프로젝트 설정</span><h2>기본 정보 관리</h2><p>수정 내용은 팀 Git 저장소에 커밋</p>
     <div className="project-manage-fields"><label><span>프로젝트 이름</span><input value={displayName} onChange={(event) => setDisplayName(event.target.value)} /></label><label><span>프로젝트 ID</span><input value={project} disabled /></label><div className="tag-picker"><span>기술 태그</span><div className="tag-entry"><input value={tagInput} onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addTags(); } }} placeholder="react, spring" /><button type="button" onClick={addTags}>각각 추가</button></div><div className="selected-tags">{tags.map((tag) => <button type="button" onClick={() => setTags((current) => current.filter((item) => item !== tag))} key={tag}>#{tag}<X size={11} /></button>)}</div></div></div>
