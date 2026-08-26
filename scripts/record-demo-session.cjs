@@ -133,13 +133,18 @@ async function main() {
 
   const startedAt = Date.now();
   const elapsed = () => (Date.now() - startedAt) / 1000;
+  const minimumCaptionSeconds = 4.2;
   let activeCaption;
   const setCaption = async (step, text, progress) => {
-    const now = elapsed();
     if (activeCaption) {
-      activeCaption.end = now;
+      const visibleFor = elapsed() - activeCaption.start;
+      if (visibleFor < minimumCaptionSeconds) {
+        await page.waitForTimeout((minimumCaptionSeconds - visibleFor) * 1000);
+      }
+      activeCaption.end = elapsed();
       captions.push(activeCaption);
     }
+    const now = elapsed();
     activeCaption = { start: now, end: now, text: `[${step}] ${text}` };
     await page.evaluate(({ stepValue, caption, progressValue }) => {
       window.__setDemoCaption?.(stepValue, caption, progressValue);
@@ -321,7 +326,7 @@ async function main() {
 
   await nav("팀원");
   await page.getByRole("heading", { name: "팀원", level: 1 }).waitFor();
-  await setCaption("07", "팀원별 발행 스킬·후기·등록 프로젝트 수 확인", 95);
+  await setCaption("07", "팀원별 공유 스킬·평가·생성 프로젝트 수 확인", 95);
   await page.mouse.move(930, 510, { steps: 20 });
   await pause(550);
 
@@ -333,9 +338,9 @@ async function main() {
 
   await nav("개요");
   await page.getByRole("heading", { name: "Platform Team", level: 1 }).waitFor();
-  await setCaption("07", "검토된 스킬과 프로젝트 구성을 다음 작업에서 다시 사용", 100);
+  await setCaption("07", "팀 평가와 프로젝트 구성을 다음 작업에서 다시 사용", 100);
   await page.mouse.move(1090, 480, { steps: 20 });
-  await pause(850);
+  await pause(5000);
 
   activeCaption.end = elapsed();
   captions.push(activeCaption);
