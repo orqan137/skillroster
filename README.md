@@ -1,8 +1,61 @@
 # SkillRoster
 
-> 팀의 AI 에이전트 스킬을 Git으로 공유하고, 동료 평가와 실제 프로젝트 검증 결과로 신뢰도를 판단하는 self-hosted 오픈소스 스킬 로스터.
+<p align="center">
+  <a href="https://github.com/orqan137/skillroster/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/orqan137/skillroster/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-0066ff">
+  <img alt="Node" src="https://img.shields.io/badge/node-%3E%3D22-00a94f">
+  <img alt="React" src="https://img.shields.io/badge/React_19-Vite-00d77b">
+  <img alt="Git native" src="https://img.shields.io/badge/storage-Git-111b15">
+</p>
+
+> 팀의 AI 에이전트 스킬을 Git으로 공유하고, 동료 평가와 프로젝트 적용 결과로 신뢰도를 판단하는 self-hosted 오픈소스 스킬 로스터.
 
 SkillRoster는 팀원의 로컬 파일이나 프롬프트를 중앙 서버로 수집하지 않습니다. 사용자가 발행한 `SKILL.md`, 동료 리뷰, 프로젝트별 Skill Set, 최소한의 실행 근거만 일반 Git 저장소에 보관합니다. 각 팀원은 자기 clone을 통해 작업하고 OpenCode는 선택된 스킬을 `.opencode/skills/`에서 그대로 사용합니다.
+
+<p align="center">
+  <img src="./docs/images/dashboard.svg" width="820" alt="SkillRoster 로스터 홈 — 팀 스킬 평가 순위와 프로젝트 연결 현황">
+</p>
+
+## 해결하려는 문제
+
+AI 코딩 도구의 스킬은 대부분 개인 컴퓨터에 흩어져 있습니다. 좋은 스킬을 발견해도 어느 프로젝트에서 유효했는지, 지금도 믿을 수 있는지, 누가 사용해봤는지 팀원이 알기 어렵습니다. 파일 서버에 모두 모으면 인증정보와 개인 작업 상태가 섞이고, 공개 마켓의 다운로드 수는 우리 팀 환경에서의 품질을 설명하지 못합니다.
+
+SkillRoster는 이 사이를 연결합니다.
+
+| 질문 | SkillRoster의 답 |
+|---|---|
+| 팀에서 실제로 쓰는 스킬은 무엇인가? | 개인이 선택해 발행한 스킬과 버전을 한곳에서 탐색 |
+| 어떤 스킬을 믿고 프로젝트에 넣을 수 있는가? | 동료 평가, 작성자 평가, 프로젝트 채택, 실행 근거를 분리해 표시 |
+| 새 프로젝트에 어떤 스킬이 필요한가? | 기술 태그와 팀 평가 순위를 조합해 추천 |
+| 누가 무엇을 바꿨는가? | YAML·Markdown 변경을 Git commit, diff, blame으로 추적 |
+| 개인 프롬프트와 소스도 서버에 올라가는가? | 기본 비수집. 명시적으로 발행한 스킬 패키지만 공유 |
+
+## 대표 화면
+
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/images/skills.svg" alt="공유 스킬과 로컬 스킬 목록"></td>
+    <td width="50%"><img src="./docs/images/project.svg" alt="프로젝트별 추천 스킬 연결"></td>
+  </tr>
+  <tr>
+    <td><b>팀 스킬과 내 로컬 스킬</b><br>발행된 스킬, 개인 저장소, 작성한 평가를 같은 화면에서 구분해 확인.</td>
+    <td><b>프로젝트별 스킬 구성</b><br>태그 일치와 팀 평가 순위를 참고해 필요한 버전을 프로젝트에 연결.</td>
+  </tr>
+</table>
+
+## 동작 방식
+
+```mermaid
+flowchart LR
+  A[팀원 로컬 스킬] -->|선택적 발행| B[SkillRoster 로컬 클라이언트]
+  B <-->|pull · validate · commit · push| C[(팀 Git 레지스트리)]
+  C --> D[동료 평가와 순위]
+  C --> E[프로젝트 Skill Set]
+  E -->|sync| F[.opencode/skills]
+  F --> G[OpenCode 프로젝트]
+```
+
+각 조직은 빈 원격 Git 저장소 하나로 로스터를 시작합니다. 팀원은 저장소 접근 권한과 자기 clone을 사용하며, 대시보드가 별도 데이터베이스 없이 Git 문서를 읽고 씁니다. 모든 변경은 전체 레지스트리 검증을 통과한 뒤 commit·push됩니다.
 
 ## 왜 다른가
 
@@ -179,4 +232,28 @@ docs                      아키텍처, 형식, 데모 문서
 - Git remote의 접근 제어가 팀 권한의 기준입니다. 세분화된 프로젝트 RBAC와 LDAP 연동은 후속 범위입니다.
 - OpenCode stable plugin API를 기준으로 하며 V2 beta API에는 의존하지 않습니다.
 
-Apache License 2.0으로 배포합니다. 기여 방법은 [CONTRIBUTING.md](CONTRIBUTING.md), 보안 경계와 제보 방법은 [SECURITY.md](SECURITY.md)를 확인하세요.
+## 프로젝트 상태와 로드맵
+
+현재 `v0.1.0`은 해커톤 MVP이지만 핵심 흐름은 실제 Git 저장소에서 동작합니다.
+
+- [x] 새 로스터 초기화와 기존 로스터 참여
+- [x] Codex·OpenCode·Claude Code·Agent Skills 로컬 경로 탐색
+- [x] 스킬 발행, 자기평가, 동료 평가와 팀 순위
+- [x] 프로젝트 태그 추천, 버전 연결, `.opencode/skills` 설치
+- [x] Git 충돌·인증·dirty worktree 오류 처리
+- [x] Windows·macOS·Linux CI와 Docker 빌드
+- [ ] 설치형 `npx skillroster` 배포와 독립 실행 파일
+- [ ] GitHub/GitLab 조직 로그인 기반 관리자 화면
+- [ ] Codex·Claude Code용 실행 근거 어댑터
+- [ ] 프로젝트별 세분화 권한과 팀 레지스트리 보관 정책
+
+## 참여하기
+
+버그와 기능 제안은 [Issues](https://github.com/orqan137/skillroster/issues)에 남겨주세요. 저장 형식이나 보안 경계를 바꾸는 제안은 구현 전에 이슈에서 설계를 먼저 논의하면 좋습니다.
+
+- 개발 환경과 PR 기준: [CONTRIBUTING.md](CONTRIBUTING.md)
+- 보안 취약점 비공개 제보: [SECURITY.md](SECURITY.md)
+- 저장 형식과 트랜잭션 원칙: [Registry format](docs/REGISTRY_FORMAT.md)
+- 시스템 구조: [Architecture](docs/ARCHITECTURE.md)
+
+SkillRoster는 Apache License 2.0으로 배포합니다.

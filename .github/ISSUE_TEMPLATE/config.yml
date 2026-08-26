@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 보안 취약점 제보
+    url: https://github.com/orqan137/skillroster/security/advisories/new
+    about: 인증정보 노출, 경로 탈출, 명령 실행과 팀 데이터 노출 문제는 비공개로 제보해주세요.
