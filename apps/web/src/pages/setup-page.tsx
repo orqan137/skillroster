@@ -135,7 +135,7 @@ export function SetupPage({ status, onComplete }: { status: SetupStatusPayload; 
   if (!mode) {
     return (
       <main className="setup-page">
-        <header className="setup-topbar"><div className="setup-brand"><span><GitBranch size={18} /></span><strong>SkillRoster</strong></div></header>
+        <header className="setup-topbar"><div className="setup-brand"><span><img src="/skillroster-mark.svg" alt="" /></span><strong>SkillRoster</strong></div></header>
         <section className="setup-welcome">
           <div className="welcome-copy"><span className="eyebrow">팀 에이전트 스킬 로스터</span><h1>시작 방식 선택</h1><p>팀장은 새 로스터 생성 · 팀원은 기존 로스터 참여</p></div>
           <div className="setup-choices">
@@ -150,7 +150,7 @@ export function SetupPage({ status, onComplete }: { status: SetupStatusPayload; 
   const isCreate = mode === "create";
   return (
     <main className="setup-page">
-      <header className="setup-topbar"><div className="setup-brand"><span><GitBranch size={18} /></span><strong>SkillRoster</strong></div><button className="mode-reset" type="button" onClick={() => setMode(null)}><ArrowLeft size={15} />시작 방식 다시 선택</button></header>
+      <header className="setup-topbar"><div className="setup-brand"><span><img src="/skillroster-mark.svg" alt="" /></span><strong>SkillRoster</strong></div><button className="mode-reset" type="button" onClick={() => setMode(null)}><ArrowLeft size={15} />시작 방식 다시 선택</button></header>
       <div className="setup-layout">
         <aside className="setup-rail">
           <span className="eyebrow">{isCreate ? "새 로스터 만들기" : "기존 로스터 들어가기"}</span>

@@ -1,4 +1,10 @@
-# SkillRoster
+<p align="center">
+  <img src="./docs/brand/skillroster-wordmark.svg" width="430" alt="SkillRoster">
+</p>
+
+<p align="center">
+  <strong>한국어</strong> · <a href="./README.en.md">English</a>
+</p>
 
 <p align="center">
   <a href="https://github.com/orqan137/skillroster/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/orqan137/skillroster/actions/workflows/ci.yml/badge.svg"></a>
@@ -13,7 +19,7 @@
 SkillRoster는 팀원의 로컬 파일이나 프롬프트를 중앙 서버로 수집하지 않습니다. 사용자가 발행한 `SKILL.md`, 동료 리뷰, 프로젝트별 Skill Set, 최소한의 실행 근거만 일반 Git 저장소에 보관합니다. 각 팀원은 자기 clone을 통해 작업하고 OpenCode는 선택된 스킬을 `.opencode/skills/`에서 그대로 사용합니다.
 
 <p align="center">
-  <img src="./docs/images/dashboard.svg" width="820" alt="SkillRoster 로스터 홈 — 팀 스킬 평가 순위와 프로젝트 연결 현황">
+  <img src="./docs/brand/skillroster-hero.png" width="900" alt="로컬 스킬이 Git 레지스트리를 거쳐 프로젝트 로스터로 구성되는 SkillRoster 대표 이미지">
 </p>
 
 ## 해결하려는 문제
@@ -31,6 +37,10 @@ SkillRoster는 이 사이를 연결합니다.
 | 개인 프롬프트와 소스도 서버에 올라가는가? | 기본 비수집. 명시적으로 발행한 스킬 패키지만 공유 |
 
 ## 대표 화면
+
+<p align="center">
+  <img src="./docs/images/dashboard.svg" width="820" alt="SkillRoster 로스터 홈 — 팀 스킬 평가 순위와 프로젝트 연결 현황">
+</p>
 
 <table>
   <tr>
@@ -66,6 +76,13 @@ flowchart LR
 - **프로젝트 단위 장착**: 기술 태그로 필요한 스킬을 추천하고, 선택한 버전을 OpenCode 프로젝트에 설치합니다.
 - **기본 비수집**: 프롬프트, 소스 코드, 인증정보를 evidence에 저장하지 않는 공개 스키마를 강제합니다.
 - **도구 독립 규격**: 저장 형식은 OpenCode 밖에서도 읽을 수 있는 Markdown, YAML, JSON Schema입니다.
+
+<table>
+  <tr>
+    <td width="220"><img src="./docs/brand/rovi-mascot.png" width="200" alt="SkillRoster 마스코트 로비"></td>
+    <td><b>Rovi · 로비</b><br>필요한 스킬을 프로젝트 로스터에 정리하는 보더콜리 팀 코치. 팀원을 감시하는 관리자가 아니라, 흩어진 도구를 구분하고 연결하는 SkillRoster의 역할을 나타냄. 로고·색상·사용 원칙은 <a href="./docs/BRAND.md">브랜드 가이드</a>에서 확인.</td>
+  </tr>
+</table>
 
 ## 2분 Quick start
 
@@ -237,7 +254,7 @@ examples                  데모 스킬과 프로젝트
 docs                      아키텍처, 형식, 데모 문서
 ```
 
-상세 설계는 [Architecture](docs/ARCHITECTURE.md), 공개 형식과 Git 트랜잭션 복구 원칙은 [Registry format](docs/REGISTRY_FORMAT.md), 발표 흐름은 [Demo](docs/DEMO.md)를 참고하세요. 대회 항목별 구현 증거는 [Contest scorecard](docs/CONTEST_SCORECARD.md), 운영 방식은 [Governance](docs/GOVERNANCE.md), 의존성 근거는 [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)에 정리되어 있습니다.
+상세 설계는 [Architecture](docs/ARCHITECTURE.md), 공개 형식과 Git 트랜잭션 복구 원칙은 [Registry format](docs/REGISTRY_FORMAT.md), 발표 흐름은 [Demo](docs/DEMO.md)를 참고하세요. 대회 항목별 구현 증거는 [Contest scorecard](docs/CONTEST_SCORECARD.md), 운영 방식은 [Governance](docs/GOVERNANCE.md), 브랜드 자산은 [Brand guide](docs/BRAND.md), 의존성 근거는 [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)에 정리되어 있습니다.
 
 ## 현재 MVP 경계
 
@@ -273,5 +290,6 @@ docs                      아키텍처, 형식, 데모 문서
 - 배점별 재현 증거: [Contest scorecard](docs/CONTEST_SCORECARD.md)
 - GitHub Flow와 release 정책: [Governance](docs/GOVERNANCE.md)
 - OSS와 license 검증: [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)
+- 로고·마스코트·대표 이미지: [Brand guide](docs/BRAND.md)
 
 SkillRoster는 Apache License 2.0으로 배포합니다.

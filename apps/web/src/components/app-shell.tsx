@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Boxes, Check, ChevronsUpDown, FolderKanban, GitBranch, House, Plus, Settings, Users } from "lucide-react";
+import { Boxes, Check, ChevronsUpDown, FolderKanban, House, Plus, Settings, Users } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { fetchJson, useApi } from "@/lib/client";
 import type { TeamsPayload } from "@/lib/contracts";
@@ -69,7 +69,7 @@ export function AppShell({
     <div className="app-frame">
       <aside className="sidebar">
         <Link className="brand" to="/" aria-label="SkillRoster 개요로 이동">
-          <span className="brand-mark"><GitBranch size={19} /></span>
+          <span className="brand-mark"><img src="/skillroster-mark.svg" alt="" /></span>
           <span>SkillRoster</span>
         </Link>
         <div className="team-switcher" ref={teamSwitcherRef}>
