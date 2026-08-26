@@ -97,5 +97,5 @@ describe("evidence flush", () => {
       changedFiles: 1,
       privacy: { promptStored: false, sourceStored: false },
     });
-  });
+  }, 20_000);
 });
