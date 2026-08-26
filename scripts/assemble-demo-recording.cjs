@@ -2,7 +2,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
-const recording = path.join(root, "artifacts", "video", "recording");
+const recording = path.resolve(
+  root,
+  process.env.SKILLROSTER_RECORDING_DIR || "artifacts/video/recording",
+);
+const videoRoot = path.join(root, "artifacts", "video");
+const relativeRecording = path.relative(videoRoot, recording);
+if (relativeRecording.startsWith("..") || path.isAbsolute(relativeRecording)) {
+  throw new Error("녹화 경로는 artifacts/video 아래여야 함");
+}
 const manifestPath = path.join(recording, "manifest.json");
 
 if (!fs.existsSync(manifestPath)) {
