@@ -11,6 +11,7 @@ git clone https://github.com/orqan137/skillroster.git
 cd skillroster
 corepack enable
 pnpm install
+pnpm verify
 pnpm dev
 ```
 
@@ -36,6 +37,8 @@ PR 전에 아래 명령을 모두 실행해주세요.
 pnpm typecheck
 pnpm test:run
 pnpm build
+pnpm license:check
+pnpm lint
 ```
 
 경로 처리, 개인정보 필드, Git 동시성, 랭킹, hook 보존을 변경했다면 해당 회귀 테스트가 필요합니다. 프론트엔드 변경은 Windows와 macOS 경로가 화면을 깨뜨리지 않는지도 확인해주세요.
@@ -46,6 +49,8 @@ pnpm build
 - 레지스트리 쓰기는 `pull → mutate → 전체 검증 → commit → push` 트랜잭션을 통과해야 합니다.
 - 프롬프트, 소스 코드, 환경 변수, 인증정보를 로그나 fixture에 넣지 않습니다.
 - Conventional Commit 형식의 짧은 커밋 메시지를 권장합니다.
+- branch는 `feat/`, `fix/`, `docs/`, `chore/` 중 변경 목적에 맞는 prefix를 사용합니다.
+- `main`에 직접 push하지 않고 CI를 통과한 PR을 squash merge합니다.
 - 생성된 `dist`, 개인 `.env`, `.skillspace-cache`는 커밋하지 않습니다.
 
 ## Pull Request 설명
@@ -58,3 +63,5 @@ pnpm build
 4. UI 변경 이미지 또는 저장 형식 migration 여부
 
 기여한 코드는 Apache License 2.0으로 배포되는 데 동의한 것으로 간주합니다.
+
+전체 역할, branch 보호와 release 규칙은 [Governance](docs/GOVERNANCE.md)를 참고하세요.

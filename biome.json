@@ -1,0 +1,39 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+	"files": {
+		"includes": [
+			"apps/**/*.ts",
+			"apps/**/*.tsx",
+			"packages/**/*.ts",
+			"scripts/**/*.mjs",
+			"!**/.next",
+			"!**/dist",
+			"!**/dist-server"
+		]
+	},
+	"formatter": {
+		"enabled": false
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"correctness": {
+				"useExhaustiveDependencies": "off"
+			},
+			"a11y": {
+				"noAutofocus": "warn",
+				"noLabelWithoutControl": "warn",
+				"noStaticElementInteractions": "warn",
+				"useAriaPropsSupportedByRole": "warn",
+				"useButtonType": "warn",
+				"useFocusableInteractive": "warn",
+				"useSemanticElements": "warn"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "warn",
+				"useIterableCallbackReturn": "warn"
+			}
+		}
+	}
+}

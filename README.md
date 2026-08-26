@@ -71,6 +71,18 @@ flowchart LR
 
 요구 사항은 Node.js 22+, pnpm 11+, Git입니다.
 
+원격 Git 저장소와 인증 없이 완성된 샘플부터 확인할 수 있습니다.
+
+```bash
+corepack enable
+pnpm install
+pnpm demo
+```
+
+3명의 팀원, 3개의 스킬, 평가, 프로젝트 연결, 검증된 실행 기록을 임시 로컬 Git에 만들고 `http://127.0.0.1:3211`에서 엽니다. 생성 경로는 terminal에 표시되며 운영 데이터에는 접근하지 않습니다.
+
+직접 새 로스터를 구성하려면:
+
 ```bash
 corepack enable
 pnpm install
@@ -177,6 +189,7 @@ pnpm skillroster dashboard
 | `evidence flush` | 대기 중인 사용 이벤트를 검증하고 Git에 반영 |
 | `rank` | evidence-weighted 팀 순위 출력 |
 | `dashboard` | 로컬 시각화 클라이언트 실행 |
+| `demo` | 인증 없이 임시 Git과 샘플 대시보드 실행 |
 
 전체 옵션은 `pnpm skillroster <command> --help`로 확인할 수 있습니다.
 
@@ -224,7 +237,7 @@ examples                  데모 스킬과 프로젝트
 docs                      아키텍처, 형식, 데모 문서
 ```
 
-상세 설계는 [Architecture](docs/ARCHITECTURE.md), 공개 형식과 Git 트랜잭션 복구 원칙은 [Registry format](docs/REGISTRY_FORMAT.md), 발표 흐름은 [Demo](docs/DEMO.md)를 참고하세요.
+상세 설계는 [Architecture](docs/ARCHITECTURE.md), 공개 형식과 Git 트랜잭션 복구 원칙은 [Registry format](docs/REGISTRY_FORMAT.md), 발표 흐름은 [Demo](docs/DEMO.md)를 참고하세요. 대회 항목별 구현 증거는 [Contest scorecard](docs/CONTEST_SCORECARD.md), 운영 방식은 [Governance](docs/GOVERNANCE.md), 의존성 근거는 [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)에 정리되어 있습니다.
 
 ## 현재 MVP 경계
 
@@ -247,6 +260,8 @@ docs                      아키텍처, 형식, 데모 문서
 - [ ] Codex·Claude Code용 실행 근거 어댑터
 - [ ] 프로젝트별 세분화 권한과 팀 레지스트리 보관 정책
 
+버전별 수용 범위는 [Roadmap](docs/ROADMAP.md)에서 관리합니다.
+
 ## 참여하기
 
 버그와 기능 제안은 [Issues](https://github.com/orqan137/skillroster/issues)에 남겨주세요. 저장 형식이나 보안 경계를 바꾸는 제안은 구현 전에 이슈에서 설계를 먼저 논의하면 좋습니다.
@@ -255,5 +270,8 @@ docs                      아키텍처, 형식, 데모 문서
 - 보안 취약점 비공개 제보: [SECURITY.md](SECURITY.md)
 - 저장 형식과 트랜잭션 원칙: [Registry format](docs/REGISTRY_FORMAT.md)
 - 시스템 구조: [Architecture](docs/ARCHITECTURE.md)
+- 배점별 재현 증거: [Contest scorecard](docs/CONTEST_SCORECARD.md)
+- GitHub Flow와 release 정책: [Governance](docs/GOVERNANCE.md)
+- OSS와 license 검증: [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)
 
 SkillRoster는 Apache License 2.0으로 배포합니다.

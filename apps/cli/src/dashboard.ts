@@ -112,7 +112,8 @@ export async function launchDashboard(input: {
     child.removeAllListeners("exit");
     child.once("error", reject);
     child.once("exit", (code) => {
-      if (code === 0 || code === null) resolvePromise();
+      // Windows reports Ctrl+C as STATUS_CONTROL_C_EXIT rather than a Unix-style signal.
+      if (code === 0 || code === null || code === 0xc000013a) resolvePromise();
       else reject(new Error(`Dashboard exited with code ${code}`));
     });
     const stop = () => child.kill("SIGINT");
