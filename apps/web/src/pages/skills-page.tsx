@@ -22,11 +22,11 @@ export function SkillsPage() {
   const sharedIds = new Set(snapshot.skills.map((skill) => skill.id));
 
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <DirectoryActionHeader eyebrow="Roster" title="스킬" actionLabel="스킬 추가" onAction={() => setCreating({ mode: "create" })} />
+    <DirectoryActionHeader title="스킬" actionLabel="스킬 추가" onAction={() => setCreating({ mode: "create" })} />
     <section className="directory-stats" aria-label="스킬 통계">
       <article><Boxes size={20} /><span>공유 스킬</span><strong>{snapshot.skills.length}</strong></article>
       <article><HardDrive size={20} /><span>내 로컬 스킬</span><strong>{data.localSkills?.skills.length ?? 0}</strong></article>
-      <article><MessageSquareText size={20} /><span>작성된 평가</span><strong>{snapshot.reviews.length}</strong></article>
+      <article><MessageSquareText size={20} /><span>팀 평가</span><strong>{snapshot.reviews.length}</strong></article>
     </section>
     <section className="data-section skill-directory">
       <div className="directory-toolbar"><div className="directory-tabs" role="tablist" aria-label="스킬 저장 위치"><button id="shared-skills-tab" role="tab" aria-controls="shared-skills-panel" aria-selected={tab === "shared"} type="button" onClick={() => setTab("shared")}>팀 공유 스킬 <span>{snapshot.skills.length}</span></button><button id="local-skills-tab" role="tab" aria-controls="local-skills-panel" aria-selected={tab === "local"} type="button" onClick={() => setTab("local")}>내 로컬 스킬 <span>{data.localSkills?.skills.length ?? 0}</span></button></div><div className="directory-search"><Search size={16} /><input aria-label="스킬 검색" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="이름·설명·태그 검색" /></div></div>

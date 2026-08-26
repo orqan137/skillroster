@@ -1,5 +1,7 @@
 # SkillRoster에 기여하기
 
+**한국어** · [English](CONTRIBUTING.en.md)
+
 버그 제보, 문서 개선, 새로운 에이전트 어댑터와 코드 기여를 환영합니다. SkillRoster는 팀 Git 저장소를 데이터베이스로 사용하므로 파일 형식·경로 안전성·Git 복구 가능성을 일반 UI 변경보다 엄격하게 다룹니다.
 
 ## 시작하기

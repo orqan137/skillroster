@@ -1,7 +1,7 @@
 # 기능 및 제출 준비 점검표
 
 점검일: 2026-08-26  
-대상: `fix/#15-responsive-demo-readme` → `main`
+대상: `main` 제출 후보
 
 ## 자동 검증
 
@@ -9,8 +9,9 @@
 |---|---|---|
 | 정적 분석 | `pnpm lint` | 경고·오류 0건 |
 | 타입 | `pnpm typecheck` | 6개 workspace 통과 |
-| 단위·통합 테스트 | `pnpm test` | 7개 테스트 파일, 10개 테스트 통과 |
-| 제출 전 전체 검증 | `pnpm verify` | lint, license, typecheck, test:run, build 일괄 확인 |
+| 정책 테스트 | `pnpm test:policy` | Issue 연계 GitHub Flow 4개 시나리오 통과 |
+| 단위·통합 테스트 | `pnpm test:run` | Vitest 20개 파일, 36개 테스트 통과 |
+| 제출 전 전체 검증 | `pnpm verify` | 2026-08-26 lint, license, typecheck, 40개 자동 검사, build 일괄 통과 |
 | 운영체제 CI | GitHub Actions | Ubuntu, macOS, Windows 병렬 실행 |
 | Docker | GitHub Actions | 이미지 build 확인. 로컬 점검 환경에는 Docker CLI 없음 |
 
@@ -26,6 +27,9 @@
 | Git CRUD | 프로젝트와 skillset 생성 후 실제 상세 페이지 이동 | 통과 |
 | 프로젝트 연결 | 태그 일치 추천, 평가 순위, 연결/해제 상태 표시 | 통과 |
 | 설정 | Git 연결·사용자·로컬 경로 읽기 모드와 영역별 수정 | 통과 |
+| 동기식 Git 저장 | 평가·스킬·프로젝트 저장이 pull·검사·commit·push 완료 뒤 성공 표시 | 통과 |
+| 실제 원격 저장소 | 빈 팀 Git 초기화·팀원 등록, 별도 프로젝트 Git의 `project.yaml` 생성 | 통과 |
+| OpenCode 설치 | 연결된 두 스킬을 실제 `.opencode/skills` 경로에 복사 | 통과 |
 
 실제 조작 결과는 [README의 전체 화면](../README.md#실제-동작-화면)에 순서대로 보관함.
 
@@ -36,6 +40,7 @@
 - 390px 프로젝트 생성 모달 너비 342px, 문서 너비 390px 유지.
 - 탭은 `tablist`/`tab`/`tabpanel`, 평점은 `fieldset`, 진행률은 `progressbar` 의미 구조 사용.
 - 모달은 바깥 영역 클릭, 닫기 버튼, Escape로 닫기 가능.
+- 1920×1080 시연 영상은 브라우저 1920×960과 하단 자막 120px를 분리하고, 01~07 단계 22개 자막의 화면 시점을 대표 프레임으로 재검증함.
 
 ## 심사 기준 연결
 

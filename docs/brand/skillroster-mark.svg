@@ -2,8 +2,10 @@
   <title id="title">SkillRoster mark</title>
   <desc id="desc">Three skill slots connected into one project roster</desc>
   <rect width="64" height="64" rx="6" fill="#0D1510"/>
-  <path d="M18 15v34M18 20h15M18 32h22M18 44h15" fill="none" stroke="#00E676" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
-  <rect x="34" y="15" width="10" height="10" fill="#0057FF" stroke="#FFFFFF" stroke-width="3"/>
-  <rect x="41" y="27" width="10" height="10" fill="#00E676" stroke="#FFFFFF" stroke-width="3"/>
-  <rect x="34" y="39" width="10" height="10" fill="#0D1510" stroke="#FFFFFF" stroke-width="3"/>
+  <g transform="translate(-2.5 0)">
+    <path d="M18 15v34M18 20h15M18 32h22M18 44h15" fill="none" stroke="#00E676" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+    <rect x="34" y="15" width="10" height="10" fill="#0057FF" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="41" y="27" width="10" height="10" fill="#00E676" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="34" y="39" width="10" height="10" fill="#0D1510" stroke="#FFFFFF" stroke-width="3"/>
+  </g>
 </svg>

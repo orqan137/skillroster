@@ -28,7 +28,9 @@ export async function dashboardData(): Promise<{
   ranked: RankedSkill[];
 }> {
   const repo = await repository();
-  const { snapshot, revision } = await repo.state(true);
+  // Read the local clone immediately. Remote synchronization is explicit in
+  // Settings; write transactions still pull before committing.
+  const { snapshot, revision } = await repo.state(false);
   return {
     revision,
     ranked: rankSkills(
@@ -69,6 +71,7 @@ export async function projectData(name: string): Promise<{
   project: ProjectDocument;
   recommendations: ReturnType<typeof recommendSkills>;
   selected: Array<{ skill: string; version: string }>;
+  dashboard: Awaited<ReturnType<typeof dashboardData>>;
 } | null> {
   const data = await dashboardData();
   const project = data.snapshot.projects.find((item) => item.metadata.name === name);
@@ -78,5 +81,6 @@ export async function projectData(name: string): Promise<{
     project,
     recommendations: recommendSkills(project, data.ranked),
     selected: skillset?.spec.skills ?? [],
+    dashboard: data,
   };
 }

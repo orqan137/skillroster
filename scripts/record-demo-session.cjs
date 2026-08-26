@@ -52,7 +52,7 @@ const overlayScript = () => {
     const agenda = document.createElement("section");
     agenda.dataset.demoAgenda = "";
     agenda.hidden = true;
-    agenda.innerHTML = '<span>SKILLROSTER DEMO</span><h2>시연 순서</h2><p>실제 GitHub 연동과 더미 데이터로 전체 흐름 시연</p><ol><li><b>01</b>빈 GitHub 확인</li><li><b>02</b>새 로스터 생성</li><li><b>03</b>팀원 연결</li><li><b>04</b>스킬 공유·평가</li><li><b>05</b>프로젝트 Git 연결</li><li><b>06</b>OpenCode 설치</li><li><b>07</b>팀원·설정</li></ol>';
+    agenda.innerHTML = '<span>SKILLROSTER DEMO</span><h2>시연 순서</h2><p>실제 GitHub 연동과 더미 데이터로 주요 기능 시연</p><ol><li><b>01</b>빈 GitHub 확인</li><li><b>02</b>새 로스터 생성</li><li><b>03</b>팀원 연결</li><li><b>04</b>스킬 공유·평가</li><li><b>05</b>프로젝트 Git 연결</li><li><b>06</b>OpenCode 설치</li><li><b>07</b>팀원·설정</li></ol>';
     document.body.append(cursor, agenda);
     document.addEventListener("mousemove", (event) => {
       cursor.style.left = `${event.clientX}px`;
@@ -287,7 +287,9 @@ async function main() {
   await type(page.getByLabel("참고 자료 1 위치"), "https://docs.example.com/release", 12);
   await click(page.getByRole("button", { name: "추가", exact: true }));
   await type(page.getByLabel("참고 자료 2 이름"), "공유 체크리스트", 18);
-  await type(page.getByLabel("참고 자료 2 위치"), shareableFile, 8);
+  // Absolute Windows paths are filled atomically. Fast key simulation can
+  // outpace React's controlled input updates and leave a truncated path.
+  await page.getByLabel("참고 자료 2 위치").fill(shareableFile);
   await click(page.getByRole("button", { name: "위치만" }).nth(1));
   await click(page.getByRole("button", { name: "작성자 평가 함께 남기기" }));
   await click(page.getByRole("button", { name: "작성자 평가 5점" }));
@@ -302,7 +304,7 @@ async function main() {
   await click(page.getByRole("button", { name: "5점" }), 180);
   await page.getByRole("combobox", { name: "프로젝트 기준" }).selectOption({ label: "Checkout API" });
   await type(page.getByRole("textbox", { name: "평가 의견" }), "계약 변경을 배포 전에 확인하기 좋았음.", 24);
-  await click(page.getByRole("button", { name: "평가를 Git에 기록" }), 0);
+  await click(page.getByRole("button", { name: "평가 저장" }), 0);
   await page.getByText("평가 저장 완료").waitFor({ timeout: 30000 });
 
   await goto(projectRemoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
@@ -325,8 +327,8 @@ async function main() {
   await page.getByRole("heading", { name: "고객 알림 센터", level: 1 }).waitFor({ timeout: 45000 });
 
   await setCaption("05", "팀 레지스트리와 프로젝트 Git에 선택한 스킬 ID·버전 동시 반영", 86);
-  await click(page.getByRole("button", { name: "Git 구성 갱신" }), 0);
-  await page.getByText("구성 반영 완료").waitFor({ timeout: 45000 });
+  await page.mouse.move(1080, 300, { steps: 18 });
+  await pause(650);
   await showFreshGitHub(projectRemoteWebUrl, ".skillroster");
   await setCaption("05", "GitHub 새로고침 후 .skillroster/project.yaml 반영 확인", 89);
   await page.mouse.move(830, 480, { steps: 20 });
@@ -348,14 +350,14 @@ async function main() {
   await pause(550);
 
   await nav("설정");
-  await page.getByRole("heading", { name: "Platform Team 로스터 설정", level: 1 }).waitFor();
+  await page.getByRole("heading", { name: "Platform Team 설정", level: 1 }).waitFor();
   await setCaption("07", "로스터별 Git 연결·사용자 정보·로컬 저장 경로 관리", 98);
   await click(page.getByRole("button", { name: "수정" }).first(), 300);
   await click(page.getByRole("button", { name: "취소" }), 180);
 
   await nav("개요");
   await page.getByRole("heading", { name: "Platform Team", level: 1 }).waitFor();
-  await setCaption("07", "팀 평가와 프로젝트 구성을 다음 작업에서 다시 사용", 100);
+  await setCaption("07", "개요에서 평가 순위와 프로젝트 구성 다시 확인", 100);
   await page.mouse.move(1090, 480, { steps: 20 });
   await pause(5000);
 

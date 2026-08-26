@@ -75,7 +75,7 @@ export function AppShell({
         <div className="team-switcher" ref={teamSwitcherRef}>
           <button ref={workspaceTriggerRef} className="workspace-trigger" type="button" onClick={() => setTeamsOpen((value) => !value)} aria-controls="team-switcher-panel" aria-expanded={teamsOpen} aria-haspopup="dialog" aria-label={`${teamName} 로스터 전환`}>
             <span className="team-symbol">{teamName.slice(0, 1)}</span>
-            <span><small>현재 팀</small><strong>{teamName}</strong><em>@{member}</em></span>
+            <span><small>로스터</small><strong>{teamName}</strong><em>@{member}</em></span>
             <ChevronsUpDown size={16} />
           </button>
           {teamsOpen && <div className="team-switcher-panel" id="team-switcher-panel" role="dialog" aria-label="내 로스터">

@@ -1,9 +1,9 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import { stringify } from "yaml";
+import { parse, stringify } from "yaml";
 
 const execFileAsync = promisify(execFile);
 
@@ -31,6 +31,13 @@ export function projectConfigurationDocument(input: ProjectRepositoryConfig, upd
       },
     },
   };
+}
+
+function comparableProjectConfiguration(document: unknown): string {
+  if (!document || typeof document !== "object") return "";
+  const copy = structuredClone(document) as { spec?: { updatedAt?: unknown } };
+  if (copy.spec) copy.spec.updatedAt = "<ignored>";
+  return JSON.stringify(copy);
 }
 
 async function git(directory: string, args: string[]): Promise<string> {
@@ -63,10 +70,20 @@ export async function syncProjectRepository(
     }
 
     const configurationDirectory = join(checkout, ".skillroster");
+    const configurationPath = join(configurationDirectory, "project.yaml");
     await mkdir(configurationDirectory, { recursive: true });
+    const currentSource = await readFile(configurationPath, "utf8").catch(() => "");
+    const currentDocument = currentSource ? parse(currentSource) : null;
+    const nextDocument = projectConfigurationDocument(input);
+    if (
+      currentDocument &&
+      comparableProjectConfiguration(currentDocument) === comparableProjectConfiguration(nextDocument)
+    ) {
+      return { branch, changed: false };
+    }
     await writeFile(
-      join(configurationDirectory, "project.yaml"),
-      stringify(projectConfigurationDocument(input), { lineWidth: 0 }),
+      configurationPath,
+      stringify(nextDocument, { lineWidth: 0 }),
       "utf8",
     );
     await git(checkout, ["add", ".skillroster/project.yaml"]);

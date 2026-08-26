@@ -1,6 +1,5 @@
 import { MessageSquareText, Shapes, Sparkles, Users } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { PageMotif } from "@/components/page-motif";
 import { PageState } from "@/components/page-state";
 import { useApi } from "@/lib/client";
 import type { DashboardPayload } from "@/lib/contracts";
@@ -14,14 +13,13 @@ export function MembersPage() {
   const { snapshot, member } = data;
 
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <header className="page-header directory-header"><div><span className="eyebrow">Roster</span><h1>팀원</h1></div><PageMotif /></header>
+    <header className="page-header directory-header"><h1>팀원</h1></header>
     <section className="directory-stats" aria-label="팀원 통계">
       <article><Users size={20} /><span>팀원</span><strong>{snapshot.members.length}</strong></article>
       <article><Sparkles size={20} /><span>공유 스킬</span><strong>{snapshot.skills.length}</strong></article>
       <article><MessageSquareText size={20} /><span>작성된 평가</span><strong>{snapshot.reviews.length}</strong></article>
     </section>
-    <section className="data-section member-directory">
-      <div className="panel-heading"><div><span className="eyebrow">구성원</span><h2>팀원 현황</h2></div></div>
+    <section className="data-section member-directory" aria-label="팀원 목록">
       {snapshot.members.map((item, index) => {
         const id = item.metadata.name;
         const owned = snapshot.skills.filter((skill) => skill.document.spec.owner === id).length;

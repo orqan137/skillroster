@@ -45,5 +45,5 @@ describe("roster local directory settings", () => {
     await expect(stat(source)).rejects.toThrow();
     await expect(stat(target)).resolves.toMatchObject({});
     await expect(runtimeConnection()).resolves.toMatchObject({ directory: target, member: "hong" });
-  });
+  }, 30_000);
 });

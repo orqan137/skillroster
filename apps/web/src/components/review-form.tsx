@@ -1,23 +1,24 @@
-"use client";
-
 import { useState, type FormEvent } from "react";
 import { Star } from "lucide-react";
 import { fetchJson } from "@/lib/client";
+import type { ReviewDocument } from "@skillspace/schemas";
 
 export function ReviewForm({
   skill,
   version,
   projects,
+  existingReview,
   onSaved,
 }: {
   skill: string;
   version: string;
   projects: Array<{ name: string; displayName: string }>;
+  existingReview?: ReviewDocument | undefined;
   onSaved: () => void;
 }) {
-  const [score, setScore] = useState(5);
-  const [comment, setComment] = useState("");
-  const [project, setProject] = useState("");
+  const [score, setScore] = useState(existingReview?.spec.score ?? 5);
+  const [comment, setComment] = useState(existingReview?.spec.comment ?? "");
+  const [project, setProject] = useState(existingReview?.spec.project ?? "");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [failure, setFailure] = useState("");
 
@@ -36,7 +37,6 @@ export function ReviewForm({
       setStatus("error");
       return;
     }
-    setComment("");
     setStatus("saved");
     onSaved();
   }
@@ -69,9 +69,9 @@ export function ReviewForm({
         value={comment}
       />
       <button className="button primary" disabled={status === "saving"} type="submit">
-        {status === "saving" ? "Git에 기록 중…" : "평가를 Git에 기록"}
+        {status === "saving" ? "저장 중…" : existingReview ? "내 평가 수정" : "평가 저장"}
       </button>
-      {status === "saved" && <span className="form-note success">평가 저장 완료</span>}
+      {status === "saved" && <span className="form-note success">평가 저장 완료 · Git에 커밋됨</span>}
       {status === "error" && <span className="form-note error" role="alert">{failure || "평가 저장 실패"}</span>}
     </form>
   );

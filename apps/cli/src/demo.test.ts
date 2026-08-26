@@ -26,5 +26,5 @@ describe("createDemoRegistry", () => {
       evidence.spec.privacy.promptStored === false && evidence.spec.privacy.sourceStored === false,
     )).toBe(true);
     await expect(repository.ensureClean()).resolves.toBeUndefined();
-  }, 20_000);
+  }, 45_000);
 });

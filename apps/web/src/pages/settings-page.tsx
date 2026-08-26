@@ -43,6 +43,7 @@ function SettingsContent({ status, connection, profile, active, reload }: {
   const [directoryFeedback, setDirectoryFeedback] = useState<Feedback>(null);
   const [sourceFeedback, setSourceFeedback] = useState<Feedback>(null);
   const [accessFeedback, setAccessFeedback] = useState<Feedback>(null);
+  const [syncFeedback, setSyncFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [profileEditing, setProfileEditing] = useState(false);
   const [localEditing, setLocalEditing] = useState(false);
@@ -104,6 +105,20 @@ function SettingsContent({ status, connection, profile, active, reload }: {
     }
   }
 
+  async function syncRegistry() {
+    setBusy("sync");
+    setSyncFeedback(null);
+    try {
+      await fetchJson("/api/registry/sync", { method: "POST" });
+      setSyncFeedback({ type: "success", text: "원격 변경 가져오기 완료" });
+      reload();
+    } catch (error) {
+      setSyncFeedback({ type: "error", text: error instanceof Error ? error.message : String(error) });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function moveDirectory(event: FormEvent) {
     event.preventDefault();
     const target = directory.trim();
@@ -152,27 +167,27 @@ function SettingsContent({ status, connection, profile, active, reload }: {
 
   return <AppShell member={connection.member} teamName={active.displayName}>
     <header className="page-header settings-header">
-      <div><span className="eyebrow">Roster</span><h1>{active.displayName} 로스터 설정</h1></div>
+      <h1>{active.displayName} 설정</h1>
       <span className="roster-scope"><GitBranch size={15} /><b>{active.displayName}</b><small>@{connection.member}</small></span>
     </header>
 
     <section className="settings-section">
-      <div className="settings-section-heading"><GitBranch size={20} /><div><h2>로스터 Git 연결</h2><p>현재 로스터의 데이터 원본과 접근 권한</p></div><span className="connection-badge"><CheckCircle2 size={14} />연결됨</span></div>
+      <div className="settings-section-heading"><GitBranch size={20} /><div><h2>로스터 Git</h2></div><span className="connection-badge"><CheckCircle2 size={14} />연결됨</span></div>
       <dl className="settings-list">
-        <div><dt>로스터</dt><dd>{active.displayName}<small>{active.team}</small></dd></div>
+        <div><dt>로스터</dt><dd>{active.displayName}{active.team !== active.displayName && <small>{active.team}</small>}</dd></div>
         <div><dt>원격 저장소</dt><dd><code>{active.remote ?? "원격 저장소 없음"}</code></dd></div>
-        <div><dt>연결 방식</dt><dd>{connection.source === "local-config" ? "로컬 SkillRoster 설정" : "환경 변수"}</dd></div>
+        <div><dt>설정 방식</dt><dd>{connection.source === "local-config" ? "로컬 설정 파일" : "환경 변수"}</dd></div>
       </dl>
       <div className="git-access-row">
         <ShieldCheck size={21} />
-        <div><strong>접근 권한 기준: 원격 Git</strong><p>비공개 저장소는 GitHub·GitLab에서 권한을 받은 계정만 clone·push 가능. SkillRoster에 토큰 저장 없음.</p></div>
-        {active.remote ? <button className="button" type="button" disabled={busy === "access"} onClick={() => void checkAccess()}><RefreshCw size={14} />{busy === "access" ? "확인 중" : "권한 다시 확인"}</button> : <span className="settings-muted">로컬 전용</span>}
+        <div><strong>원격 Git 권한 사용</strong><p>비공개 저장소는 권한이 있는 Git 계정만 clone·push 가능. 토큰은 SkillRoster에 저장하지 않음.</p></div>
+        {active.remote ? <div className="settings-git-actions"><button className="button" type="button" disabled={busy !== null} onClick={() => void syncRegistry()}><RefreshCw size={14} />{busy === "sync" ? "가져오는 중" : "Git 변경 가져오기"}</button><button className="button" type="button" disabled={busy !== null} onClick={() => void checkAccess()}>{busy === "access" ? "확인 중" : "권한 확인"}</button></div> : <span className="settings-muted">로컬 전용</span>}
       </div>
-      {accessFeedback && <p className={`settings-feedback ${accessFeedback.type}`} aria-live="polite">{accessFeedback.text}</p>}
+      {(syncFeedback ?? accessFeedback) && <p className={`settings-feedback ${(syncFeedback ?? accessFeedback)?.type}`} aria-live="polite">{(syncFeedback ?? accessFeedback)?.text}</p>}
     </section>
 
     <section className="settings-section">
-      <div className="settings-section-heading"><UserRound size={20} /><div><h2>사용자 정보</h2><p>현재 로스터의 프로필과 커밋 작성자</p></div>{profileEditing ? <button className="settings-edit-button cancel" type="button" onClick={cancelProfileEdit}><X size={14} />취소</button> : <button className="settings-edit-button" type="button" onClick={() => setProfileEditing(true)}><Pencil size={14} />수정</button>}</div>
+      <div className="settings-section-heading"><UserRound size={20} /><div><h2>사용자 정보</h2></div>{profileEditing ? <button className="settings-edit-button cancel" type="button" onClick={cancelProfileEdit}><X size={14} />취소</button> : <button className="settings-edit-button" type="button" onClick={() => setProfileEditing(true)}><Pencil size={14} />수정</button>}</div>
       {!profileEditing && <dl className="settings-list settings-read-list">
         <div><dt>사용자</dt><dd>{profile.displayName}<small>@{profile.id}</small></dd></div>
         <div><dt>이메일</dt><dd>{profile.email}</dd></div>
@@ -193,7 +208,7 @@ function SettingsContent({ status, connection, profile, active, reload }: {
     </section>
 
     <section className="settings-section">
-      <div className="settings-section-heading"><FolderOpen size={20} /><div><h2>로컬 저장 경로</h2><p>현재 컴퓨터의 로스터 clone과 개인 스킬 위치</p></div>{localEditing ? <button className="settings-edit-button cancel" type="button" onClick={cancelLocalEdit}><X size={14} />취소</button> : <button className="settings-edit-button" type="button" onClick={() => setLocalEditing(true)}><Pencil size={14} />수정</button>}</div>
+      <div className="settings-section-heading"><FolderOpen size={20} /><div><h2>로컬 저장 경로</h2></div>{localEditing ? <button className="settings-edit-button cancel" type="button" onClick={cancelLocalEdit}><X size={14} />취소</button> : <button className="settings-edit-button" type="button" onClick={() => setLocalEditing(true)}><Pencil size={14} />수정</button>}</div>
       {!localEditing && <dl className="settings-list settings-read-list">
         <div><dt>로스터 clone</dt><dd><code>{connection.directory}</code></dd></div>
         <div><dt>설정 파일</dt><dd><code>{status.configPath}</code></dd></div>
