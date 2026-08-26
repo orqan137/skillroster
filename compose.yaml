@@ -1,0 +1,12 @@
+services:
+  dashboard:
+    build:
+      context: .
+    environment:
+      SKILLSPACE_REGISTRY: /registry
+      SKILLSPACE_MEMBER: ${SKILLSPACE_MEMBER:?Set SKILLSPACE_MEMBER}
+    volumes:
+      - ${SKILLSPACE_REGISTRY_HOST:?Set SKILLSPACE_REGISTRY_HOST}:/registry
+    ports:
+      - "127.0.0.1:${SKILLSPACE_PORT:-3210}:3210"
+    restart: unless-stopped

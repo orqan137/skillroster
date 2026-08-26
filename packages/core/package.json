@@ -1,0 +1,25 @@
+{
+  "name": "@skillspace/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest src",
+    "test:run": "vitest run src"
+  },
+  "dependencies": {
+    "@skillspace/schemas": "workspace:*",
+    "gray-matter": "^4.0.3",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

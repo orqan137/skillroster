@@ -1,0 +1,36 @@
+{
+  "name": "@skillspace/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "skillroster": "dist/index.js",
+    "skillspace": "dist/index.js"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "@skillspace/core": "workspace:*",
+    "@skillspace/git": "workspace:*",
+    "@skillspace/opencode-plugin": "workspace:*",
+    "@skillspace/schemas": "workspace:*",
+    "commander": "^14.0.2",
+    "simple-git": "^3.28.0",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

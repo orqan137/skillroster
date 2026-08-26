@@ -1,0 +1,9 @@
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/dist-server
+.skillspace-cache
+.git
+coverage
+*.log

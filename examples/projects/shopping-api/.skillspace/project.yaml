@@ -1,0 +1,17 @@
+apiVersion: skillspace.dev/v1alpha1
+kind: Project
+metadata:
+  name: shopping-api
+spec:
+  displayName: Shopping API
+  tags:
+    - backend-api
+    - docker
+    - java
+    - javascript
+    - spring-boot
+    - typescript
+  verificationCommands:
+    - npm test
+  createdBy: kim
+  createdAt: 2026-08-25T13:01:16.943Z
