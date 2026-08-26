@@ -1,0 +1,35 @@
+"area: cli":
+  - changed-files:
+      - any-glob-to-any-file: "apps/cli/**"
+
+"area: web":
+  - changed-files:
+      - any-glob-to-any-file: "apps/web/**"
+
+"area: core":
+  - changed-files:
+      - any-glob-to-any-file: "packages/core/**"
+      - any-glob-to-any-file: "packages/schemas/**"
+
+"area: git":
+  - changed-files:
+      - any-glob-to-any-file: "packages/git/**"
+
+"area: opencode":
+  - changed-files:
+      - any-glob-to-any-file: "packages/opencode-plugin/**"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
+      - any-glob-to-any-file: "docs/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**"
+      - any-glob-to-any-file: "scripts/**"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: "pnpm-lock.yaml"
+      - any-glob-to-any-file: "**/package.json"

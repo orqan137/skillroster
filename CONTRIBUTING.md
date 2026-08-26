@@ -49,7 +49,8 @@ pnpm lint
 - 레지스트리 쓰기는 `pull → mutate → 전체 검증 → commit → push` 트랜잭션을 통과해야 합니다.
 - 프롬프트, 소스 코드, 환경 변수, 인증정보를 로그나 fixture에 넣지 않습니다.
 - Conventional Commit 형식의 짧은 커밋 메시지를 권장합니다.
-- branch는 `feat/`, `fix/`, `docs/`, `chore/` 중 변경 목적에 맞는 prefix를 사용합니다.
+- 먼저 Issue를 만들고 branch는 `feat/#123-short-description`처럼 변경 유형과 같은 Issue 번호를 사용합니다.
+- PR 본문에는 `Closes #123` 또는 `Refs #123`으로 branch와 같은 Issue를 연결합니다.
 - `main`에 직접 push하지 않고 CI를 통과한 PR을 squash merge합니다.
 - 생성된 `dist`, 개인 `.env`, `.skillspace-cache`는 커밋하지 않습니다.
 
