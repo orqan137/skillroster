@@ -1,6 +1,6 @@
 name: 버그 제보
 description: 재현 가능한 오류나 예상과 다른 동작 제보
-title: "[Bug] "
+title: "fix: "
 labels: ["bug"]
 body:
   - type: markdown
@@ -21,6 +21,13 @@ body:
         1. ...
         2. ...
         3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 조건
+      description: 어떤 결과가 확인되면 이 문제가 해결된 것으로 볼 수 있는지 적어주세요.
     validations:
       required: true
   - type: dropdown

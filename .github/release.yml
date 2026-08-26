@@ -1,0 +1,15 @@
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+  categories:
+    - title: 새 기능
+      labels: [enhancement, "area: cli", "area: web", "area: core"]
+    - title: 오류 수정
+      labels: [bug]
+    - title: 문서
+      labels: [documentation]
+    - title: 의존성과 운영
+      labels: [dependencies, ci]
+    - title: 기타 변경
+      labels: ["*"]

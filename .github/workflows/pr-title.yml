@@ -16,7 +16,22 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|refactor|test|build|ci|chore|perf)(\([a-z0-9._-]+\))?!?:\ .+ ]]; then
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|refactor|test|build|ci|chore|perf|style)(\([a-z0-9._-]+\))?!?:\ .+ ]]; then
             echo "PR title must follow Conventional Commits, for example: feat(cli): add local demo"
             exit 1
           fi
+
+  issue-linked-policy:
+    name: Issue-linked PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Validate branch and linked Issue
+        env:
+          PR_ACTOR: ${{ github.actor }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: node scripts/check-pr-policy.mjs
