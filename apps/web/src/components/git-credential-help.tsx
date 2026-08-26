@@ -15,7 +15,7 @@ export function GitCredentialHelp({ remote, checking, onClose, onRetry }: { remo
   const host = remoteHost(remote);
   const github = host.toLowerCase() === "github.com";
   const sshTarget = host === "원격 Git 서버" ? "git@<Git 서버 주소>" : `git@${host}`;
-  return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><section className="credential-modal" role="alertdialog" aria-modal="true" aria-label="Git 연결 안내">
+  return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="Git 연결 안내 닫기" /><section className="credential-modal" role="alertdialog" aria-modal="true" aria-label="Git 연결 안내">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
     <span className="credential-symbol"><KeyRound size={25} /></span>
     <span className="eyebrow">Git 연결 필요</span>

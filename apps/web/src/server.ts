@@ -333,7 +333,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
 
     const skillMatch = url.pathname.match(/^\/api\/skills\/([^/]+)\/([^/]+)$/);
     if (request.method === "GET" && skillMatch) {
-      const data = await skillData(decodeURIComponent(skillMatch[1]!), decodeURIComponent(skillMatch[2]!));
+      const data = await skillData(decodeURIComponent(skillMatch[1] ?? ""), decodeURIComponent(skillMatch[2] ?? ""));
       if (!data) throw new ApiNotFoundError("스킬을 찾을 수 없습니다.");
       else json(response, 200, { ...data, member: await activeMember() });
       return true;
@@ -341,7 +341,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
 
     const projectMatch = url.pathname.match(/^\/api\/projects\/([^/]+)$/);
     if (request.method === "GET" && projectMatch) {
-      const name = decodeURIComponent(projectMatch[1]!);
+      const name = decodeURIComponent(projectMatch[1] ?? "");
       const project = await projectData(name);
       if (!project) throw new ApiNotFoundError("프로젝트를 찾을 수 없습니다.");
       else {
@@ -351,7 +351,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       return true;
     }
     if (request.method === "PATCH" && projectMatch) {
-      const name = decodeURIComponent(projectMatch[1]!);
+      const name = decodeURIComponent(projectMatch[1] ?? "");
       const input = await body(request);
       const displayName = String(input.displayName ?? "").trim();
       const tags = Array.isArray(input.tags) ? input.tags.flatMap((tag) => parseTags(String(tag))) : parseTags(String(input.tags ?? ""));
@@ -362,7 +362,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       return true;
     }
     if (request.method === "DELETE" && projectMatch) {
-      const name = decodeURIComponent(projectMatch[1]!);
+      const name = decodeURIComponent(projectMatch[1] ?? "");
       const repo = await repository();
       await repo.transaction(`chore(project): remove ${name}`, () => deleteProject(repo.directory, name));
       json(response, 200, { ok: true, project: name });
@@ -392,7 +392,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
 
     const projectSkillMatch = url.pathname.match(/^\/api\/projects\/([^/]+)\/skills$/);
     if (request.method === "POST" && projectSkillMatch) {
-      const name = decodeURIComponent(projectSkillMatch[1]!);
+      const name = decodeURIComponent(projectSkillMatch[1] ?? "");
       const input = await body(request);
       if (!input.skill || !input.version) {
         throw new ApiInputError("스킬과 버전이 필요합니다.");
@@ -407,7 +407,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
 
     const projectSyncMatch = url.pathname.match(/^\/api\/projects\/([^/]+)\/sync$/);
     if (request.method === "POST" && projectSyncMatch) {
-      const name = decodeURIComponent(projectSyncMatch[1]!);
+      const name = decodeURIComponent(projectSyncMatch[1] ?? "");
       const input = await body(request);
       const projectRoot = resolve(String(input.projectRoot ?? "").trim());
       if (!String(input.projectRoot ?? "").trim()) throw new ApiInputError("스킬을 설치할 로컬 프로젝트 폴더가 필요합니다.");
@@ -420,7 +420,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       return true;
     }
     if (request.method === "DELETE" && projectSkillMatch) {
-      const name = decodeURIComponent(projectSkillMatch[1]!);
+      const name = decodeURIComponent(projectSkillMatch[1] ?? "");
       const input = await body(request);
       if (!input.skill) {
         throw new ApiInputError("연결을 해제할 스킬이 필요합니다.");

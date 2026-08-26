@@ -83,7 +83,7 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
           {loading && <div className="scan-state">로컬 스킬 저장소 탐색 중</div>}
           {(scanError || error) && <div className="setup-error" role="alert">{error || scanError}</div>}
           {data && <>
-            <div className="source-table" role="list" aria-label="로컬 스킬 저장소">
+            <section className="source-table" aria-label="로컬 스킬 저장소">
               {data.sources.map((source) => (
                 <label className={`source-row ${!source.exists ? "missing" : ""}`} key={source.path}>
                   <input
@@ -101,7 +101,7 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
                   <span className={`source-status ${source.exists ? "found" : ""}`}>{source.exists ? `${source.skillCount}개 발견` : "폴더 없음"}</span>
                 </label>
               ))}
-            </div>
+            </section>
 
             <form className="custom-path-form" onSubmit={addCustomPath}>
               <label><span>다른 폴더 직접 추가</span><input value={customPath} onChange={(event) => setCustomPath(event.target.value)} placeholder="예: ~/project/.opencode/skills" /></label>

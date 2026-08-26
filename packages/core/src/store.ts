@@ -472,7 +472,8 @@ export async function loadTeamSnapshot(root: string): Promise<TeamSnapshot> {
     for (const reference of skillset.spec.skills) {
       assertDocumentLocation(skillIds.has(reference.skill), within(root, "projects", skillset.spec.project, "skillset.yaml"), `연결된 스킬 ${reference.skill}이 없습니다`);
       const [owner, name] = reference.skill.split("/");
-      const release = within(root, "releases", owner!, name!, reference.version);
+      assertDocumentLocation(Boolean(owner && name), within(root, "projects", skillset.spec.project, "skillset.yaml"), `잘못된 스킬 참조 ${reference.skill}입니다`);
+      const release = within(root, "releases", owner ?? "", name ?? "", reference.version);
       assertDocumentLocation(await access(release).then(() => true, () => false), within(root, "projects", skillset.spec.project, "skillset.yaml"), `스킬 릴리스 ${reference.skill}@${reference.version}가 없습니다`);
     }
   }

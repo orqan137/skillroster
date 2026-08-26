@@ -34,6 +34,33 @@ AI coding skills usually stay scattered across individual machines. Even when a 
 | Who changed this knowledge? | Trace YAML and Markdown through Git commits, diffs, and blame. |
 | Are source code and prompts uploaded? | No by default. Only an explicitly published skill package is shared. |
 
+## Real product screens
+
+These are full 1440×900 captures from the actual `pnpm demo` Git registry, not design mockups.
+
+<p align="center">
+  <img src="./docs/images/screenshots/01-start.png" width="900" alt="Choose between creating a new roster and joining an existing roster">
+</p>
+
+<p align="center">
+  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="SkillRoster dashboard with ranked skills, reviews, and project adoption">
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="Shared and local skill directory"></td>
+    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="Project creation with tag and ranking recommendations"></td>
+  </tr>
+  <tr>
+    <td><b>Shared versus local</b><br>See what stays on this machine and what the team can reuse.</td>
+    <td><b>Project recommendations</b><br>Select exact skill versions using tag fit and team ranking.</td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="New project with two recommended skills connected">
+</p>
+
 ## How it works
 
 ```mermaid
@@ -68,7 +95,7 @@ pnpm install
 pnpm demo
 ```
 
-The demo creates a temporary local Git registry with three members, three skills, reviews, project links, and execution evidence. It opens at `http://127.0.0.1:3211` and does not touch production data or require remote credentials.
+The demo creates a temporary local Git registry with three members, three skills, two projects, four reviews, and two execution records. It opens at `http://127.0.0.1:3211`, uses only its isolated settings and `examples/skills`, and does not scan the user's real agent skills or require remote credentials.
 
 To configure your own roster instead:
 

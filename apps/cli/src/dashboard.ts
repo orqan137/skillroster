@@ -60,6 +60,7 @@ function openBrowser(url: string): void {
 export async function launchDashboard(input: {
   registry: string;
   member: string;
+  sourcesConfig?: string;
   hostname: string;
   port: number;
   open: boolean;
@@ -94,6 +95,7 @@ export async function launchDashboard(input: {
         ...process.env,
         SKILLSPACE_REGISTRY: input.registry,
         SKILLSPACE_MEMBER: input.member,
+        ...(input.sourcesConfig ? { SKILLSPACE_SOURCES_CONFIG: input.sourcesConfig } : {}),
       },
       stdio: "inherit",
       windowsHide: true,
