@@ -7,6 +7,7 @@ coverage/
 .env
 .env.local
 .skillspace-cache/
+.skillroster-demo/
 test-results/
 playwright-report/
 pnpm-debug.log*

@@ -1,5 +1,22 @@
 # Hackathon demo script
 
+## 인증 없는 심사용 데모
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm verify
+pnpm demo
+```
+
+외부 remote나 credential 없이 임시 Git worktree에 샘플을 생성함. 기본 주소는 `http://127.0.0.1:3211`이며 terminal에 registry 절대 경로가 출력됨. 아래 상태가 보이면 준비 완료임.
+
+- 팀원 3명
+- 공유 스킬 3개
+- 프로젝트 1개와 연결 스킬 2개
+- 평가 3개(동료 2개, 작성자 1개)
+- 개인정보를 담지 않은 verified 실행 기록 1개
+
 ## Before the demo
 
 1. Prepare an empty bare or hosted Git repository.
@@ -14,7 +31,7 @@ Initialize as Hong, then join as Kim. Show the remote Git tree: there is no data
 
 ### 0:25–0:50 — Publish and review
 
-Publish `spring-review` as Hong and `api-contract-check` as Kim. Review the other person's exact version. Point out that self-review is rejected and every review is attributable in Git history.
+Publish `spring-review` as Hong and `api-contract-check` as Kim. Review the other person's exact version. 작성자도 자기평가를 남길 수 있지만 화면과 랭킹에서 동료 평가와 분리됨을 보여줌. 모든 평가는 Git 작성자와 파일 이력으로 추적 가능함.
 
 ### 0:50–1:20 — Start a project
 
@@ -37,3 +54,13 @@ Run `skillroster dashboard`. Show that a peer-reviewed, verified, adopted skill 
 **Does it send source code to a central service?** No. Source and prompts remain local; the evidence schema forbids storing them.
 
 **What happens when verification fails?** The developer commit is not blocked. A failed evidence record lowers trust and remains auditable.
+
+## 발표 직전 점검
+
+```bash
+git status --short
+pnpm verify
+git log --oneline -5
+```
+
+화면 순서는 개요 → 스킬 상세 → 프로젝트 → 설정의 Git 상태로 고정함. 실시간 데이터를 새로 입력하는 구간은 스킬 평가 하나로 제한하고, 나머지는 샘플 데이터로 재현성을 확보함.

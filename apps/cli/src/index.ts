@@ -20,6 +20,7 @@ import {
 } from "@skillspace/opencode-plugin";
 import type { Visibility } from "@skillspace/schemas";
 import { launchDashboard } from "./dashboard.js";
+import { createDemoRegistry } from "./demo.js";
 import { flushEvidence } from "./evidence.js";
 import { discoverGitIdentity } from "./identity.js";
 import { readLocalProjectConfig, writeLocalProjectConfig } from "./project-config.js";
@@ -305,6 +306,30 @@ evidence
       return;
     }
     console.log(`Published ${result.processed} evidence event(s): ${result.status}`);
+  });
+
+program
+  .command("demo")
+  .description("Launch a credential-free sample roster for evaluation")
+  .option("--directory <path>", "parent directory for the temporary registry")
+  .option("--hostname <host>", "listen hostname", "127.0.0.1")
+  .option("--port <port>", "listen port", Number, 3211)
+  .option("--no-open", "do not open the browser")
+  .option("--dev", "run the dashboard in development mode")
+  .option("--web-directory <path>", "web client directory override")
+  .action(async (options) => {
+    const demo = await createDemoRegistry(options.directory ? resolve(options.directory) : undefined);
+    console.log(`Demo registry: ${demo.directory}`);
+    console.log("Sample data: 3 members · 3 skills · 1 project · 3 reviews · 1 verified run");
+    await launchDashboard({
+      registry: demo.directory,
+      member: demo.member,
+      hostname: options.hostname,
+      port: options.port,
+      open: options.open,
+      development: options.dev,
+      webDirectory: options.webDirectory,
+    });
   });
 
 program
