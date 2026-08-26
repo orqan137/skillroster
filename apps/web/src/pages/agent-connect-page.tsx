@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ArrowRight, Check, FileSearch, Folder, GitBranch, Link2, Plus, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, FileSearch, Folder, Link2, Plus, ShieldCheck } from "lucide-react";
 import { fetchJson, useApi } from "@/lib/client";
 import type { LocalSkillScanPayload } from "@/lib/contracts";
 
@@ -59,7 +59,7 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
 
   return (
     <main className="setup-page local-connect-page">
-      <header className="setup-topbar"><div className="setup-brand"><span><GitBranch size={18} /></span><strong>SkillRoster</strong></div></header>
+      <header className="setup-topbar"><div className="setup-brand"><span><img src="/skillroster-mark.svg" alt="" /></span><strong>SkillRoster</strong></div></header>
       <div className="local-connect-layout">
         <section className="local-connect-intro">
           <span className="eyebrow">로컬 스킬 연결</span>
