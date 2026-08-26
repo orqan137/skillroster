@@ -152,7 +152,7 @@ function SettingsContent({ status, connection, profile, active, reload }: {
 
   return <AppShell member={connection.member} teamName={active.displayName}>
     <header className="page-header settings-header">
-      <div><span className="eyebrow">Roster settings</span><h1>{active.displayName} 로스터 설정</h1></div>
+      <div><span className="eyebrow">Roster</span><h1>{active.displayName} 로스터 설정</h1></div>
       <span className="roster-scope"><GitBranch size={15} /><b>{active.displayName}</b><small>@{connection.member}</small></span>
     </header>
 

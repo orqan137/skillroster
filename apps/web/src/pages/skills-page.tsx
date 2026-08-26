@@ -22,7 +22,7 @@ export function SkillsPage() {
   const sharedIds = new Set(snapshot.skills.map((skill) => skill.id));
 
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <DirectoryActionHeader eyebrow="Skills" title="스킬" actionLabel="스킬 추가" onAction={() => setCreating({ mode: "create" })} />
+    <DirectoryActionHeader eyebrow="Roster" title="스킬" actionLabel="스킬 추가" onAction={() => setCreating({ mode: "create" })} />
     <section className="directory-stats" aria-label="스킬 통계">
       <article><Boxes size={20} /><span>공유 스킬</span><strong>{snapshot.skills.length}</strong></article>
       <article><HardDrive size={20} /><span>내 로컬 스킬</span><strong>{data.localSkills?.skills.length ?? 0}</strong></article>

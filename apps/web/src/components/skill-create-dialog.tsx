@@ -50,7 +50,7 @@ export function SkillCreateDialog({ data, initialMode = "create", initialSkillPa
 
   return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="스킬 추가 창 닫기" /><section className="creation-modal skill-creation-modal" role="dialog" aria-modal="true" aria-label="스킬 추가">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
-    <header><span className="creation-symbol"><Sparkles size={24} /></span><div><span className="eyebrow">스킬 추가</span><h2>스킬 만들기 및 공유</h2></div></header>
+    <header><span className="creation-symbol"><Sparkles size={24} /></span><div><span className="eyebrow">스킬</span><h2>스킬 추가</h2></div></header>
     <div className="creation-tabs" role="tablist"><button id="skill-create-tab" role="tab" aria-controls="skill-create-panel" aria-selected={mode === "create"} type="button" onClick={() => setMode("create")}><FileText size={16} />새 SKILL.md 작성</button><button id="skill-existing-tab" role="tab" aria-controls="skill-create-panel" aria-selected={mode === "existing"} type="button" onClick={() => setMode("existing")}><FolderOpen size={16} />기존 로컬 스킬 공유</button></div>
     <form className="skill-creation-form" id="skill-create-panel" role="tabpanel" aria-labelledby={mode === "create" ? "skill-create-tab" : "skill-existing-tab"} onSubmit={submit}>
       {mode === "create" ? <div className="skill-form-grid">
