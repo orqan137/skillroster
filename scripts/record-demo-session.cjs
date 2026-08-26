@@ -18,7 +18,9 @@ const edgePath = process.env.EDGE_PATH || "C:\\Program Files (x86)\\Microsoft\\E
 const installPath = process.env.SKILLROSTER_RECORDING_PROJECT || "C:\\Users\\castle\\AppData\\Local\\Temp\\skillroster-recording-project-live";
 const shareableFile = process.env.SKILLROSTER_SHAREABLE_FILE || path.join(root, "examples", "skills", "api-contract-check", "CHECKLIST.md");
 
-if (!outputDir.startsWith(path.join(root, "artifacts", "video"))) {
+const videoRoot = path.join(root, "artifacts", "video");
+const relativeOutput = path.relative(videoRoot, outputDir);
+if (relativeOutput.startsWith("..") || path.isAbsolute(relativeOutput)) {
   throw new Error("녹화 경로는 artifacts/video 아래여야 함");
 }
 fs.rmSync(outputDir, { recursive: true, force: true });
@@ -31,10 +33,6 @@ const overlayScript = () => {
     style.textContent = `
       [data-demo-cursor] { position: fixed; z-index: 2147483647; width: 22px; height: 22px; border: 3px solid #0057ff; border-radius: 50%; background: rgba(255,255,255,.92); transform: translate(-50%,-50%); pointer-events: none; box-shadow: 0 2px 0 #07120d; transition: width .12s, height .12s, background .12s; }
       [data-demo-cursor].down { width: 38px; height: 38px; background: rgba(0,230,132,.7); }
-      [data-demo-overlay] { position: fixed; z-index: 2147483646; left: 0; right: 0; bottom: 0; min-height: 104px; box-sizing: border-box; padding: 22px 92px 21px 220px; color: #fff; background: rgba(7,18,13,.96); border-top: 5px solid #00e684; font: 700 29px/1.45 Pretendard, "Malgun Gothic", sans-serif; pointer-events: none; }
-      [data-demo-step] { position: absolute; left: 88px; top: 19px; min-width: 88px; color: #07120d; background: #00e684; padding: 8px 12px; text-align: center; font-size: 27px; font-weight: 900; }
-      [data-demo-caption] { display: block; }
-      [data-demo-progress] { position: fixed; z-index: 2147483647; left: 0; bottom: 0; height: 7px; width: 0; background: #0057ff; pointer-events: none; transition: width .3s ease; }
       [data-demo-agenda] { position: fixed; z-index: 2147483645; top: 132px; left: 50%; width: 850px; transform: translateX(-50%); box-sizing: border-box; padding: 42px 52px 44px; color: #fff; background: #07120d; border-top: 8px solid #00e684; box-shadow: 12px 12px 0 #0057ff; font-family: Pretendard, "Malgun Gothic", sans-serif; pointer-events: none; }
       [data-demo-agenda][hidden] { display: none; }
       [data-demo-agenda] > span { color: #00e684; font-size: 18px; font-weight: 800; letter-spacing: .08em; }
@@ -51,15 +49,11 @@ const overlayScript = () => {
     cursor.dataset.demoCursor = "";
     cursor.style.left = "120px";
     cursor.style.top = "120px";
-    const overlay = document.createElement("div");
-    overlay.dataset.demoOverlay = "";
-    const progress = document.createElement("div");
-    progress.dataset.demoProgress = "";
     const agenda = document.createElement("section");
     agenda.dataset.demoAgenda = "";
     agenda.hidden = true;
     agenda.innerHTML = '<span>SKILLROSTER DEMO</span><h2>시연 순서</h2><p>실제 GitHub 연동과 더미 데이터로 전체 흐름 시연</p><ol><li><b>01</b>빈 GitHub 확인</li><li><b>02</b>새 로스터 생성</li><li><b>03</b>팀원 연결</li><li><b>04</b>스킬 공유·평가</li><li><b>05</b>프로젝트 Git 연결</li><li><b>06</b>OpenCode 설치</li><li><b>07</b>팀원·설정</li></ol>';
-    document.body.append(cursor, overlay, progress, agenda);
+    document.body.append(cursor, agenda);
     document.addEventListener("mousemove", (event) => {
       cursor.style.left = `${event.clientX}px`;
       cursor.style.top = `${event.clientY}px`;
@@ -69,10 +63,6 @@ const overlayScript = () => {
     setInterval(() => {
       cursor.style.opacity = cursor.style.opacity === "0.99" ? "1" : "0.99";
     }, 100);
-    window.__setDemoCaption = (step, text, progressValue) => {
-      overlay.innerHTML = `<b data-demo-step>${step}</b><span data-demo-caption>${text}</span>`;
-      progress.style.width = `${Math.min(100, Math.max(0, progressValue))}%`;
-    };
     window.__showDemoAgenda = (visible) => { agenda.hidden = !visible; };
     window.__highlightDemoField = (selector, text) => {
       const field = document.querySelector(selector);
@@ -92,7 +82,10 @@ const overlayScript = () => {
 async function main() {
   const browser = await chromium.launch({ executablePath: edgePath, headless: true });
   const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
+    // The browser occupies only the upper 960 px of the final 1080p frame.
+    // Captions are rendered later into a dedicated 120 px strip so they can
+    // never cover buttons, fields, or other application content.
+    viewport: { width: 1920, height: 960 },
     deviceScaleFactor: 1,
     locale: "ko-KR",
     colorScheme: "light",
@@ -127,7 +120,7 @@ async function main() {
     format: "jpeg",
     quality: 74,
     maxWidth: 1920,
-    maxHeight: 1080,
+    maxHeight: 960,
     everyNthFrame: 1,
   });
 
@@ -135,20 +128,20 @@ async function main() {
   const elapsed = () => (Date.now() - startedAt) / 1000;
   const minimumCaptionSeconds = 4.2;
   let activeCaption;
-  const setCaption = async (step, text, progress) => {
-    if (activeCaption) {
-      const visibleFor = elapsed() - activeCaption.start;
-      if (visibleFor < minimumCaptionSeconds) {
-        await page.waitForTimeout((minimumCaptionSeconds - visibleFor) * 1000);
-      }
-      activeCaption.end = elapsed();
-      captions.push(activeCaption);
+  const finishCaption = async () => {
+    if (!activeCaption) return;
+    const visibleFor = elapsed() - activeCaption.start;
+    if (visibleFor < minimumCaptionSeconds) {
+      await page.waitForTimeout((minimumCaptionSeconds - visibleFor) * 1000);
     }
+    activeCaption.end = elapsed();
+    captions.push(activeCaption);
+    activeCaption = undefined;
+  };
+  const setCaption = async (step, text, progress) => {
+    await finishCaption();
     const now = elapsed();
     activeCaption = { start: now, end: now, text: `[${step}] ${text}` };
-    await page.evaluate(({ stepValue, caption, progressValue }) => {
-      window.__setDemoCaption?.(stepValue, caption, progressValue);
-    }, { stepValue: step, caption: text, progressValue: progress });
   };
   const pause = (milliseconds = 450) => page.waitForTimeout(milliseconds);
   const click = async (locator, after = 420) => {
@@ -166,7 +159,30 @@ async function main() {
     await locator.fill("");
     await locator.pressSequentially(value, { delay });
   };
-  const nav = async (name) => click(page.getByRole("link", { name, exact: true }));
+  const goto = async (url, options) => {
+    await finishCaption();
+    return page.goto(url, options);
+  };
+  const nav = async (name) => {
+    await finishCaption();
+    return click(page.getByRole("link", { name, exact: true }));
+  };
+  const showFreshGitHub = async (url, expectedText) => {
+    await finishCaption();
+    const separator = url.includes("?") ? "&" : "?";
+    await page.goto(`${url}${separator}demo_refresh=${Date.now()}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 45000,
+    });
+    // An explicit reload makes the remote update visible in the recording and
+    // prevents GitHub's previous empty-repository response from being reused.
+    await page.reload({ waitUntil: "domcontentloaded", timeout: 45000 });
+    await page
+      .getByText(expectedText, { exact: false })
+      .filter({ visible: true })
+      .first()
+      .waitFor({ timeout: 45000 });
+  };
 
   if (!demoOnly && !resumeAfterCreate && !resumeAfterManager) {
     await setCaption("01", "빈 GitHub 저장소부터 프로젝트 적용까지 실제 화면으로 시연", 2);
@@ -177,13 +193,13 @@ async function main() {
     await pause(700);
     await page.evaluate(() => window.__showDemoAgenda?.(false));
 
-    await page.goto(remoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+    await goto(remoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
     await page.locator("body").waitFor();
     await setCaption("01", "팀 로스터용 GitHub 저장소가 비어 있는 상태 확인", 7);
     await page.mouse.move(820, 420, { steps: 20 });
     await pause(850);
 
-    await page.goto(managerUrl);
+    await goto(managerUrl);
     await page.getByRole("heading", { name: "로스터 시작하기" }).waitFor();
     await setCaption("02", "팀장: 새 로스터 만들기 선택 후 팀과 관리자 정보 입력", 11);
     await click(page.getByRole("button", { name: /새 로스터 만들기/ }));
@@ -210,14 +226,14 @@ async function main() {
     await setCaption("02", "로컬 스킬 폴더 연결은 선택 사항 · 데모에서는 건너뛰기", 28);
     await click(page.getByRole("button", { name: "건너뛰기" }), 0);
     await page.getByRole("heading", { name: "SkillRoster Test Team", level: 1 }).waitFor({ timeout: 30000 });
-    await page.goto(remoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
-    await setCaption("02", "GitHub에 로스터 구조와 첫 커밋이 생성된 결과 확인", 32);
+    await showFreshGitHub(remoteWebUrl, "skillspace.yaml");
+    await setCaption("02", "GitHub 새로고침 후 로스터 구조와 첫 커밋 반영 확인", 32);
     await page.mouse.move(860, 440, { steps: 22 });
     await pause(850);
   }
 
   if (!demoOnly) {
-    await page.goto(memberUrl);
+    await goto(memberUrl);
     await page.getByRole("heading", { name: "로스터 시작하기" }).waitFor();
     await setCaption("03", "팀원: 로스터 연결하기 선택 후 같은 Git 저장소 입력", 36);
     await click(page.getByRole("button", { name: /로스터 연결하기/ }));
@@ -237,14 +253,14 @@ async function main() {
     await click(page.getByRole("button", { name: "건너뛰기" }), 0);
     await page.getByRole("heading", { name: "SkillRoster Test Team", level: 1 }).waitFor({ timeout: 45000 });
 
-    await page.goto(remoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
-    await setCaption("03", "GitHub 변경 이력에서 팀장 초기화와 팀원 등록 커밋 확인", 48);
+    await showFreshGitHub(remoteWebUrl, "chore(member): add demo-member");
+    await setCaption("03", "GitHub 새로고침 후 팀장 초기화와 팀원 등록 커밋 확인", 48);
     await page.mouse.move(810, 520, { steps: 22 });
     await page.mouse.wheel(0, 280);
     await pause(750);
   }
 
-  await page.goto(demoUrl);
+  await goto(demoUrl);
   await page.getByRole("heading", { name: "Platform Team", level: 1 }).waitFor();
   await setCaption("04", "이후 화면은 더미 데이터 사용 · 평가 순위와 프로젝트 현황", 52);
   await page.mouse.move(1100, 470, { steps: 20 });
@@ -280,7 +296,7 @@ async function main() {
   await page.locator(".detail-header h1").filter({ hasText: "release-check" }).waitFor({ timeout: 30000 });
   await page.getByText("파일 포함", { exact: true }).waitFor();
 
-  await page.goto(`${demoUrl}/skills/minjun/api-contract-check`);
+  await goto(`${demoUrl}/skills/minjun/api-contract-check`);
   await page.locator(".detail-header h1").filter({ hasText: "api-contract-check" }).waitFor();
   await setCaption("04", "작성자와 동료 모두 평가 가능 · 후기와 프로젝트 기준을 Git에 기록", 70);
   await click(page.getByRole("button", { name: "5점" }), 180);
@@ -289,12 +305,12 @@ async function main() {
   await click(page.getByRole("button", { name: "평가를 Git에 기록" }), 0);
   await page.getByText("평가 저장 완료").waitFor({ timeout: 30000 });
 
-  await page.goto(projectRemoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+  await goto(projectRemoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
   await setCaption("05", "프로젝트용 GitHub 저장소도 빈 상태에서 시작", 74);
   await page.mouse.move(830, 430, { steps: 20 });
   await pause(700);
 
-  await page.goto(`${demoUrl}/projects`);
+  await goto(`${demoUrl}/projects`);
   await page.getByRole("heading", { name: "프로젝트", level: 1 }).waitFor();
   await click(page.getByRole("button", { name: "프로젝트 추가" }));
   await setCaption("05", "프로젝트 이름·Git 주소·기술 태그 입력 후 평가 순위 기반 스킬 선택", 79);
@@ -311,11 +327,12 @@ async function main() {
   await setCaption("05", "팀 레지스트리와 프로젝트 Git에 선택한 스킬 ID·버전 동시 반영", 86);
   await click(page.getByRole("button", { name: "Git 구성 갱신" }), 0);
   await page.getByText("구성 반영 완료").waitFor({ timeout: 45000 });
-  await page.goto(projectRemoteWebUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+  await showFreshGitHub(projectRemoteWebUrl, ".skillroster");
+  await setCaption("05", "GitHub 새로고침 후 .skillroster/project.yaml 반영 확인", 89);
   await page.mouse.move(830, 480, { steps: 20 });
   await pause(750);
 
-  await page.goto(`${demoUrl}/projects/notification-center`);
+  await goto(`${demoUrl}/projects/notification-center`);
   await page.getByRole("heading", { name: "고객 알림 센터", level: 1 }).waitFor();
   await click(page.getByRole("tab", { name: /연결된 스킬/ }), 250);
   await setCaption("06", "프로젝트 구성을 실제 .opencode/skills 폴더에 설치", 91);
@@ -342,8 +359,7 @@ async function main() {
   await page.mouse.move(1090, 480, { steps: 20 });
   await pause(5000);
 
-  activeCaption.end = elapsed();
-  captions.push(activeCaption);
+  await finishCaption();
   await client.send("Page.stopScreencast");
   await pause(350);
   const duration = elapsed();
