@@ -587,6 +587,11 @@ button, input, select, textarea { font: inherit; }
 .creation-fields label > span, .skill-form-grid label > span, .version-inline > span, .tag-picker > span, .skill-tag-field > span { font-size: 12px; font-weight: 800; }
 .creation-fields input, .skill-form-grid input, .skill-form-grid textarea, .skill-form-grid select, .version-inline input { width: 100%; min-height: 43px; border: 1px solid var(--ink); border-radius: 1px; padding: 10px 11px; color: var(--ink); background: white; font: inherit; }
 .creation-fields small, .skill-form-grid small { color: var(--muted); font-size: 10px; }
+.creation-fields label.wide { min-width: 0; }
+.creation-fields code { font: 10px ui-monospace, monospace; }
+.repository-privacy-note { padding: 12px; display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 9px; color: #0a5130; border-left: 4px solid #00a94f; background: #e2f9eb; }
+.repository-privacy-note strong { font-size: 11px; }
+.repository-privacy-note p { margin: 3px 0 0; color: #326c4f; font-size: 10px; line-height: 1.5; }
 .field-with-icon { display: grid; grid-template-columns: 34px minmax(0,1fr); align-items: center; border: 1px solid var(--ink); }
 .field-with-icon svg { margin: auto; color: var(--muted); }
 .field-with-icon input { border: 0; border-left: 1px solid var(--line); }
@@ -631,6 +636,22 @@ button, input, select, textarea { font: inherit; }
 .skill-form-grid .wide { grid-column: 1 / -1; }
 .skill-form-grid textarea { resize: vertical; line-height: 1.55; }
 .skill-tag-field { padding: 25px 26px 18px; display: grid; align-content: start; gap: 8px; }
+.skill-reference-field { grid-column: 1; margin: 0 32px 22px; padding-top: 17px; border-top: 1px solid var(--ink); }
+.skill-reference-heading { display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+.skill-reference-heading > div { display: grid; gap: 3px; }
+.skill-reference-heading span { font-size: 12px; font-weight: 800; }
+.skill-reference-heading small { color: var(--muted); font-size: 9px; }
+.skill-reference-heading > button { min-height: 29px; padding: 0 8px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--ink); color: var(--ink); background: white; font-size: 10px; font-weight: 800; cursor: pointer; }
+.skill-reference-list { margin-top: 10px; display: grid; gap: 7px; }
+.skill-reference-row { display: grid; grid-template-columns: 130px minmax(0,1fr) 65px auto; gap: 6px; }
+.skill-reference-row > input, .skill-reference-row .field-with-icon { min-width: 0; min-height: 39px; }
+.skill-reference-row > input { width: 100%; padding: 8px 9px; border: 1px solid var(--ink); font: inherit; }
+.skill-reference-row .field-with-icon { grid-template-columns: 31px minmax(0,1fr); }
+.skill-reference-row .field-with-icon input { min-width: 0; width: 100%; border: 0; border-left: 1px solid var(--line); padding: 8px; font: 10px ui-monospace, monospace; }
+.reference-remove { width: 39px; display: grid; place-items: center; border: 1px solid #d8b7ba; color: var(--red); background: white; cursor: pointer; }
+.reference-mode { min-height: 39px; padding: 0 8px; border: 1px solid var(--ink); color: var(--ink); background: white; font-size: 9px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.reference-mode.included { color: white; border-color: var(--blue); background: var(--blue); }
+.skill-reference-field > p { margin: 8px 0 0; display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 9px; }
 .skill-file-policy { grid-column: 2; margin: 0 26px 22px; padding: 14px; display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 9px; align-self: end; color: #0c5130; border-top: 2px solid #00a94f; background: #e4fbed; }
 .skill-file-policy strong { font-size: 11px; }
 .skill-file-policy p { margin: 5px 0 0; color: #347153; font-size: 10px; line-height: 1.5; }
@@ -687,7 +708,8 @@ button, input, select, textarea { font: inherit; }
 @media (max-width: 900px) {
   .creation-layout, .skill-creation-form { grid-template-columns: 1fr; }
   .creation-fields, .skill-form-grid, .existing-skill-picker { border-right: 0; border-bottom: 1px solid var(--line); }
-  .skill-tag-field, .skill-file-policy { grid-column: 1; }
+  .skill-tag-field, .skill-reference-field, .skill-file-policy { grid-column: 1; }
+  .skill-reference-field { margin: 0 20px 22px; }
   .skill-file-policy { margin-top: 0; }
   .shared-skill-row { grid-template-columns: 28px 40px minmax(0,1fr) 65px 18px; }
   .skill-project-count { display: none; }
@@ -695,6 +717,15 @@ button, input, select, textarea { font: inherit; }
 
 /* Project actions, local install, and application settings */
 .project-header-actions { display: flex; align-items: end; gap: 20px; }
+.project-git-badge { margin-left: 7px; padding: 3px 5px; color: white; background: var(--blue); font-size: 8px; font-weight: 800; }
+.project-repository-link { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 10px; }
+.project-repository-link > a, .project-repository-link > button { display: inline-flex; align-items: center; gap: 4px; }
+.project-repository-link > a { color: var(--blue); font-weight: 800; }
+.project-repository-link > button { min-height: 29px; padding: 0 8px; border: 1px solid var(--ink); color: var(--ink); background: white; font-size: 10px; font-weight: 800; cursor: pointer; }
+.project-repository-link > button:disabled { opacity: .6; }
+.project-repository-link > span { display: inline-flex; align-items: center; gap: 4px; color: #007a39; font-weight: 750; }
+.project-repository-link > span.error { color: var(--red); }
+.project-sync-warning { margin: -10px 0 20px; padding: 11px 13px; color: #6f4c00; background: #ffedac; border-left: 4px solid #e1a700; font-size: 11px; font-weight: 700; }
 .project-detail .loadout-count { min-width: 112px; padding-left: 18px; border-left: 2px solid var(--ink); justify-items: start; }
 .loadout-count strong { display: flex; align-items: baseline; gap: 3px; }
 .loadout-count strong small { font-size: 14px; }
@@ -713,6 +744,16 @@ button, input, select, textarea { font: inherit; }
 .project-sync-note { color: var(--muted); }
 .project-sync-error { color: var(--red); }
 .project-sync-success { display: flex; align-items: center; gap: 6px; color: #007c39; font-weight: 750; }
+
+.skill-references { margin-top: 15px; padding: 22px 26px; }
+.skill-references > article { min-height: 54px; padding: 9px 0; display: grid; grid-template-columns: 31px minmax(0,1fr); align-items: center; gap: 9px; border-bottom: 1px solid var(--line); }
+.skill-references > article > span { width: 29px; height: 29px; display: grid; place-items: center; color: white; background: var(--blue); }
+.skill-references article div { min-width: 0; display: grid; gap: 3px; }
+.skill-references strong { font-size: 12px; }
+.skill-references strong em { margin-left: 7px; padding: 3px 5px; color: white; background: #00a94f; font-size: 8px; font-style: normal; }
+.skill-references a, .skill-references code { min-width: 0; overflow: hidden; color: var(--blue); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.skill-references a { display: flex; align-items: center; gap: 4px; }
+.skill-references > p { margin: 11px 0 0; color: var(--muted); font-size: 9px; }
 
 .project-manage-modal { position: relative; width: min(650px, 100%); max-height: calc(100vh - 40px); overflow: auto; padding: 31px; border-top: 7px solid var(--lime); background: white; box-shadow: 10px 10px 0 var(--blue); }
 .project-manage-modal h2 { margin: 6px 42px 5px 0; font-size: 27px; letter-spacing: -.035em; }
@@ -818,6 +859,8 @@ button, input, select, textarea { font: inherit; }
   .creation-tabs { padding: 0 20px; gap: 16px; overflow-x: auto; }
   .skill-form-grid { grid-template-columns: 1fr; }
   .skill-form-grid .wide { grid-column: auto; }
+  .skill-reference-row { grid-template-columns: minmax(0,1fr) 65px 39px; }
+  .skill-reference-row > input { grid-column: 1 / -1; }
   .directory-toolbar { padding: 12px 14px; display: grid; }
   .directory-tabs { min-height: 44px; }
   .directory-search { width: 100%; }

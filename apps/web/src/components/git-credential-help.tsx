@@ -20,7 +20,7 @@ export function GitCredentialHelp({ remote, checking, onClose, onRetry }: { remo
     <span className="credential-symbol"><KeyRound size={25} /></span>
     <span className="eyebrow">Git 연결 필요</span>
     <h2>{host} 인증 필요</h2>
-    <p>비밀번호와 토큰은 저장하지 않음 · 이 컴퓨터의 Git 인증 설정 사용</p>
+    <p>비밀번호와 토큰 저장 없음 · 운영체제의 Git 인증 사용</p>
     <div className="credential-methods">
       <section><span><Terminal size={18} /></span><div><strong>{github ? "가장 간단한 방법" : "HTTPS 인증"}</strong><p>터미널에서 명령 실행 후 브라우저 로그인</p><code>{github ? "gh auth login" : "git ls-remote <원격 Git 주소>"}</code>{github && <a href="https://cli.github.com/" target="_blank" rel="noreferrer">GitHub CLI 설치 안내 <ExternalLink size={13} /></a>}</div></section>
       <section><span><ShieldCheck size={18} /></span><div><strong>SSH 사용</strong><p>SSH 키의 Git 서버 계정 등록 여부 확인</p><code>ssh -T {sshTarget}</code></div></section>

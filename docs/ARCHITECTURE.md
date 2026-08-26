@@ -5,7 +5,7 @@
 SkillRoster separates three planes.
 
 1. **Local execution plane** — OpenCode, source files, prompts, credentials, and pending evidence stay on each developer machine.
-2. **Git knowledge plane** — explicitly published skills, reviews, projects, loadouts, and minimal evidence are ordinary files in a team Git repository.
+2. **Git knowledge plane** — explicitly published `SKILL.md` files, opt-in attachments, reference locations, reviews, projects, loadouts, and minimal evidence are ordinary files in a team Git repository.
 3. **Local client plane** — CLI and dashboard read a developer's clone and write through pull/rebase/commit/push transactions.
 
 ```text
@@ -28,6 +28,10 @@ Team registry Git remote
               ▲
               │ read/write via local clone
        Visual dashboard
+              │ selected skill IDs and versions
+              ▼
+Project Git remote
+└─ .skillroster/project.yaml
 ```
 
 ## Trust and ranking
@@ -46,7 +50,7 @@ Every mutation follows `clean check → pull --rebase → write files → valida
 
 ## Privacy boundary
 
-The OpenCode plugin handles only the native `skill` tool. It records the winning installed skill ID and version, session ID, timestamp, and fixed privacy flags. It does not read or persist tool output, prompts, source code, environment variables, or credentials. Verification output is displayed locally but is not copied into evidence.
+The OpenCode plugin handles only the native `skill` tool. It records the winning installed skill ID and version, session ID, timestamp, and fixed privacy flags. It does not read or persist tool output, prompts, source code, environment variables, or credentials. Verification output is displayed locally but is not copied into evidence. Skill publication copies `SKILL.md` by default; each optional reference stays location-only unless the user explicitly selects that file for inclusion.
 
 ## Extension points
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, GitCommitHorizontal, Star, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ExternalLink, FileText, GitCommitHorizontal, Link2, Star, XCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Link, useParams } from "react-router-dom";
 import { AppShell } from "@/components/app-shell";
@@ -25,9 +25,9 @@ export function SkillPage() {
         </div>
         <div className="skill-score-stat"><span>평가 점수</span><strong>{data.ranking?.score ?? 0}</strong><small><Star size={14} fill="currentColor" /> {data.ranking?.averageRating?.toFixed(1) ?? "평가 없음"} · 동료 {data.ranking?.peerReviewCount ?? 0} · 작성자 {data.ranking?.selfReviewCount ?? 0} · 프로젝트 {data.ranking?.adoptedProjects ?? 0}</small></div>
       </header>
-      <nav className="detail-tabs" aria-label="스킬 상세 메뉴"><a href="#instructions">사용법</a><a href="#signals">평가하기</a><a href="#reviews">스킬 후기</a></nav>
+      <nav className="detail-tabs" aria-label="스킬 상세 메뉴"><a href="#instructions">사용법</a>{data.skill.document.spec.references?.length ? <a href="#references">참고 자료</a> : null}<a href="#signals">평가하기</a><a href="#reviews">스킬 후기</a></nav>
       <div className="detail-grid">
-        <article className="data-section markdown-body" id="instructions"><ReactMarkdown>{data.markdown}</ReactMarkdown></article>
+        <div><article className="data-section markdown-body" id="instructions"><ReactMarkdown>{data.markdown}</ReactMarkdown></article>{data.skill.document.spec.references?.length ? <section className="data-section skill-references" id="references"><div className="panel-heading"><div><span className="eyebrow">참고 자료</span><h2>연결된 문서와 파일</h2></div></div>{data.skill.document.spec.references.map((reference) => { const external = !reference.included && /^https?:\/\//i.test(reference.location); return <article key={`${reference.label ?? ""}-${reference.location}`}><span>{external ? <Link2 size={17} /> : <FileText size={17} />}</span><div><strong>{reference.label || (reference.included ? "포함된 파일" : external ? "웹 자료" : "파일 위치")}{reference.included && <em>파일 포함</em>}</strong>{external ? <a href={reference.location} target="_blank" rel="noreferrer">{reference.location}<ExternalLink size={13} /></a> : <code>{reference.location}</code>}</div></article>; })}<p>‘파일 포함’ 자료만 스킬과 함께 복사됨 · 나머지는 위치 정보만 공유</p></section> : null}</div>
         <aside className="detail-aside" id="signals">
           <section className="panel compact"><span className="eyebrow">스킬 평가</span><h2>이 버전 평가하기</h2><ReviewForm skill={`${owner}/${name}`} version={data.skill.document.spec.version} projects={data.snapshot.projects.map((item) => ({ name: item.metadata.name, displayName: item.spec.displayName }))} onSaved={() => void reload()} /></section>
           <section className="panel compact"><span className="eyebrow">프로젝트 사용 기록</span><h2>최근 적용 내역</h2><div className="evidence-list">{data.evidence.length === 0 && <p className="muted">프로젝트 사용 기록 없음</p>}{data.evidence.slice(0, 6).map((item) => <article key={item.metadata.name}>{item.spec.status === "verified" ? <CheckCircle2 className="good" size={18} /> : <XCircle className="bad" size={18} />}<div><strong>{item.spec.project}</strong><span>@{item.spec.member} · {evidenceStatusLabel(item.spec.status)}</span></div>{item.spec.acceptedCommit && <GitCommitHorizontal size={16} />}</article>)}</div></section>

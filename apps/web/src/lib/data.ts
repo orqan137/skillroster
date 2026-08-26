@@ -4,6 +4,7 @@ import { rankSkills, recommendSkills, type RankedSkill } from "@skillspace/core"
 import { GitTeamRepository } from "@skillspace/git";
 import type { ProjectDocument } from "@skillspace/schemas";
 import { runtimeConnection } from "./local-config.js";
+import { stripSkillFrontmatter } from "./skill-markdown.js";
 
 export async function registryPath(): Promise<string> {
   const connection = await runtimeConnection();
@@ -48,7 +49,7 @@ export async function skillData(owner: string, name: string) {
   return {
     ...data,
     skill,
-    markdown: await readFile(join(skill.path, "SKILL.md"), "utf8"),
+    markdown: stripSkillFrontmatter(await readFile(join(skill.path, "SKILL.md"), "utf8")),
     reviews: data.snapshot.reviews
       .filter(
         (review) =>

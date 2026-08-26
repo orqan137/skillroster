@@ -43,6 +43,11 @@ export interface SkillDocument {
     visibility: Visibility;
     tags: string[];
     compatibility: string[];
+    references?: Array<{
+      label?: string;
+      location: string;
+      included?: boolean;
+    }>;
     publishedAt: string;
   };
 }
@@ -70,6 +75,7 @@ export interface ProjectDocument {
     displayName: string;
     tags: string[];
     verificationCommands: string[];
+    repository?: string;
     createdBy: string;
     createdAt: string;
   };

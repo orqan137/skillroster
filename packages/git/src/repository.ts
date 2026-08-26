@@ -182,6 +182,7 @@ export class GitTeamRepository {
       lastPullAt.set(this.directory.toLowerCase(), Date.now());
       const baseRevision = (await this.git.revparse(["HEAD"])).trim();
       try {
+        await installSchemas(this.directory);
         const result = await mutate();
         await loadTeamSnapshot(this.directory);
         const committed = await this.commit(message);

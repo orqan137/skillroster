@@ -62,9 +62,9 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
       <header className="setup-topbar"><div className="setup-brand"><span><img src="/skillroster-mark.svg" alt="" /></span><strong>SkillRoster</strong></div></header>
       <div className="local-connect-layout">
         <section className="local-connect-intro">
-          <span className="eyebrow">로컬 스킬 연결</span>
-          <h1>내 에이전트 스킬<br />찾기 및 연결</h1>
-          <p>선택한 폴더의 <code>SKILL.md</code>만 탐색 · 소스 코드, 프롬프트 실행 내역과 인증정보는 수집하지 않음</p>
+          <span className="eyebrow">로컬 스킬</span>
+          <h1>로컬 스킬<br />연결</h1>
+          <p><code>SKILL.md</code>가 있는 폴더 선택</p>
           <div className="path-guide">
             <strong>기본 탐색 경로</strong>
             <dl>
@@ -74,13 +74,13 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
               <div><dt>공통 규격</dt><dd><code>~/.agents/skills</code></dd></div>
             </dl>
           </div>
-          <div className="project-path-note"><FileSearch size={18} /><div><strong>프로젝트 전용 스킬 연결 가능</strong><span><code>.opencode/skills</code>, <code>.claude/skills</code>, <code>.agents/skills</code> 폴더 직접 추가</span></div></div>
+          <div className="project-path-note"><FileSearch size={18} /><div><strong>프로젝트 스킬 폴더 연결</strong><span><code>.opencode/skills</code>, <code>.claude/skills</code>, <code>.agents/skills</code></span></div></div>
         </section>
 
         <section className="local-connect-workspace">
-          <div className="setup-heading"><span className="step-label">마지막 설정</span><h2>연결할 스킬 저장소 선택</h2><p>탐색 결과 확인 후 연결 · 팀 공유는 별도의 발행과 평가 필요</p></div>
+          <div className="setup-heading"><span className="step-label">선택 사항</span><h2>스킬 폴더 선택</h2><p>연결한 스킬은 로컬 목록에 표시 · 팀 공유는 직접 선택</p></div>
 
-          {loading && <div className="scan-state">로컬 스킬 저장소 탐색 중</div>}
+          {loading && <div className="scan-state">스킬 폴더 찾는 중</div>}
           {(scanError || error) && <div className="setup-error" role="alert">{error || scanError}</div>}
           {data && <>
             <section className="source-table" aria-label="로컬 스킬 저장소">
@@ -119,9 +119,9 @@ export function AgentConnectPage({ onComplete }: { onComplete: () => void }) {
           </>}
 
           <footer className="connect-actions">
-            <button className="button" type="button" disabled={saving} onClick={() => void connect([])}>나중에 연결</button>
-            <span><Link2 size={14} />연결 정보는 이 컴퓨터에만 저장</span>
-            <button className="button primary" type="button" disabled={saving || !data} onClick={() => void connect([...selected])}>{saving ? "연결 중…" : `${selected.size}개 저장소 연결`} {!saving && <ArrowRight size={16} />}</button>
+            <button className="button" type="button" disabled={saving} onClick={() => void connect([])}>건너뛰기</button>
+            <span><Link2 size={14} />선택 경로는 로컬에만 저장</span>
+            <button className="button primary" type="button" disabled={saving || !data} onClick={() => void connect([...selected])}>{saving ? "연결 중…" : `${selected.size}개 폴더 연결`} {!saving && <ArrowRight size={16} />}</button>
           </footer>
         </section>
       </div>

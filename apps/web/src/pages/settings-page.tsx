@@ -152,7 +152,7 @@ function SettingsContent({ status, connection, profile, active, reload }: {
 
   return <AppShell member={connection.member} teamName={active.displayName}>
     <header className="page-header settings-header">
-      <div><span className="eyebrow">Roster settings</span><h1>{active.displayName} 로스터 설정</h1><p>이 로스터와 현재 컴퓨터에 적용되는 연결·사용자·저장 경로 관리</p></div>
+      <div><span className="eyebrow">Roster settings</span><h1>{active.displayName} 로스터 설정</h1></div>
       <span className="roster-scope"><GitBranch size={15} /><b>{active.displayName}</b><small>@{connection.member}</small></span>
     </header>
 
@@ -161,7 +161,7 @@ function SettingsContent({ status, connection, profile, active, reload }: {
       <dl className="settings-list">
         <div><dt>로스터</dt><dd>{active.displayName}<small>{active.team}</small></dd></div>
         <div><dt>원격 저장소</dt><dd><code>{active.remote ?? "원격 저장소 없음"}</code></dd></div>
-        <div><dt>연결 방식</dt><dd>{connection.source === "local-config" ? "이 컴퓨터의 SkillRoster 설정" : "환경 변수"}</dd></div>
+        <div><dt>연결 방식</dt><dd>{connection.source === "local-config" ? "로컬 SkillRoster 설정" : "환경 변수"}</dd></div>
       </dl>
       <div className="git-access-row">
         <ShieldCheck size={21} />

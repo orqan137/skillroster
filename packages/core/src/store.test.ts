@@ -51,11 +51,17 @@ describe("team store", () => {
       now,
     });
     await updateMember(root, "kim", { displayName: "Kim Updated", email: "kim.new@example.com" });
+    const guide = join(skill, "review-guide.txt");
+    await writeFile(guide, "팀에 공유 가능한 검토 기준", "utf8");
     await publishSkill(root, {
       sourceDirectory: skill,
       owner: "hong",
       version: "1.0.0",
       tags: ["java", "spring-boot"],
+      references: [
+        { label: "운영 가이드", location: "https://docs.example.com/release" },
+        { label: "검토 기준", location: guide, includeFile: true },
+      ],
       now,
     });
     await writeReview(root, {
@@ -108,6 +114,10 @@ describe("team store", () => {
       spec: { displayName: "Kim Updated", email: "kim.new@example.com", role: "member" },
     });
     expect(snapshot.skills.map((item) => item.id)).toEqual(["hong/spring-review"]);
+    expect(snapshot.skills[0]?.document.spec.references).toEqual([
+      { label: "운영 가이드", location: "https://docs.example.com/release" },
+      { label: "검토 기준", location: "attachments/review-guide.txt", included: true },
+    ]);
     expect(snapshot.reviews).toHaveLength(2);
     expect(snapshot.evidence).toHaveLength(1);
 
@@ -130,6 +140,7 @@ describe("team store", () => {
     await mkdir(localProject);
     await expect(installProjectSkills(root, "shopping-api", localProject)).resolves.toEqual([{ name: "spring-review", skill: "hong/spring-review", version: "1.0.0" }]);
     await expect(readFile(join(localProject, ".opencode", "skills", "spring-review", "SKILL.md"), "utf8")).resolves.toContain("# Review");
+    await expect(readFile(join(localProject, ".opencode", "skills", "spring-review", "attachments", "review-guide.txt"), "utf8")).resolves.toContain("검토 기준");
 
     await removeProjectSkill(root, "shopping-api", "hong/spring-review", now);
     expect((await loadTeamSnapshot(root)).skillsets[0]?.spec.skills).toHaveLength(0);
@@ -165,7 +176,7 @@ describe("team store", () => {
     });
   });
 
-  it("rejects credential-like files before copying a skill into the registry", async () => {
+  it("publishes only SKILL.md and leaves neighboring private files local", async () => {
     const { root, skill } = await fixture();
     await writeFile(join(skill, ".env"), "TOKEN=must-not-copy", "utf8");
     await initializeTeamStore(root, {
@@ -175,16 +186,37 @@ describe("team store", () => {
       ownerDisplayName: "Hong",
       ownerEmail: "hong@example.com",
     });
-    await expect(publishSkill(root, { sourceDirectory: skill, owner: "hong", version: "1.0.0" })).rejects.toThrow("인증정보로 오인될 수 있는 파일");
-    await expect(access(join(root, "skills", "hong", "spring-review"))).rejects.toThrow();
+    await expect(publishSkill(root, { sourceDirectory: skill, owner: "hong", version: "1.0.0" })).resolves.toMatchObject({ kind: "Skill" });
+    await expect(access(join(root, "skills", "hong", "spring-review", "SKILL.md"))).resolves.toBeUndefined();
+    await expect(access(join(root, "skills", "hong", "spring-review", ".env"))).rejects.toThrow();
+  });
+
+  it("rejects an explicitly included credential-like attachment before writing the release", async () => {
+    const { root, skill } = await fixture();
+    const secret = join(skill, ".env");
+    await writeFile(secret, "TOKEN=must-not-copy", "utf8");
+    await initializeTeamStore(root, {
+      name: "backend",
+      displayName: "Backend Team",
+      owner: "hong",
+      ownerDisplayName: "Hong",
+      ownerEmail: "hong@example.com",
+    });
+    await expect(publishSkill(root, {
+      sourceDirectory: skill,
+      owner: "hong",
+      version: "1.0.0",
+      references: [{ location: secret, includeFile: true }],
+    })).rejects.toThrow("인증정보로 오인될 수 있는 파일");
+    await expect(access(join(root, "releases", "hong", "spring-review", "1.0.0"))).rejects.toThrow();
   });
 
   it("updates and deletes a project while keeping the registry valid", async () => {
     const { root } = await fixture();
     await initializeTeamStore(root, { name: "backend", displayName: "Backend Team", owner: "hong", ownerDisplayName: "Hong", ownerEmail: "hong@example.com" });
-    await createProject(root, { name: "web-app", displayName: "Web App", tags: ["react"], verificationCommands: [], createdBy: "hong" });
+    await createProject(root, { name: "web-app", displayName: "Web App", tags: ["react"], verificationCommands: [], repository: "https://github.com/example/web-app", createdBy: "hong" });
     await updateProject(root, "web-app", { displayName: "Web Console", tags: ["react", "spring"] });
-    expect((await loadTeamSnapshot(root)).projects[0]).toMatchObject({ spec: { displayName: "Web Console", tags: ["react", "spring"] } });
+    expect((await loadTeamSnapshot(root)).projects[0]).toMatchObject({ spec: { displayName: "Web Console", tags: ["react", "spring"], repository: "https://github.com/example/web-app" } });
     await deleteProject(root, "web-app");
     await expect(loadTeamSnapshot(root)).resolves.toMatchObject({ projects: [], skillsets: [] });
   });
