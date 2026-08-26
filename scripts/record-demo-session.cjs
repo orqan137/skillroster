@@ -277,11 +277,11 @@ async function main() {
   await click(page.getByRole("button", { name: "작성자 평가 5점" }));
   await type(page.getByPlaceholder("직접 사용한 범위, 장점과 주의점 기록"), "릴리스 점검 순서를 반복해서 확인하기 좋았음.", 18);
   await click(page.getByRole("button", { name: "스킬 만들고 공유" }), 0);
-  await page.getByRole("heading", { name: "release-check", level: 1 }).waitFor({ timeout: 30000 });
+  await page.locator(".detail-header h1").filter({ hasText: "release-check" }).waitFor({ timeout: 30000 });
   await page.getByText("파일 포함", { exact: true }).waitFor();
 
   await page.goto(`${demoUrl}/skills/minjun/api-contract-check`);
-  await page.getByRole("heading", { name: "api-contract-check", level: 1 }).waitFor();
+  await page.locator(".detail-header h1").filter({ hasText: "api-contract-check" }).waitFor();
   await setCaption("04", "작성자와 동료 모두 평가 가능 · 후기와 프로젝트 기준을 Git에 기록", 70);
   await click(page.getByRole("button", { name: "5점" }), 180);
   await page.getByRole("combobox", { name: "프로젝트 기준" }).selectOption({ label: "Checkout API" });
