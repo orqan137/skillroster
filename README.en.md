@@ -16,7 +16,7 @@
 
 > A self-hosted, Git-native team registry for publishing AI agent skills, reviewing them with teammates, and assembling project-ready skill sets.
 
-SkillRoster does not collect every local file or prompt into a central service. It stores only explicitly published `SKILL.md` files, user-selected attachments and reference locations, peer reviews, project loadouts, and minimal execution evidence in an ordinary Git repository. Each teammate works from their own clone, while OpenCode consumes selected skills directly from `.opencode/skills/`.
+SkillRoster does not collect every local file or prompt into a central service. It stores only explicitly published `SKILL.md` files, user-selected attachments and reference locations, team reviews, project skill sets, and minimal execution records in an ordinary Git repository. Each teammate works from their own clone, while OpenCode consumes selected skills directly from `.opencode/skills/`.
 
 <p align="center">
   <img src="./docs/brand/skillroster-hero.png" width="900" alt="SkillRoster organizes local skills through a Git registry into project-specific rosters">
@@ -73,7 +73,7 @@ flowchart LR
   F --> G[OpenCode project]
 ```
 
-Start a roster with one empty remote repository. Teammates use the repository's existing access control and their own clones. The local React dashboard reads and writes the Git documents without a separate database. Every write validates the complete registry before commit and push.
+Start a roster with one empty remote repository. Teammates use the repository's existing access control and their own clones. The local React dashboard reads and writes the Git documents without a separate database. Reads use the local clone immediately; Settings provides an explicit `Pull Git changes` action. Every review, skill, or project mutation waits for pull, full-registry validation, commit, and push before reporting success.
 
 ## What makes it different
 
@@ -167,7 +167,7 @@ Use `pnpm skillroster <command> --help` for all options.
 
 When OpenCode loads an installed skill, the local queue records only the skill and version, session identifier, timestamp, and explicit `promptStored: false` / `sourceStored: false` flags. The next Git commit runs the project's configured verification command and records `verified`, `failed`, or `used`. A failed verification does not block the developer's commit.
 
-Ranking combines a Bayesian peer rating (65%), execution evidence (20%), recency (10%), and project adoption. The prior mean prevents a brand-new skill with a single rating from immediately taking first place.
+Ranking combines a Bayesian peer rating (65%), execution records (20%), recency (10%), and project adoption. Author reviews have a lower weight, missing peer reviews or execution records do not receive free points, and the prior mean prevents a brand-new skill with a single rating from immediately taking first place.
 
 ## Cross-platform and Docker
 
@@ -206,7 +206,7 @@ See [Architecture](docs/ARCHITECTURE.md), [Registry format](docs/REGISTRY_FORMAT
 
 Bug reports and feature proposals are welcome in [GitHub Issues](https://github.com/orqan137/skillroster/issues). Discuss registry-format or security-boundary changes before implementation.
 
-- Development and pull requests: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Development and pull requests: [CONTRIBUTING.en.md](CONTRIBUTING.en.md) · [한국어](CONTRIBUTING.md)
 - Private vulnerability reports: [SECURITY.md](SECURITY.md)
 - Governance and releases: [docs/GOVERNANCE.md](docs/GOVERNANCE.md)
 - Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)

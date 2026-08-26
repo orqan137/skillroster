@@ -401,8 +401,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       const project = await projectData(name);
       if (!project) throw new ApiNotFoundError("프로젝트를 찾을 수 없습니다.");
       else {
-        const dashboard = await dashboardData();
-        json(response, 200, { ...project, dashboard: { ...dashboard, member: await activeMember() } });
+        json(response, 200, { ...project, dashboard: { ...project.dashboard, member: await activeMember() } });
       }
       return true;
     }
@@ -410,10 +409,12 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       const name = decodeURIComponent(projectMatch[1] ?? "");
       const input = await body(request);
       const displayName = String(input.displayName ?? "").trim();
+      const projectRemote = assertRemoteGitUrl(String(input.repository ?? ""));
       const tags = Array.isArray(input.tags) ? input.tags.flatMap((tag) => parseTags(String(tag))) : parseTags(String(input.tags ?? ""));
       if (!displayName) throw new ApiInputError("프로젝트 이름이 필요합니다.");
+      await checkGitRemoteAccess(projectRemote);
       const repo = await repository();
-      const project = await repo.transaction(`docs(project): update ${name}`, () => updateProject(repo.directory, name, { displayName, tags }));
+      const project = await repo.transaction(`docs(project): update ${name}`, () => updateProject(repo.directory, name, { displayName, tags, repository: projectRemote }));
       let warning = "";
       try { await syncLinkedProject(name); } catch (error) { warning = error instanceof Error ? error.message : String(error); }
       json(response, 200, { ok: true, project: project.metadata.name, repositorySynced: !warning, ...(warning ? { warning } : {}) });
@@ -462,6 +463,13 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       let warning = "";
       try { await syncLinkedProject(name); } catch (error) { warning = error instanceof Error ? error.message : String(error); }
       json(response, 200, { ok: true, repositorySynced: !warning, ...(warning ? { warning } : {}) });
+      return true;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/registry/sync") {
+      const repo = await repository();
+      await repo.sync();
+      json(response, 200, { ok: true, revision: await repo.revision() });
       return true;
     }
 

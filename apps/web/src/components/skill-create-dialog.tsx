@@ -50,7 +50,7 @@ export function SkillCreateDialog({ data, initialMode = "create", initialSkillPa
 
   return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="스킬 추가 창 닫기" /><section className="creation-modal skill-creation-modal" role="dialog" aria-modal="true" aria-label="스킬 추가">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
-    <header><span className="creation-symbol"><Sparkles size={24} /></span><div><span className="eyebrow">스킬</span><h2>스킬 추가</h2></div></header>
+    <header><span className="creation-symbol"><Sparkles size={24} /></span><h2>스킬 추가</h2></header>
     <div className="creation-tabs" role="tablist"><button id="skill-create-tab" role="tab" aria-controls="skill-create-panel" aria-selected={mode === "create"} type="button" onClick={() => setMode("create")}><FileText size={16} />새 SKILL.md 작성</button><button id="skill-existing-tab" role="tab" aria-controls="skill-create-panel" aria-selected={mode === "existing"} type="button" onClick={() => setMode("existing")}><FolderOpen size={16} />기존 로컬 스킬 공유</button></div>
     <form className="skill-creation-form" id="skill-create-panel" role="tabpanel" aria-labelledby={mode === "create" ? "skill-create-tab" : "skill-existing-tab"} onSubmit={submit}>
       {mode === "create" ? <div className="skill-form-grid">
@@ -60,7 +60,7 @@ export function SkillCreateDialog({ data, initialMode = "create", initialSkillPa
         <label className="wide"><span>에이전트가 따를 사용 방법</span><textarea rows={7} value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder={"사용 시점과 작업 순서 작성\n\n업무 문서는 복사하지 않고 내부 위키나 Google Drive 링크로 연결"} /></label>
         <label className="wide"><span>내 로컬 저장소</span><select value={sourcePath} onChange={(event) => setSourcePath(event.target.value)}>{sources.map((source) => <option value={source.path} key={source.path}>{source.label} · {source.path}</option>)}</select>{sources.length === 0 && <small className="bad">연결된 개인 스킬 저장소 없음</small>}</label>
       </div> : <div className="existing-skill-picker">
-        <div className="file-share-warning"><FolderOpen size={19} /><div><strong>선택한 스킬의 `SKILL.md`만 팀 Git에 공유</strong><p>같은 폴더의 소스 코드, 인증정보와 업무 문서는 업로드하지 않음</p></div></div>
+        <div className="file-share-warning"><FolderOpen size={19} /><div><strong>선택한 스킬과 직접 지정한 파일만 공유</strong><p>같은 폴더의 다른 파일과 인증정보는 올리지 않음</p></div></div>
         {localSkills.length === 0 && <div className="empty-state">연결된 개인 저장소에서 발견한 스킬 없음</div>}
         <div className="existing-skill-list">{localSkills.map((skill) => {
           const directory = skill.path.replace(/[\\/]SKILL\.md$/i, "");

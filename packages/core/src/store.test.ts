@@ -211,12 +211,30 @@ describe("team store", () => {
     await expect(access(join(root, "releases", "hong", "spring-review", "1.0.0"))).rejects.toThrow();
   });
 
+  it("reports a missing included attachment without exposing a filesystem error", async () => {
+    const { root, skill } = await fixture();
+    await initializeTeamStore(root, {
+      name: "backend",
+      displayName: "Backend Team",
+      owner: "hong",
+      ownerDisplayName: "Hong",
+      ownerEmail: "hong@example.com",
+    });
+    await expect(publishSkill(root, {
+      sourceDirectory: skill,
+      owner: "hong",
+      version: "1.0.0",
+      references: [{ location: join(skill, "missing-guide.pdf"), includeFile: true }],
+    })).rejects.toThrow("공유할 파일을 찾을 수 없습니다");
+    await expect(access(join(root, "releases", "hong", "spring-review", "1.0.0"))).rejects.toThrow();
+  });
+
   it("updates and deletes a project while keeping the registry valid", async () => {
     const { root } = await fixture();
     await initializeTeamStore(root, { name: "backend", displayName: "Backend Team", owner: "hong", ownerDisplayName: "Hong", ownerEmail: "hong@example.com" });
     await createProject(root, { name: "web-app", displayName: "Web App", tags: ["react"], verificationCommands: [], repository: "https://github.com/example/web-app", createdBy: "hong" });
-    await updateProject(root, "web-app", { displayName: "Web Console", tags: ["react", "spring"] });
-    expect((await loadTeamSnapshot(root)).projects[0]).toMatchObject({ spec: { displayName: "Web Console", tags: ["react", "spring"], repository: "https://github.com/example/web-app" } });
+    await updateProject(root, "web-app", { displayName: "Web Console", tags: ["react", "spring"], repository: "https://github.com/example/web-console" });
+    expect((await loadTeamSnapshot(root)).projects[0]).toMatchObject({ spec: { displayName: "Web Console", tags: ["react", "spring"], repository: "https://github.com/example/web-console" } });
     await deleteProject(root, "web-app");
     await expect(loadTeamSnapshot(root)).resolves.toMatchObject({ projects: [], skillsets: [] });
   });

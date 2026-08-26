@@ -11,6 +11,7 @@ import { AgentConnectPage } from "./pages/agent-connect-page";
 import { PageState } from "./components/page-state";
 import { useApi } from "./lib/client";
 import type { SetupStatusPayload } from "./lib/contracts";
+import { RosterShellProvider } from "./lib/roster-shell-context";
 
 export function App() {
   const { data, error, requestId, loading, reload } = useApi<SetupStatusPayload>("/api/setup/status");
@@ -20,7 +21,8 @@ export function App() {
   if (!data.localSources.completed) return <AgentConnectPage onComplete={() => void reload()} />;
 
   return (
-    <Routes>
+    <RosterShellProvider value={{ member: data.connection?.member ?? "", teamName: data.connection?.team ?? "Roster" }}>
+      <Routes>
       <Route path="/" element={<DashboardPage />} />
       <Route path="/projects" element={<ProjectsPage />} />
       <Route path="/projects/:name" element={<ProjectPage />} />
@@ -30,6 +32,7 @@ export function App() {
       <Route path="/skills" element={<SkillsPage />} />
       <Route path="/skills/:owner/:name" element={<SkillPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+    </RosterShellProvider>
   );
 }

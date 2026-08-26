@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Braces, Sparkles, Star } from "lucide-react";
@@ -16,7 +14,7 @@ export function ProjectTabs({
   project: string;
   recommendations: RecommendedSkill[];
   selected: Array<{ skill: string; version: string }>;
-  onChanged: () => void;
+  onChanged: (warning?: string) => void;
 }) {
   const [tab, setTab] = useState<"recommendations" | "loadout">("recommendations");
   const selectedKeys = new Set(selected.map((item) => `${item.skill}@${item.version}`));
@@ -47,9 +45,8 @@ export function ProjectTabs({
       {tab === "recommendations" ? (
         <div id="recommendations-panel" role="tabpanel">
           <div className="section-intro">
-            <span className="eyebrow">스킬 선택</span>
-            <h2>프로젝트에 연결할 팀 스킬</h2>
-            <p>태그 일치 우선 · 나머지는 팀 평가 순위 기준</p>
+            <h2>스킬 선택</h2>
+            <p>프로젝트 태그 일치 후 팀 점수 순</p>
           </div>
           <div className="recommendation-list">
             {recommendations.length === 0 && (
@@ -69,7 +66,7 @@ export function ProjectTabs({
                     </div>
                   </div>
                   <ProjectSkillAction
-                    onChanged={(nextSelected) => { onChanged(); if (nextSelected) setTab("loadout"); }}
+                    onChanged={(nextSelected, warning) => { onChanged(warning); if (nextSelected) setTab("loadout"); }}
                     project={project}
                     selected={isSelected}
                     skill={skill.skill}
@@ -83,16 +80,15 @@ export function ProjectTabs({
       ) : (
         <div id="loadout-panel" role="tabpanel">
           <div className="section-intro">
-            <span className="eyebrow">현재 구성</span>
-            <h2>이 프로젝트에 연결된 스킬</h2>
-            <p>연결과 해제 내역은 팀 Git 저장소에 즉시 기록</p>
+            <h2>연결된 스킬</h2>
+            <p>변경 내용은 팀 Git에 커밋</p>
           </div>
           <section className="loadout-table" aria-label="현재 프로젝트 스킬 구성">
             <div className="loadout-table-head"><span>스킬</span><span>버전</span><span>연결</span></div>
             {selected.length === 0 && <div className="empty-state">연결된 스킬 없음 · ‘스킬 찾기’ 탭에서 선택 가능</div>}
             {selected.map((item) => (
               <article className="loadout-row" key={item.skill}>
-                <Link to={`/skills/${item.skill}`}><strong>{item.skill}</strong></Link><span>v{item.version}</span><ProjectSkillAction project={project} skill={item.skill} version={item.version} selected onChanged={() => onChanged()} />
+                <Link to={`/skills/${item.skill}`}><strong>{item.skill}</strong></Link><span>v{item.version}</span><ProjectSkillAction project={project} skill={item.skill} version={item.version} selected onChanged={(_, warning) => onChanged(warning)} />
               </article>
             ))}
           </section>

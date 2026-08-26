@@ -203,7 +203,10 @@ export async function publishSkill(
       continue;
     }
     if (!isAbsolute(location)) throw new Error(`포함할 파일은 절대 경로로 입력해주세요: ${location}`);
-    const info = await lstat(location);
+    const info = await lstat(location).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") throw new Error(`공유할 파일을 찾을 수 없습니다: ${location}`);
+      throw error;
+    });
     if (info.isSymbolicLink()) throw new Error(`심볼릭 링크 파일은 공유할 수 없습니다: ${location}`);
     if (!info.isFile()) throw new Error(`공유할 파일을 찾을 수 없습니다: ${location}`);
     const fileName = basename(location);
@@ -347,7 +350,7 @@ export async function createProject(
 export async function updateProject(
   root: string,
   name: string,
-  input: { displayName: string; tags: string[] },
+  input: { displayName: string; tags: string[]; repository?: string },
 ): Promise<ProjectDocument> {
   const project = assertSlug(name, "project");
   const path = within(root, "projects", project, "project.yaml");
@@ -356,6 +359,11 @@ export async function updateProject(
   if (!displayName) throw new Error("프로젝트 이름이 필요합니다.");
   document.spec.displayName = displayName;
   document.spec.tags = [...new Set(input.tags.map((tag) => assertSlug(tag, "tag")))].sort();
+  if (input.repository !== undefined) {
+    const repository = input.repository.trim();
+    if (!repository) throw new Error("프로젝트 Git 주소가 필요합니다.");
+    document.spec.repository = repository;
+  }
   await writeYaml(path, document);
   return document;
 }

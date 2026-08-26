@@ -93,14 +93,20 @@ def main() -> None:
     caption_filter_path = CAPTION_TRACK.as_posix().replace(":", r"\:").replace("'", r"\'")
 
     concat = RECORDING / "frames.txt"
+    # The concat demuxer rounds per-image durations to image2's 25 fps clock,
+    # which accumulates visible subtitle drift over thousands of frames.
+    # Resample the CDP timestamps to an explicit 30 fps file sequence instead.
     lines: list[str] = []
-    for index, frame in enumerate(frames):
-        current = float(frame["time"])
-        next_time = float(frames[index + 1]["time"]) if index + 1 < len(frames) else duration
-        frame_duration = max(0.001, min(0.5, next_time - current))
-        lines.append(f"file '{(RECORDING / frame['file']).as_posix()}'\n")
-        lines.append(f"duration {frame_duration:.6f}\n")
-    lines.append(f"file '{(RECORDING / frames[-1]['file']).as_posix()}'\n")
+    source_index = 0
+    output_frame_count = round(duration * 30)
+    for output_index in range(output_frame_count):
+        output_time = output_index / 30
+        while (
+            source_index + 1 < len(frames)
+            and float(frames[source_index + 1]["time"]) <= output_time
+        ):
+            source_index += 1
+        lines.append(f"file '{(RECORDING / frames[source_index]['file']).as_posix()}'\n")
     concat.write_text("".join(lines), encoding="utf-8")
 
     subprocess.run(
@@ -110,6 +116,8 @@ def main() -> None:
             "-hide_banner",
             "-loglevel",
             "error",
+            "-r",
+            "30",
             "-f",
             "concat",
             "-safe",
@@ -117,7 +125,7 @@ def main() -> None:
             "-i",
             str(concat),
             "-vf",
-            f"fps=30,scale=1920:960:flags=lanczos,pad=1920:1080:0:0:color=0x07120d,ass=filename='{caption_filter_path}',format=yuv420p",
+            f"scale=1920:960:flags=lanczos,pad=1920:1080:0:0:color=0x07120d,ass=filename='{caption_filter_path}',format=yuv420p",
             "-t",
             f"{duration:.3f}",
             "-an",

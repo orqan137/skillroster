@@ -25,7 +25,7 @@ export function ProjectCreateDialog({ data, onClose, onCreated }: { data: Dashbo
   }, [data.ranked]);
   const recommendations = useMemo(() => data.ranked.map((skill, index) => {
     const matchingTags = skill.tags.filter((tag) => tags.includes(tag));
-    return { ...skill, rank: index + 1, matchingTags, recommendationScore: skill.score + matchingTags.length * 12 };
+    return { ...skill, rank: index + 1, matchingTags, recommendationScore: skill.score + matchingTags.length * 8 };
   }).sort((a, b) => b.recommendationScore - a.recommendationScore || a.rank - b.rank).slice(0, 6), [data.ranked, tags]);
 
   function addTag(raw: string) {
@@ -50,22 +50,22 @@ export function ProjectCreateDialog({ data, onClose, onCreated }: { data: Dashbo
 
   return <div className="modal-backdrop"><button className="modal-backdrop-dismiss" type="button" tabIndex={-1} onClick={onClose} aria-label="새 프로젝트 창 닫기" /><section className="creation-modal project-creation-modal" role="dialog" aria-modal="true" aria-label="새 프로젝트 만들기">
     <button className="modal-close" type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
-    <header><span className="creation-symbol blue"><FolderKanban size={24} /></span><div><span className="eyebrow">새 프로젝트</span><h2>프로젝트 만들기</h2></div></header>
+    <header><span className="creation-symbol blue"><FolderKanban size={24} /></span><h2>프로젝트 만들기</h2></header>
     <form className="creation-layout" onSubmit={submit}>
       <div className="creation-fields">
         <label><span>프로젝트 이름</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setName(toSlug(event.target.value)); }} placeholder="예: 결제 API 개편" /></label>
         <label><span>프로젝트 ID</span><div className="field-with-icon"><Hash size={15} /><input value={name} onChange={(event) => setName(toSlugDraft(event.target.value))} onBlur={() => setName(toSlug(name))} placeholder="payment-api" /></div><small>Git에 저장되는 영문 식별자</small></label>
         <label className="wide"><span>프로젝트 Git 주소</span><div className="field-with-icon"><GitBranch size={15} /><input value={repository} onChange={(event) => setRepository(event.target.value)} placeholder="https://github.com/org/payment-api" /></div><small>프로젝트 생성 시 <code>.skillroster/project.yaml</code> 구성 커밋</small></label>
-        <div className="repository-privacy-note"><ShieldCheck size={18} /><div><strong>구성 정보만 프로젝트 Git에 기록</strong><p>스킬 참고 파일과 로컬 경로의 파일 내용은 업로드하지 않음</p></div></div>
+        <div className="repository-privacy-note"><ShieldCheck size={18} /><p>프로젝트 Git에는 스킬 ID와 버전만 기록. 참고 파일 내용은 올리지 않음.</p></div>
         <div className="tag-picker"><span>기술 태그</span><div className="tag-entry"><input value={tagInput} onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addTag(tagInput); } }} placeholder="react, spring, docker" /><button type="button" onClick={() => addTag(tagInput)}>각각 추가</button></div><small>쉼표 또는 공백으로 여러 태그 구분 가능</small>
           <div className="selected-tags">{tags.map((tag) => <button type="button" onClick={() => setTags((current) => current.filter((item) => item !== tag))} key={tag}>#{tag}<X size={11} /></button>)}</div>
-          <div className="suggested-tags"><small>팀 스킬에서 많이 쓰는 태그</small><div>{tagCatalog.map(([tag, count]) => <button className={tags.includes(tag) ? "active" : ""} type="button" onClick={() => tags.includes(tag) ? setTags((current) => current.filter((item) => item !== tag)) : setTags((current) => [...current, tag])} key={tag}>#{tag}<span>{count}</span></button>)}</div></div>
+          <div className="suggested-tags"><small>팀 스킬에서 많이 쓰는 태그</small><div>{tagCatalog.map(([tag, count]) => <button className={tags.includes(tag) ? "active" : ""} type="button" aria-pressed={tags.includes(tag)} onClick={() => tags.includes(tag) ? setTags((current) => current.filter((item) => item !== tag)) : setTags((current) => [...current, tag])} key={tag}>#{tag}<span>{count}</span></button>)}</div></div>
         </div>
       </div>
       <aside className="skill-recommend-picker">
         <div className="recommend-picker-heading"><span><Sparkles size={17} />추천 스킬</span><small>{tags.length ? "태그 일치와 팀 순위 반영" : "팀 평가 순위 기준"}</small></div>
         {recommendations.length === 0 && <div className="empty-state">추천할 공유 스킬 없음</div>}
-        {recommendations.map((skill) => <button className={selected.has(skill.skill) ? "selected" : ""} type="button" onClick={() => toggleSkill(skill.skill)} key={skill.skill}>
+        {recommendations.map((skill) => <button className={selected.has(skill.skill) ? "selected" : ""} type="button" aria-pressed={selected.has(skill.skill)} onClick={() => toggleSkill(skill.skill)} key={skill.skill}>
           <span className="recommend-rank">{skill.rank}</span><div><strong>{skill.skill.split("/").at(-1)}</strong><p>{skill.description}</p><span>{skill.matchingTags.length ? skill.matchingTags.map((tag) => `#${tag}`).join(" ") : `팀 순위 ${skill.rank}위`}</span></div><em><Star size={12} fill="currentColor" />{skill.averageRating?.toFixed(1) ?? "—"}</em><i>{selected.has(skill.skill) && <Check size={15} />}</i>
         </button>)}
       </aside>

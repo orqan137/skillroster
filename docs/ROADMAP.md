@@ -17,6 +17,7 @@ Roadmap은 발표용 약속이 아니라 Issue와 Release로 추적하는 개발
 - [Codex·Claude Code evidence adapter](https://github.com/orqan137/skillroster/issues/7)
 - [GitHub/GitLab 조직 신원 연결과 세분화된 project 권한](https://github.com/orqan137/skillroster/issues/8)
 - registry migration·archive·restore 명령
+- 개인·팀·프로젝트 메모리의 권한, 평가, 연결·해제와 보관·회수 생명주기
 - 접근성, [영문 문서와 실제 외부 contributor 온보딩](https://github.com/orqan137/skillroster/issues/9)
 
 ## v1.0.0 · 안정 형식

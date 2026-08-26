@@ -38,10 +38,9 @@ export function rankSkills(
 ): RankedSkill[] {
   const selfReviewWeight = 0.35;
   const owners = new Map(skills.map((skill) => [skill.id, skill.document.spec.owner]));
-  const globalRatings = reviews.map((review) => ({
-    score: review.spec.score,
-    weight: review.spec.reviewer === owners.get(review.spec.skill) ? selfReviewWeight : 1,
-  }));
+  const globalRatings = reviews
+    .filter((review) => review.spec.reviewer !== owners.get(review.spec.skill))
+    .map((review) => ({ score: review.spec.score, weight: 1 }));
   const globalWeight = globalRatings.reduce((sum, rating) => sum + rating.weight, 0);
   const priorMean = globalWeight
     ? globalRatings.reduce((sum, rating) => sum + rating.score * rating.weight, 0) / globalWeight
@@ -69,7 +68,8 @@ export function rankSkills(
       );
       const verifiedRuns = matchingEvidence.filter((item) => item.spec.status === "verified").length;
       const failedRuns = matchingEvidence.filter((item) => item.spec.status === "failed").length;
-      const evidenceScore = 5 * ((verifiedRuns + 1) / (verifiedRuns + failedRuns + 2));
+      const recordedRuns = verifiedRuns + failedRuns;
+      const evidenceScore = recordedRuns ? 5 * (verifiedRuns / recordedRuns) : 0;
 
       const adoptedProjects = new Set(
         skillsets

@@ -6,7 +6,7 @@ SkillRoster separates three planes.
 
 1. **Local execution plane** — OpenCode, source files, prompts, credentials, and pending evidence stay on each developer machine.
 2. **Git knowledge plane** — explicitly published `SKILL.md` files, opt-in attachments, reference locations, reviews, projects, loadouts, and minimal evidence are ordinary files in a team Git repository.
-3. **Local client plane** — CLI and dashboard read a developer's clone and write through pull/rebase/commit/push transactions.
+3. **Local client plane** — CLI and dashboard read a developer's clone and write through pull/rebase/commit/push transactions. Read-only screens load the local clone immediately; users explicitly pull remote-only changes from Settings.
 
 ```text
 Developer project
@@ -46,7 +46,7 @@ The score combines a Bayesian peer rating, evidence success, freshness, and adop
 
 ## Concurrency
 
-Every mutation follows `clean check → pull --rebase → write files → validate the complete snapshot → commit → push`. Writes targeting the same clone are serialized in-process. Push races retry up to three times after rebasing. A failed mutation restores its starting revision, so an uncommitted partial package cannot leak into a later commit. Reviews use one file per reviewer and skill version, making an update an explicit replacement rather than an accumulating duplicate.
+Every mutation follows `clean check → pull --rebase → write files → validate the complete snapshot → commit → push`, and the client reports success only after push finishes. Writes targeting the same clone are serialized in-process. Push races retry up to three times after rebasing. A failed mutation restores its starting revision, so an uncommitted partial package cannot leak into a later commit. Reviews use one file per reviewer and skill version, making an update an explicit replacement rather than an accumulating duplicate.
 
 ## Privacy boundary
 

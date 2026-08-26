@@ -44,6 +44,14 @@ describe("projectConfigurationDocument", () => {
       identity: { name: "Hong", email: "hong@example.com" },
     })).resolves.toMatchObject({ branch: "main", changed: true });
 
+    await expect(syncProjectRepository({
+      project: "payment-api",
+      displayName: "결제 API",
+      projectRepository: remote,
+      skills: [{ skill: "hong/release-check", version: "1.0.0" }],
+      identity: { name: "Hong", email: "hong@example.com" },
+    })).resolves.toMatchObject({ branch: "main", changed: false });
+
     const checkout = join(root, "checkout");
     await execFileAsync("git", ["clone", remote, checkout]);
     await expect(readFile(join(checkout, ".skillroster", "project.yaml"), "utf8")).resolves.toContain("referencedFilesUploaded: false");
