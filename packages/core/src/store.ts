@@ -1,5 +1,5 @@
-import { access, cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, join, relative, resolve, sep } from "node:path";
+import { access, copyFile, cp, lstat, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import {
   API_VERSION,
   DocumentValidationError,
@@ -26,6 +26,8 @@ const DATA_DIRECTORIES = [
   "projects",
   "schemas",
 ];
+
+const FORBIDDEN_ATTACHMENT_NAME = /^(?:\.env(?:\..+)?|\.npmrc|\.pypirc|id_rsa|id_ed25519|credentials?(?:\..+)?|secrets?(?:\..+)?|service-account(?:\..+)?)$|\.(?:pem|key|p12|pfx)$/i;
 
 function within(root: string, ...segments: string[]): string {
   const rootPath = resolve(root);
@@ -181,12 +183,41 @@ export async function publishSkill(
     version: string;
     visibility?: Visibility;
     tags?: string[];
+    references?: Array<{ label?: string; location: string; includeFile?: boolean }>;
     now?: Date;
   },
 ): Promise<SkillDocument> {
   const owner = assertSlug(input.owner, "owner");
   await validateSkillPackage(input.sourceDirectory);
   const parsed = await parseSkillDirectory(input.sourceDirectory);
+  const references: NonNullable<SkillDocument["spec"]["references"]> = [];
+  const attachments: Array<{ source: string; fileName: string }> = [];
+  const includedNames = new Set<string>();
+  let includedFiles = 0;
+  let includedBytes = 0;
+  for (const reference of input.references ?? []) {
+    const label = reference.label?.trim();
+    const location = reference.location.trim();
+    if (!reference.includeFile) {
+      references.push({ ...(label ? { label } : {}), location });
+      continue;
+    }
+    if (!isAbsolute(location)) throw new Error(`포함할 파일은 절대 경로로 입력해주세요: ${location}`);
+    const info = await lstat(location);
+    if (info.isSymbolicLink()) throw new Error(`심볼릭 링크 파일은 공유할 수 없습니다: ${location}`);
+    if (!info.isFile()) throw new Error(`공유할 파일을 찾을 수 없습니다: ${location}`);
+    const fileName = basename(location);
+    if (FORBIDDEN_ATTACHMENT_NAME.test(fileName)) throw new Error(`인증정보로 오인될 수 있는 파일은 공유할 수 없습니다: ${fileName}`);
+    if (includedNames.has(fileName.toLowerCase())) throw new Error(`같은 이름의 첨부 파일이 있습니다: ${fileName}`);
+    includedNames.add(fileName.toLowerCase());
+    includedFiles += 1;
+    includedBytes += info.size;
+    if (info.size > 2_000_000) throw new Error(`첨부 파일은 2MB를 넘을 수 없습니다: ${fileName}`);
+    if (includedFiles > 10 || includedBytes > 10_000_000) throw new Error("첨부 파일은 10개, 전체 10MB까지 공유할 수 있습니다.");
+    attachments.push({ source: location, fileName });
+    references.push({ ...(label ? { label } : {}), location: `attachments/${fileName}`, included: true });
+  }
+
   const target = within(root, "skills", owner, parsed.name);
   const releaseTarget = within(root, "releases", owner, parsed.name, input.version);
   const releaseExists = await readdir(releaseTarget).then(
@@ -199,14 +230,16 @@ export async function publishSkill(
   await rm(target, { recursive: true, force: true });
   await mkdir(target, { recursive: true });
   await mkdir(releaseTarget, { recursive: true });
-  await cp(input.sourceDirectory, target, {
-    recursive: true,
-    filter: (source) => !/[\\/](?:\.git|node_modules)(?:[\\/]|$)/.test(source),
-  });
-  await cp(input.sourceDirectory, releaseTarget, {
-    recursive: true,
-    filter: (source) => !/[\\/](?:\.git|node_modules)(?:[\\/]|$)/.test(source),
-  });
+  await copyFile(join(input.sourceDirectory, "SKILL.md"), join(target, "SKILL.md"));
+  await copyFile(join(input.sourceDirectory, "SKILL.md"), join(releaseTarget, "SKILL.md"));
+  if (attachments.length) {
+    await mkdir(join(target, "attachments"), { recursive: true });
+    await mkdir(join(releaseTarget, "attachments"), { recursive: true });
+    for (const attachment of attachments) {
+      await copyFile(attachment.source, join(target, "attachments", attachment.fileName));
+      await copyFile(attachment.source, join(releaseTarget, "attachments", attachment.fileName));
+    }
+  }
 
   const document: SkillDocument = {
     apiVersion: API_VERSION,
@@ -219,6 +252,7 @@ export async function publishSkill(
       visibility: input.visibility ?? "team",
       tags: [...new Set((input.tags ?? []).map((tag) => assertSlug(tag, "tag")))].sort(),
       compatibility: parsed.compatibility,
+      ...(references.length ? { references } : {}),
       publishedAt: (input.now ?? new Date()).toISOString(),
     },
   };
@@ -275,6 +309,7 @@ export async function createProject(
     displayName: string;
     tags: string[];
     verificationCommands: string[];
+    repository?: string;
     createdBy: string;
     now?: Date;
   },
@@ -293,6 +328,7 @@ export async function createProject(
       displayName: input.displayName,
       tags: [...new Set(input.tags.map((tag) => assertSlug(tag, "tag")))].sort(),
       verificationCommands: input.verificationCommands,
+      ...(input.repository?.trim() ? { repository: input.repository.trim() } : {}),
       createdBy: assertSlug(input.createdBy, "created by"),
       createdAt: now,
     },

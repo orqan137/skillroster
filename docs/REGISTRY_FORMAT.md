@@ -7,7 +7,8 @@ skillspace.yaml
 members/<member>.yaml
 skills/<owner>/<skill>/SKILL.md
 skills/<owner>/<skill>/skill.yaml
-releases/<owner>/<skill>/<version>/...
+releases/<owner>/<skill>/<version>/SKILL.md
+releases/<owner>/<skill>/<version>/attachments/*  # explicit opt-in only
 reviews/<owner>/<skill>/<version>/<reviewer>.yaml
 evidence/<yyyy>/<mm>/<event>.yaml
 projects/<project>/project.yaml
@@ -22,6 +23,8 @@ schemas/*.schema.json
 - A review is uniquely identified by skill version and reviewer. Skill owners may leave a clearly labelled self-review; ranking gives it 35% of a peer review's weight.
 - Evidence event IDs are generated locally and reused on retry, so a repeated flush overwrites the same logical file instead of inventing a second run.
 - All slugs use lowercase letters, digits, and single hyphen separators.
+- `Skill.spec.references` stores user-entered labels and locations. `included: true` means the user explicitly copied that one file into `attachments/`; all other references remain location-only.
+- `Project.spec.repository` points to the project Git remote. The remote receives `.skillroster/project.yaml`, which lists the selected skill IDs and versions but contains no referenced file payload.
 
 ## Evidence fields
 
@@ -40,9 +43,9 @@ schemas/*.schema.json
 
 The source of truth is `packages/schemas/schemas`. Consumers should reject a document with an unknown `apiVersion`, `kind`, or extra field.
 
-## Canonical documents and package files
+## Canonical documents and published files
 
-Only the exact paths in the tree above are registry documents. Other files inside a published skill or release are package contents, even when their extension is `.yaml`. For example, `skills/<owner>/<skill>/agents/openai.yaml` configures an agent and does not need a registry `kind` field.
+Only the exact YAML paths in the tree above are registry documents. A skill publication copies `SKILL.md` plus files explicitly marked for inclusion into its current and immutable release locations. Neighboring scripts, source code, credentials, and business documents stay in their original local or organizational storage.
 
 When loading a snapshot, SkillRoster checks schema validity, path-to-ID consistency, duplicate IDs, member ownership, review/project references, project skill sets, release existence, and evidence references. An invalid canonical document stops the snapshot with its path instead of silently returning partial data.
 
@@ -57,4 +60,4 @@ Dashboard writes use one serialized transaction per local clone:
 
 Do not edit the managed clone while the dashboard is running. If `GIT_WORKTREE_DIRTY` appears, inspect and commit or discard that manual change in Git before retrying. Authentication failures use the operating system's Git credential helper; SkillRoster does not store Git tokens.
 
-Published packages reject symbolic links, credential-like files such as `.env`, private keys, or service account files, packages over 500 files or 20 MB, and individual files over 2 MB. Keep large references in an internal document system and link to them from `SKILL.md`.
+Published `SKILL.md` files reject symbolic links and files over 2 MB. Included attachments also reject symbolic links, credential-like names, files over 2 MB, more than 10 files, or more than 10 MB total. Location-only references are not read. Project repositories receive the selected skill IDs and versions, not attachment contents.

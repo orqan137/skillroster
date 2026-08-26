@@ -31,7 +31,7 @@ export function DashboardPage() {
   return (
     <AppShell member={member} teamName={snapshot.team.spec.displayName}>
       <header className="page-header roster-home-header">
-        <div className="roster-home-identity"><span className="roster-home-mark" aria-hidden="true">{snapshot.team.spec.displayName.slice(0, 1).toUpperCase()}</span><div><span className="eyebrow">Roster home</span><h1>{snapshot.team.spec.displayName}</h1><p>팀원의 평가와 후기, 프로젝트 연결 상태 확인</p></div></div>
+        <div className="roster-home-identity"><span className="roster-home-mark" aria-hidden="true">{snapshot.team.spec.displayName.slice(0, 1).toUpperCase()}</span><div><span className="eyebrow">Roster</span><h1>{snapshot.team.spec.displayName}</h1></div></div>
         <div className="header-tools"><PageMotif /><div className="revision"><GitCommitHorizontal size={17} />{revision.slice(0, 8)}</div></div>
       </header>
 
@@ -44,7 +44,7 @@ export function DashboardPage() {
 
       <div className="dashboard-grid">
         <section className="data-section ranking-panel" id="skills">
-          <div className="panel-heading"><div><span className="eyebrow">팀 랭킹</span><h2>스킬 평가 순위</h2></div><span className="muted">후기와 프로젝트 적용 반영</span></div>
+          <div className="panel-heading"><div><span className="eyebrow">팀 랭킹</span><h2>스킬 평가 순위</h2></div></div>
           <div className="ranking-list">
             {ranked.length === 0 && <div className="empty-state">공유 스킬 등록 후 팀 순위 확인 가능</div>}
             {ranked.map((skill, index) => {
@@ -85,7 +85,7 @@ export function DashboardPage() {
       </section>
 
       <section className="data-section local-skills-panel" id="local-skills">
-        <div className="panel-heading"><div><span className="eyebrow">내 컴퓨터</span><h2><HardDrive size={18} />연결된 로컬 스킬</h2></div><span className="muted">{localSkills?.sources.length ?? 0}개 저장소 · {localSkills?.skills.length ?? 0}개 스킬</span></div>
+        <div className="panel-heading"><div><span className="eyebrow">로컬</span><h2><HardDrive size={18} />연결된 로컬 스킬</h2></div><span className="muted">{localSkills?.sources.length ?? 0}개 저장소 · {localSkills?.skills.length ?? 0}개 스킬</span></div>
         <div className="local-skill-table">
           {!localSkills?.skills.length && <div className="empty-state">연결한 저장소에 스킬 없음 · `SKILL.md` 추가 시 자동 탐색</div>}
           {localSkills?.skills.slice(0, 8).map((skill) => <article key={skill.path}><div><strong>{skill.name}</strong><p>{skill.description}</p></div><code>{skill.path}</code><span>개인 보관</span></article>)}

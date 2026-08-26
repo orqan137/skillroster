@@ -84,7 +84,7 @@ export function AppShell({
               {teams?.teams.map((team) => <button type="button" key={team.team} disabled={Boolean(switching)} onClick={() => void switchTeam(team.team)}><span className="team-option-symbol">{team.displayName.slice(0, 1)}</span><span><strong>{team.displayName}</strong><small>@{team.member}</small></span>{team.active && <Check size={16} />}</button>)}
             </div>
             {switchError && <p className="team-switch-error" role="alert">{switchError}</p>}
-            {teams?.switchable !== false && <Link className="add-team-link" to="/teams/add" onClick={() => setTeamsOpen(false)}><Plus size={16} />새 로스터 연결</Link>}
+            {teams?.switchable !== false && <Link className="add-team-link" to="/teams/add" onClick={() => setTeamsOpen(false)}><Plus size={16} />로스터 연결하기</Link>}
           </div>}
         </div>
         <nav aria-label="주요 메뉴">

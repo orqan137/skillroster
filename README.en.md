@@ -16,7 +16,7 @@
 
 > A self-hosted, Git-native team registry for publishing AI agent skills, reviewing them with teammates, and assembling project-ready skill sets.
 
-SkillRoster does not collect every local file or prompt into a central service. It stores only explicitly published `SKILL.md` packages, peer reviews, project loadouts, and minimal execution evidence in an ordinary Git repository. Each teammate works from their own clone, while OpenCode consumes selected skills directly from `.opencode/skills/`.
+SkillRoster does not collect every local file or prompt into a central service. It stores only explicitly published `SKILL.md` files, user-selected attachments and reference locations, peer reviews, project loadouts, and minimal execution evidence in an ordinary Git repository. Each teammate works from their own clone, while OpenCode consumes selected skills directly from `.opencode/skills/`.
 
 <p align="center">
   <img src="./docs/brand/skillroster-hero.png" width="900" alt="SkillRoster organizes local skills through a Git registry into project-specific rosters">
@@ -32,7 +32,7 @@ AI coding skills usually stay scattered across individual machines. Even when a 
 | Which skill should a project adopt? | Compare peer reviews, author self-reviews, project adoption, and execution evidence separately. |
 | What fits a new project? | Combine detected technology tags with the team's evidence-weighted ranking. |
 | Who changed this knowledge? | Trace YAML and Markdown through Git commits, diffs, and blame. |
-| Are source code and prompts uploaded? | No by default. Only an explicitly published skill package is shared. |
+| Are source code and prompts uploaded? | No by default. Only `SKILL.md`, explicitly selected attachments, and reference locations are shared. |
 
 ## Real product screens
 
@@ -82,6 +82,8 @@ Start a roster with one empty remote repository. Teammates use the repository's 
 - **Reviews plus evidence:** a five-star score is not treated as proof. The UI separates opinions from recorded project outcomes.
 - **Honest self-review:** authors may evaluate their own skill, but the UI marks it as an author review and applies a lower ranking weight.
 - **Versioned project loadouts:** projects adopt an exact skill version and sync it into OpenCode.
+- **Project Git integration:** creating a project links its own Git repository and commits the selected roster to `.skillroster/project.yaml`.
+- **Explicit reference scope:** links and paths remain location-only by default; a file is copied only when the user deliberately selects “include file.”
 - **Private by default:** the public schema rejects prompt or source payloads in execution evidence.
 - **Tool-readable format:** Markdown, YAML, and JSON Schema are usable beyond OpenCode.
 
@@ -121,7 +123,7 @@ Default local discovery paths:
 | Claude Code | `~/.claude/skills` |
 | Agent Skills | `~/.agents/skills` |
 
-The scanner looks for `SKILL.md` up to four levels below a selected directory. It reads name and description metadata only. Nothing is published until the user explicitly selects it.
+The scanner looks for `SKILL.md` up to four levels below a selected directory. It reads name and description metadata only. Publishing includes `SKILL.md` by default; optional references may stay location-only or include an explicitly selected safe file. Neighboring files and folders are never copied automatically.
 
 ## CLI workflow
 

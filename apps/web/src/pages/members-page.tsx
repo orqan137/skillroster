@@ -14,7 +14,7 @@ export function MembersPage() {
   const { snapshot, member } = data;
 
   return <AppShell member={member} teamName={snapshot.team.spec.displayName}>
-    <header className="page-header directory-header"><div><span className="eyebrow">Members</span><h1>팀원</h1><p>팀원별 공유 스킬, 후기와 프로젝트 참여 내역 확인</p></div><PageMotif /></header>
+    <header className="page-header directory-header"><div><span className="eyebrow">Members</span><h1>팀원</h1></div><PageMotif /></header>
     <section className="directory-stats" aria-label="팀원 통계">
       <article><Users size={20} /><span>팀원</span><strong>{snapshot.members.length}</strong></article>
       <article><Sparkles size={20} /><span>발행된 스킬</span><strong>{snapshot.skills.length}</strong></article>

@@ -20,6 +20,20 @@
         "visibility": { "enum": ["private", "team", "verified", "deprecated"] },
         "tags": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
         "compatibility": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "references": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["location"],
+            "properties": {
+              "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "location": { "type": "string", "minLength": 1, "maxLength": 2048 },
+              "included": { "type": "boolean" }
+            }
+          }
+        },
         "publishedAt": { "type": "string", "format": "date-time" }
       }
     }

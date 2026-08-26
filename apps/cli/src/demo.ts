@@ -32,9 +32,11 @@ export async function createDemoRegistry(parentDirectory?: string): Promise<Demo
   await mkdir(parent, { recursive: true });
   const directory = await mkdtemp(join(parent, "skillroster-demo-"));
   const sourcesConfig = join(parent, `${basename(directory)}-sources.yaml`);
+  const personalSkills = join(parent, `${basename(directory)}-personal-skills`);
+  await mkdir(personalSkills, { recursive: true });
   await writeFile(
     sourcesConfig,
-    `version: 1\ncompleted: true\nsources:\n  - ${JSON.stringify(exampleSkillsDirectory())}\n`,
+    `version: 1\ncompleted: true\nsources:\n  - ${JSON.stringify(exampleSkillsDirectory())}\n  - ${JSON.stringify(personalSkills)}\n`,
     "utf8",
   );
   const repository = await GitTeamRepository.initialize({
@@ -77,6 +79,13 @@ export async function createDemoRegistry(parentDirectory?: string): Promise<Demo
         version: "1.0.0",
         visibility: "team",
         tags: skill.tags,
+        ...(skill.name === "api-contract-check" ? {
+          references: [
+            { label: "API 설계 가이드", location: "https://swagger.io/specification/" },
+            { label: "내부 체크리스트 위치", location: "/team-drive/platform/api-review-checklist.md" },
+            { label: "공유 체크리스트", location: join(examples, skill.name, "CHECKLIST.md"), includeFile: true },
+          ],
+        } : {}),
         now: DEMO_NOW,
       }),
     );

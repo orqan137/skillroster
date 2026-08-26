@@ -19,6 +19,7 @@ import {
 import { createLocalSkill, resolveConnectedLocalSkill, scanLocalSkills } from "./lib/local-skills.js";
 import { checkGitRemoteAccess } from "./lib/git-access.js";
 import { ApiInputError, ApiNotFoundError, classifyApiError, PayloadTooLargeError } from "./lib/api-errors.js";
+import { syncProjectRepository } from "./lib/project-repository.js";
 import { initializeTeam, joinTeam } from "./lib/setup-service.js";
 import { parseTags } from "./lib/tags.js";
 import { moveActiveTeamDirectory } from "./lib/settings-service.js";
@@ -34,6 +35,49 @@ function argument(name: string): string | undefined {
 
 const hostname = argument("--hostname") ?? process.env.HOSTNAME ?? "127.0.0.1";
 const port = Number(argument("--port") ?? process.env.PORT ?? 3210);
+
+function skillReferences(value: unknown): Array<{ label?: string; location: string; includeFile?: boolean }> {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new ApiInputError("참고 자료 형식을 확인해주세요.");
+  if (value.length > 20) throw new ApiInputError("참고 자료는 최대 20개까지 등록할 수 있습니다.");
+  return value.map((item) => {
+    if (!item || typeof item !== "object") throw new ApiInputError("참고 자료 형식을 확인해주세요.");
+    const reference = item as { label?: unknown; location?: unknown; includeFile?: unknown };
+    const label = String(reference.label ?? "").trim();
+    const location = String(reference.location ?? "").trim();
+    if (!location) throw new ApiInputError("참고 링크 또는 파일 경로를 입력해주세요.");
+    if (/(?:[?&](?:access_?token|token|signature|sig|x-amz-signature)=)|(?:https?:\/\/)[^/\s]+:[^@/\s]+@/i.test(location)) {
+      throw new ApiInputError("인증 토큰이나 비밀번호가 포함된 참고 주소는 등록할 수 없습니다.");
+    }
+    if (label.length > 80 || location.length > 2048 || [...location].some((character) => character.charCodeAt(0) < 32)) {
+      throw new ApiInputError("참고 자료 이름 또는 위치가 너무 길거나 올바르지 않습니다.");
+    }
+    return { ...(label ? { label } : {}), location, ...(reference.includeFile === true ? { includeFile: true } : {}) };
+  });
+}
+
+function assertRemoteGitUrl(remote: string): string {
+  const value = remote.trim();
+  if (!/^(?:https?:\/\/|ssh:\/\/|git@)[^\s]+$/i.test(value)) {
+    throw new ApiInputError("HTTPS 또는 SSH 형식의 원격 Git 주소가 필요합니다.");
+  }
+  return value;
+}
+
+async function syncLinkedProject(name: string) {
+  const [project, connection, repo] = await Promise.all([projectData(name), runtimeConnection(), repository()]);
+  if (!project) throw new ApiNotFoundError("프로젝트를 찾을 수 없습니다.");
+  const projectRemote = project.project.spec.repository;
+  if (!projectRemote) throw new ApiInputError("연결된 프로젝트 Git 저장소가 없습니다.");
+  return syncProjectRepository({
+    project: name,
+    displayName: project.project.spec.displayName,
+    projectRepository: projectRemote,
+    ...(connection?.remote ? { teamRegistry: connection.remote } : {}),
+    skills: project.selected,
+    identity: await repo.identity(),
+  });
+}
 
 function json(response: ServerResponse, status: number, body: unknown): void {
   response.writeHead(status, { "content-type": "application/json; charset=utf-8" });
@@ -248,6 +292,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       const mode = String(input.mode ?? "create");
       const version = String(input.version ?? "1.0.0");
       const tags = Array.isArray(input.tags) ? input.tags.flatMap((tag) => parseTags(String(tag))) : parseTags(String(input.tags ?? ""));
+      const references = skillReferences(input.references);
       let sourceDirectory: string;
       let publishName = String(input.name ?? "");
       if (mode === "existing") {
@@ -271,7 +316,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
         ? input.selfReview as { score?: unknown; comment?: unknown }
         : null;
       const skill = await repo.transaction(`feat(skill): publish ${member}/${publishName}@${version}`, async () => {
-        const published = await publishSkill(repo.directory, { sourceDirectory, owner: member, version, tags });
+        const published = await publishSkill(repo.directory, { sourceDirectory, owner: member, version, tags, references });
         if (selfReview) {
           await writeReview(repo.directory, {
             skill: `${member}/${published.metadata.name}`,
@@ -297,6 +342,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       const input = await body(request);
       const name = String(input.name ?? "");
       const displayName = String(input.displayName ?? "").trim();
+      const projectRemote = assertRemoteGitUrl(String(input.repository ?? ""));
       const tags = Array.isArray(input.tags) ? input.tags.flatMap((tag) => parseTags(String(tag))) : parseTags(String(input.tags ?? ""));
       const skills = Array.isArray(input.skills)
         ? input.skills.map((item) => item as { skill?: unknown; version?: unknown })
@@ -304,6 +350,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       if (!name || !displayName) {
         throw new ApiInputError("프로젝트 이름과 ID를 입력해주세요.");
       }
+      await checkGitRemoteAccess(projectRemote);
       const current = await dashboardData();
       const references = skills.map((item) => ({ skill: String(item.skill ?? ""), version: String(item.version ?? "") }));
       for (const reference of references) {
@@ -320,6 +367,7 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
           displayName,
           tags,
           verificationCommands: [],
+          repository: projectRemote,
           createdBy: member,
         });
         for (const reference of references) {
@@ -327,7 +375,15 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
         }
         return created;
       });
-      json(response, 201, { ok: true, project: project.metadata.name, linkedSkills: references.length });
+      let repositorySynced = true;
+      let warning = "";
+      try {
+        await syncLinkedProject(project.metadata.name);
+      } catch (error) {
+        repositorySynced = false;
+        warning = `프로젝트는 생성됐지만 프로젝트 Git 구성 반영에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`;
+      }
+      json(response, 201, { ok: true, project: project.metadata.name, linkedSkills: references.length, repositorySynced, ...(warning ? { warning } : {}) });
       return true;
     }
 
@@ -358,7 +414,9 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       if (!displayName) throw new ApiInputError("프로젝트 이름이 필요합니다.");
       const repo = await repository();
       const project = await repo.transaction(`docs(project): update ${name}`, () => updateProject(repo.directory, name, { displayName, tags }));
-      json(response, 200, { ok: true, project: project.metadata.name });
+      let warning = "";
+      try { await syncLinkedProject(name); } catch (error) { warning = error instanceof Error ? error.message : String(error); }
+      json(response, 200, { ok: true, project: project.metadata.name, repositorySynced: !warning, ...(warning ? { warning } : {}) });
       return true;
     }
     if (request.method === "DELETE" && projectMatch) {
@@ -401,7 +459,17 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       await repo.transaction(`feat(project): add ${input.skill}@${input.version} to ${name}`, () =>
         addProjectSkill(repo.directory, name, String(input.skill), String(input.version)),
       );
-      json(response, 200, { ok: true });
+      let warning = "";
+      try { await syncLinkedProject(name); } catch (error) { warning = error instanceof Error ? error.message : String(error); }
+      json(response, 200, { ok: true, repositorySynced: !warning, ...(warning ? { warning } : {}) });
+      return true;
+    }
+
+    const projectRepositorySyncMatch = url.pathname.match(/^\/api\/projects\/([^/]+)\/repository\/sync$/);
+    if (request.method === "POST" && projectRepositorySyncMatch) {
+      const name = decodeURIComponent(projectRepositorySyncMatch[1] ?? "");
+      const result = await syncLinkedProject(name);
+      json(response, 200, { ok: true, ...result });
       return true;
     }
 
@@ -429,7 +497,9 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       await repo.transaction(`feat(project): remove ${input.skill} from ${name}`, () =>
         removeProjectSkill(repo.directory, name, String(input.skill)),
       );
-      json(response, 200, { ok: true });
+      let warning = "";
+      try { await syncLinkedProject(name); } catch (error) { warning = error instanceof Error ? error.message : String(error); }
+      json(response, 200, { ok: true, repositorySynced: !warning, ...(warning ? { warning } : {}) });
       return true;
     }
 
