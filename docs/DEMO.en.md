@@ -21,7 +21,7 @@ The command creates a sample roster in a temporary Git worktree and opens `http:
 
 The demo uses an isolated `sources.yaml` and scans only `examples/skills`. It does not inspect the user's actual Codex, OpenCode, or Claude Code skill directories.
 
-## Presentation flow
+## Suggested walkthrough
 
 1. **Roster overview:** show member, skill, project, and recent-review counts.
 2. **Skill review:** distinguish author and peer feedback and show its ranking effect.
@@ -29,15 +29,13 @@ The demo uses an isolated `sources.yaml` and scans only `examples/skills`. It do
 4. **Agent targets:** show OpenCode, Codex, and Claude Code install destinations.
 5. **Git record:** confirm the same change in YAML and commit history.
 
-## Preparing a real remote demo
+## Checking a real remote connection
 
 1. Prepare one empty remote for the team roster and another for a project.
 2. Use two terminals with different `SKILLSPACE_CONFIG` paths to represent a lead and teammate.
 3. Create the roster, refresh GitHub, and show the first commit.
 4. Join from the second identity and show the member commit in the remote history.
 5. Create a project and inspect `.skillroster/project.yaml` in the project repository.
-
-Make captions distinguish real-remote steps from sample-data steps. Keep them outside the browser frame so they never cover controls or tables.
 
 ## Common questions
 
@@ -56,7 +54,7 @@ No. It records a failed outcome for later review without blocking the developer'
 **Are Codex and Claude Code supported?**  
 Yes for discovery, publishing, reviews, project composition, and installation. Automatic execution records are currently OpenCode-only.
 
-## Final check
+## Troubleshooting check
 
 ```bash
 git status --short
