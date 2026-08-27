@@ -52,6 +52,6 @@ SkillRoster는 인원이 적어도 변경 이유와 검토 결과가 남도록 G
 - `MINOR`: 호환되는 기능과 adapter 추가
 - `PATCH`: 버그·문서·내부 품질 개선
 
-`vX.Y.Z` 태그는 루트 `package.json` 버전과 같아야 한다. 태그를 push하면 `pnpm verify`를 다시 실행하고 통과한 commit만 GitHub Release로 발행한다. 릴리스 노트는 Pull Request label에 따라 기능·수정·문서·운영 변경을 나눈다. 실험 형식은 `v1alpha1`처럼 표시하고 안정화 전에 이전 문서를 준비한다.
+`vX.Y.Z` 태그는 루트 `package.json` 버전과 같아야 한다. 태그를 push하면 `pnpm verify`를 다시 실행하고, 검사를 통과한 commit만 GitHub Release로 공개한다. 릴리스 노트는 Pull Request label에 따라 기능·수정·문서·운영 변경을 나눈다. 실험 형식은 `v1alpha1`처럼 표시하고 안정화 전에 이전 문서를 준비한다.
 
 선택 배경과 GAYADI-Android 작업 흐름 비교는 [ADR-0001](decisions/0001-issue-linked-github-flow.md)에 기록한다.

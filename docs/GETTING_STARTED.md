@@ -84,7 +84,7 @@ ssh -T git@github.com
 
 프로젝트 전용 `.opencode/skills`, `.claude/skills`, `.agents/skills`도 직접 추가할 수 있습니다. 탐색기는 선택한 폴더 아래에서 `SKILL.md`를 최대 4단계까지 찾고 이름과 설명만 읽습니다.
 
-발행할 때는 `SKILL.md`만 기본으로 복사합니다. 관련 자료는 링크나 경로만 남길 수 있으며, 팀에 공유해도 되는 파일은 `파일 포함`을 직접 선택한 경우에만 복사됩니다. 선택하지 않은 파일과 폴더는 발행하지 않습니다.
+스킬을 팀에 공유하면 `SKILL.md`만 기본으로 복사합니다. 관련 자료는 링크나 경로만 남길 수 있습니다. 파일 내용까지 공유하려면 `파일 포함`을 직접 선택해야 하며, 선택하지 않은 파일과 폴더는 복사하지 않습니다.
 
 ## 로컬 저장 위치
 
@@ -133,7 +133,7 @@ pnpm skillroster team join git@github.com:your-org/backend-skillroster.git \
   --display-name "김개발"
 ```
 
-## 스킬 발행과 프로젝트 구성
+## 스킬 공유와 프로젝트 구성
 
 ```bash
 pnpm skillroster publish ./my-skill --version 1.0.0 --tags typescript,api
