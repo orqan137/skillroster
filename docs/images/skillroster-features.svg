@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">SkillRoster 주요 기능</title>
+  <desc id="desc">로컬 스킬 탐색부터 등록, 평가, 프로젝트 구성, 설치와 기록까지의 흐름</desc>
+  <defs>
+    <style>text{font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;fill:#0D1510}.step{font-size:14px;font-weight:800}.head{font-size:19px;font-weight:800}.body{font-size:14px;fill:#465049}.mono{font-size:13px;fill:#59635D}</style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#0D1510"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <text x="80" y="98" font-size="32" font-weight="800">프로젝트 주요 기능</text>
+  <path d="M80 160 H1520" stroke="#0D1510" stroke-width="2"/>
+
+  <rect x="80" y="235" width="260" height="310" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="80" y="235" width="260" height="56" fill="#00E676"/>
+  <text x="104" y="270" class="step">01</text>
+  <text x="110" y="350" class="head">로컬 스킬 탐색</text>
+  <text x="110" y="398" class="body">Codex · OpenCode</text>
+  <text x="110" y="426" class="body">Claude Code 경로 확인</text>
+  <text x="110" y="490" class="mono">SKILL.md 기준</text>
+
+  <rect x="375" y="235" width="260" height="310" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="375" y="235" width="260" height="56" fill="#0D1510"/>
+  <text x="399" y="270" class="step" fill="#FFFFFF" style="fill:#FFFFFF">02</text>
+  <text x="405" y="350" class="head">팀 스킬 등록</text>
+  <text x="405" y="398" class="body">설명 · 태그 · 참고 위치</text>
+  <text x="405" y="426" class="body">공유 파일 직접 선택</text>
+  <text x="405" y="490" class="mono">선택 항목만 Git에 기록</text>
+
+  <rect x="670" y="235" width="260" height="310" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="670" y="235" width="260" height="56" fill="#0057FF"/>
+  <text x="694" y="270" class="step" fill="#FFFFFF" style="fill:#FFFFFF">03</text>
+  <text x="700" y="350" class="head">평가 및 후기</text>
+  <text x="700" y="398" class="body">별점 · 의견</text>
+  <text x="700" y="426" class="body">사용 프로젝트 기록</text>
+  <text x="700" y="490" class="mono">본인 스킬 평가 가능</text>
+
+  <rect x="965" y="235" width="260" height="310" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="965" y="235" width="260" height="56" fill="#0D1510"/>
+  <text x="989" y="270" class="step" fill="#FFFFFF" style="fill:#FFFFFF">04</text>
+  <text x="995" y="350" class="head">프로젝트 구성</text>
+  <text x="995" y="398" class="body">태그 · 평가 순위 추천</text>
+  <text x="995" y="426" class="body">스킬 버전 선택</text>
+  <text x="995" y="490" class="mono">프로젝트 Git 연동</text>
+
+  <rect x="1260" y="235" width="260" height="310" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="1260" y="235" width="260" height="56" fill="#00E676"/>
+  <text x="1284" y="270" class="step">05</text>
+  <text x="1290" y="350" class="head">설치 및 기록</text>
+  <text x="1290" y="398" class="body">OpenCode 프로젝트 설치</text>
+  <text x="1290" y="426" class="body">사용 이력 수집</text>
+  <text x="1290" y="490" class="mono">.opencode/skills/</text>
+
+  <path d="M340 390 H366" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M635 390 H661" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M930 390 H956" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M1225 390 H1251" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="80" y="650" width="1440" height="120" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="110" y="698" font-size="17" font-weight="800">Git 기반 관리</text>
+  <text x="110" y="735" font-size="15">스킬 · 평가 · 프로젝트 구성을 파일로 저장하고 commit · diff · rollback으로 변경 이력 확인</text>
+</svg>

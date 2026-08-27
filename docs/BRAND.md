@@ -1,12 +1,14 @@
 # SkillRoster 브랜드 가이드
 
+**한국어** · [English](BRAND.en.md)
+
 SkillRoster의 브랜드는 **흩어진 팀 스킬을 한 로스터로 정리하고, 프로젝트에 맞는 조합을 만드는 도구**라는 제품 역할을 시각화함.
 
 ## 이름과 핵심 문장
 
 - 제품명: `SkillRoster` — 띄어쓰기 없이 대문자 `S`, `R` 사용
 - 한국어: `팀의 AI 에이전트 스킬을 평가하고 프로젝트에 연결하는 Git 기반 로스터`
-- English: `A Git-native team registry for reviewing AI agent skills and assembling project-ready skill sets.`
+- 영문: `A Git-backed team roster for reviewing AI-agent skills and assembling project-specific skill sets.`
 - 피해야 할 표현: 검증을 보장한다는 표현, 팀원을 감시한다는 표현, 구현되지 않은 중앙 SaaS·SSO 기능
 
 ## 로고
@@ -64,7 +66,3 @@ SkillRoster의 브랜드는 **흩어진 팀 스킬을 한 로스터로 정리하
 - 마스코트는 투명 PNG, 대표 이미지는 2:1 가로형
 
 외부 생성 자산을 추가할 때는 사용 도구, 생성일, 핵심 프롬프트, 라이선스 또는 이용 조건을 같은 방식으로 기록해야 함.
-
-## English summary
-
-SkillRoster uses a connected three-slot mark and Rovi, an original border collie team coach. The identity represents organizing locally authored AI agent skills into a reviewable Git registry and assembling the right versions for each project. Keep the artwork high-contrast, flat, and professional. Do not imply employee surveillance or guaranteed correctness.

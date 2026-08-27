@@ -9,7 +9,7 @@
 | 03 | 팀원 연결 | 별도 로컬 환경에서 clone, 팀원 문서 커밋, GitHub 새로고침 후 변경 이력 확인 |
 | 04 | 스킬 공유·평가 | 링크·경로와 명시적 파일 첨부, 작성자 평가와 동료 평가 |
 | 05 | 프로젝트 Git | 빈 `skillroster-project-test` 연결, 추천 스킬 선택, GitHub 새로고침 후 `.skillroster/project.yaml` 확인 |
-| 06 | OpenCode 설치 | 프로젝트 구성을 실제 `.opencode/skills`에 설치 |
+| 06 | 대상별 설치 | 화면에서는 OpenCode 설치를 시연하고 Codex·Claude Code의 프로젝트별 설치 지원 안내 |
 | 07 | 팀원·설정 | 구성원 활동과 로스터별 Git·사용자·로컬 경로 관리 |
 
 ## 내레이션 추가

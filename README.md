@@ -14,99 +14,38 @@
   <img alt="Git native" src="https://img.shields.io/badge/storage-Git-111b15">
 </p>
 
-> 팀의 AI 에이전트 스킬을 Git으로 공유하고, 동료 평가와 프로젝트 적용 결과로 신뢰도를 판단하는 self-hosted 오픈소스 스킬 로스터.
-
-SkillRoster는 팀원의 로컬 파일이나 프롬프트를 중앙 서버로 수집하지 않습니다. 사용자가 발행한 `SKILL.md`, 명시적으로 선택한 첨부 파일과 참고 위치, 동료 평가, 프로젝트별 스킬 구성, 최소한의 실행 기록만 일반 Git 저장소에 보관합니다. 각 팀원은 자기 clone을 통해 작업하고 OpenCode는 선택된 스킬을 `.opencode/skills/`에서 그대로 사용합니다.
+> 팀에서 쓰는 AI 에이전트 스킬을 Git에 모으고, 동료 평가와 사용 기록을 바탕으로 프로젝트별 구성을 만드는 자체 설치형 오픈소스 도구.
 
 <p align="center">
-  <img src="./docs/brand/skillroster-hero.png" width="900" alt="로컬 스킬이 Git 레지스트리를 거쳐 프로젝트 로스터로 구성되는 SkillRoster 대표 이미지">
+  <a href="#빠르게-살펴보기">데모 실행</a> ·
+  <a href="./docs/GETTING_STARTED.md">사용 안내</a> ·
+  <a href="./docs/ARCHITECTURE.md">동작 구조</a> ·
+  <a href="./docs/REGISTRY_FORMAT.md">저장 형식</a> ·
+  <a href="https://youtu.be/ATZtox9RLIQ">시연 영상</a>
 </p>
 
-## 해결하려는 문제
+SkillRoster는 개인 컴퓨터에 흩어진 에이전트 스킬을 팀 Git 저장소에서 함께 관리합니다. 팀원은 필요한 스킬만 발행하고, 직접 사용한 결과와 의견을 남깁니다. 프로젝트를 만들 때는 기술 태그와 팀 평가를 참고해 사용할 스킬 버전을 고른 뒤 OpenCode·Codex·Claude Code 경로에 설치할 수 있습니다.
 
-AI 코딩 도구의 스킬은 대부분 개인 컴퓨터에 흩어져 있습니다. 좋은 스킬을 발견해도 어느 프로젝트에서 유효했는지, 지금도 믿을 수 있는지, 누가 사용해봤는지 팀원이 알기 어렵습니다. 파일 서버에 모두 모으면 인증정보와 개인 작업 상태가 섞이고, 공개 마켓의 다운로드 수는 우리 팀 환경에서의 품질을 설명하지 못합니다.
-
-SkillRoster는 이 사이를 연결합니다.
-
-| 질문 | SkillRoster의 답 |
-|---|---|
-| 팀에서 실제로 쓰는 스킬은 무엇인가? | 개인이 선택해 발행한 스킬과 버전을 한곳에서 탐색 |
-| 어떤 스킬을 프로젝트에 넣을 것인가? | 동료 평가, 작성자 평가, 프로젝트 채택과 실행 기록을 분리해 표시 |
-| 새 프로젝트에 어떤 스킬이 필요한가? | 기술 태그와 팀 평가 순위를 조합해 추천 |
-| 누가 무엇을 바꿨는가? | YAML·Markdown 변경을 Git commit, diff, blame으로 추적 |
-| 개인 프롬프트와 소스도 서버에 올라가는가? | 기본 비수집. `SKILL.md`와 사용자가 명시적으로 고른 첨부 파일·참고 위치만 공유 |
-
-## 실제 동작 화면
-
-아래 이미지는 별도 목업이 아니라 `pnpm demo`의 임시 Git 레지스트리를 1440×900 브라우저에서 직접 조작해 캡처한 화면입니다.
+프롬프트, 소스 코드, 인증정보는 기본 수집 대상이 아닙니다. 발행한 `SKILL.md`, 사용자가 직접 고른 첨부 파일과 참고 위치, 평가, 프로젝트 구성, 최소한의 실행 기록만 Git에 남습니다.
 
 <p align="center">
-  <img src="./docs/images/screenshots/01-start.png" width="900" alt="새 로스터 만들기와 기존 로스터 들어가기를 선택하는 SkillRoster 첫 화면">
+  <img src="./docs/brand/skillroster-hero.png" width="900" alt="로컬 스킬이 팀 Git 저장소를 거쳐 프로젝트별 구성으로 이어지는 SkillRoster 흐름">
 </p>
 
-<p align="center"><b>처음 사용</b> · 팀장은 빈 원격 Git으로 새 로스터 생성, 팀원은 기존 로스터 참여.</p>
+## 한눈에 보기
 
-<p align="center">
-  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="동료 평가와 프로젝트 연결을 보여주는 SkillRoster 개요 화면">
-</p>
+| 순서 | 하는 일 | 남는 기록 |
+|---:|---|---|
+| 1 | Codex·OpenCode·Claude Code 등의 로컬 스킬 폴더 탐색 | 이름과 설명을 로컬에서 확인 |
+| 2 | 팀에 공유할 스킬 버전 발행 | `SKILL.md`, 선택한 참고 자료, 작성자와 Git 이력 |
+| 3 | 작성자·동료 평가와 프로젝트 사용 결과 기록 | 평가, 후기, 실행 상태, 사용 프로젝트 |
+| 4 | 프로젝트에 필요한 스킬을 골라 도구별 경로에 설치 | 선택한 스킬 ID와 정확한 버전 |
 
-<p align="center"><b>로스터 개요</b> · 스킬 평가 순위, 최근 후기, 프로젝트 연결을 한 화면에서 확인.</p>
+공개 마켓의 인기 순위 대신 같은 팀이 남긴 평가와 실제 프로젝트 사용 이력을 보여주는 것이 핵심입니다. 모든 자료는 일반 Markdown·YAML·JSON 문서로 저장되며, 변경 내용은 Git의 commit·diff·blame·rollback으로 확인할 수 있습니다.
 
-<table>
-  <tr>
-    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="팀 공유 스킬과 로컬 스킬을 구분하는 스킬 화면"></td>
-    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="태그와 평가 순위로 추천된 스킬을 선택하는 프로젝트 생성 화면"></td>
-  </tr>
-  <tr>
-    <td><b>공유 스킬과 로컬 스킬</b><br>팀에 발행한 스킬과 로컬에만 있는 스킬 구분.</td>
-    <td><b>프로젝트 생성과 추천</b><br>기술 태그 일치와 팀 평가 순위를 함께 보고 스킬 선택.</td>
-  </tr>
-</table>
+## 빠르게 살펴보기
 
-<p align="center">
-  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="추천 스킬 두 개가 연결된 신규 프로젝트 화면">
-</p>
-
-<p align="center"><b>생성 완료</b> · 프로젝트와 선택한 스킬 세트가 실제 Git 문서로 함께 커밋됨.</p>
-
-## 동작 방식
-
-```mermaid
-flowchart LR
-  A[팀원 로컬 스킬] -->|선택적 발행| B[SkillRoster 로컬 클라이언트]
-  B <-->|pull · validate · commit · push| C[(팀 Git 레지스트리)]
-  C --> D[동료 평가와 순위]
-  C --> E[프로젝트 Skill Set]
-  E -->|sync| F[.opencode/skills]
-  F --> G[OpenCode 프로젝트]
-```
-
-각 조직은 빈 원격 Git 저장소 하나로 로스터를 시작합니다. 팀원은 저장소 접근 권한과 자기 clone을 사용하며, 대시보드가 별도 데이터베이스 없이 Git 문서를 읽고 씁니다. 화면 조회는 로컬 clone을 즉시 읽고, 원격 변경은 설정의 `Git 변경 가져오기`에서 명시적으로 반영합니다. 평가·스킬·프로젝트 저장은 `pull → 전체 문서 검사 → commit → push`가 끝날 때까지 기다린 뒤 완료로 표시합니다.
-
-## 왜 다른가
-
-- **팀 내부 레지스트리**: 공개 마켓의 다운로드 수가 아니라 우리 팀의 동료 평가와 프로젝트 재현 결과를 보여줍니다.
-- **Git이 데이터베이스**: 별도 DB 없이 review, evidence, project loadout을 YAML과 Markdown으로 저장해 diff, blame, rollback이 가능합니다.
-- **평가 + 실행 기록**: 별점만으로 순위를 만들지 않습니다. 실행 성공·실패, 최근 활동, 실제 프로젝트 채택을 함께 반영합니다.
-- **작성자 평가 구분**: 스킬을 공유하면서 자기평가를 남길 수 있지만, 화면에서 작성자 평가로 표시하고 순위에는 동료 평가의 35% 비중으로 반영합니다.
-- **프로젝트 단위 장착**: 기술 태그로 필요한 스킬을 추천하고, 선택한 버전을 OpenCode 프로젝트에 설치합니다.
-- **프로젝트 Git 연동**: 프로젝트를 만들 때 별도 Git 저장소를 연결하고 `.skillroster/project.yaml`에 선택한 스킬 구성을 커밋합니다.
-- **참고 자료 공유 범위 선택**: 기본은 링크·경로만 기록하고, 공유 가능한 파일은 사용자가 직접 ‘파일 포함’을 선택한 경우에만 첨부합니다.
-- **기본 비수집**: 프롬프트, 소스 코드, 인증정보를 evidence에 저장하지 않는 공개 스키마를 강제합니다.
-- **도구 독립 규격**: 저장 형식은 OpenCode 밖에서도 읽을 수 있는 Markdown, YAML, JSON Schema입니다.
-
-<table>
-  <tr>
-    <td width="220"><img src="./docs/brand/rovi-mascot.png" width="200" alt="SkillRoster 마스코트 로비"></td>
-    <td><b>Rovi · 로비</b><br>필요한 스킬을 프로젝트 로스터에 정리하는 보더콜리 팀 코치. 팀원을 감시하는 관리자가 아니라, 흩어진 도구를 구분하고 연결하는 SkillRoster의 역할을 나타냄. 로고·색상·사용 원칙은 <a href="./docs/BRAND.md">브랜드 가이드</a>에서 확인.</td>
-  </tr>
-</table>
-
-## 2분 Quick start
-
-요구 사항은 Node.js 22+, pnpm 11+, Git입니다.
-
-원격 Git 저장소와 인증 없이 완성된 샘플부터 확인할 수 있습니다.
+Node.js 22+, pnpm 11+, Git이 필요합니다.
 
 ```bash
 corepack enable
@@ -114,200 +53,159 @@ pnpm install
 pnpm demo
 ```
 
-3명의 팀원, 3개의 스킬, 2개의 프로젝트, 4개의 평가, 2개의 실행 기록을 임시 로컬 Git에 만들고 `http://127.0.0.1:3211`에서 엽니다. 데모 전용 설정과 `examples/skills`만 사용하므로 사용자의 실제 에이전트 스킬이나 운영 데이터에는 접근하지 않습니다.
+명령을 실행하면 외부 Git 계정 없이 임시 로스터가 만들어지고 `http://127.0.0.1:3211`이 열립니다. 데모에는 팀원 3명, 스킬 3개, 프로젝트 2개, 평가 4개, 실행 기록 2개가 들어 있습니다. `examples/skills`만 읽기 때문에 사용자의 실제 스킬 폴더나 운영 자료에는 접근하지 않습니다.
 
-직접 새 로스터를 구성하려면:
+실제 로스터 생성과 CLI 사용법은 [시작하기](docs/GETTING_STARTED.md)에서 이어서 확인할 수 있습니다.
 
-```bash
-corepack enable
-pnpm install
-pnpm dev
-```
+## 실제 화면
 
-브라우저에서 `http://127.0.0.1:3210`을 열면 최초 설정 화면이 나타납니다.
+아래 이미지는 목업이 아니라 `pnpm demo`로 만든 임시 Git 로스터를 직접 조작해 캡처한 화면입니다.
 
-현재 저장소 실행 방식은 Windows, macOS, Linux에서 동일합니다. 사용자 홈과 파일 경로는 Node.js의 운영체제 API로 계산하므로 `C:\Users\...` 같은 Windows 경로나 `/Users/...` 같은 macOS 경로를 코드에 고정하지 않습니다. Windows에서는 PowerShell, macOS·Linux에서는 Terminal에서 위 명령을 실행하면 됩니다.
+<p align="center">
+  <img src="./docs/images/screenshots/01-start.png" width="900" alt="새 로스터 만들기와 기존 로스터 들어가기를 선택하는 첫 화면">
+</p>
 
-> 현재 MVP 배포물은 소스에서 실행하는 개발자용 클라이언트입니다. 일반 사용자가 저장소를 clone하지 않고 설치하게 하려면 릴리스 단계에서 컴파일된 대시보드를 포함한 npm CLI(`npx skillroster`) 또는 독립 실행 파일을 제공해야 합니다. 로컬 웹 UI + CLI 구조 자체는 그대로 유지할 수 있으며 Electron은 필수가 아닙니다.
+<p align="center"><b>처음 사용</b> · 팀장은 빈 원격 Git으로 로스터를 만들고, 팀원은 같은 저장소에 참여.</p>
 
-첫 화면에서 역할에 맞는 흐름을 선택합니다.
+<p align="center">
+  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="스킬 순위와 최근 평가, 프로젝트 연결을 보여주는 개요 화면">
+</p>
 
-- **새 로스터 만들기(팀장)**: README·라이선스 없이 만든 빈 GitHub/GitLab/Gitea 또는 사내 Git 저장소를 연결합니다. SkillRoster가 팀 구조를 생성하고 첫 커밋을 push합니다.
-- **기존 로스터 들어가기(팀원)**: 팀장이 초기화한 원격 Git 주소를 연결합니다. SkillRoster가 저장소를 clone하고 내 팀원 정보를 커밋·push합니다.
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="팀 공유 스킬과 로컬 스킬을 구분하는 스킬 화면"></td>
+    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="태그와 팀 평가를 참고해 스킬을 고르는 프로젝트 생성 화면"></td>
+  </tr>
+  <tr>
+    <td><b>공유 스킬과 로컬 스킬</b><br>팀에 발행한 스킬과 이 컴퓨터에만 있는 스킬 구분.</td>
+    <td><b>프로젝트 생성</b><br>기술 태그와 팀 평가를 함께 보고 사용할 버전 선택.</td>
+  </tr>
+</table>
 
-두 흐름 모두 원격 Git 연결과 clone/push 권한이 필수입니다. 연결 후에는 사용할 로컬 스킬 저장소를 선택합니다.
+<p align="center">
+  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="스킬 두 개가 연결된 신규 프로젝트 화면">
+</p>
 
-SkillRoster는 Git 비밀번호나 토큰을 별도로 저장하지 않습니다. Windows의 Git Credential Manager, macOS의 Keychain, 또는 사용자가 실행 중인 SSH Agent 등 각 컴퓨터의 Git 인증을 그대로 사용합니다. 저장소 주소를 입력하면 원격 저장소를 변경하지 않는 `git push --dry-run`으로 push 권한을 먼저 확인합니다. 인증이 없거나 만료되면 화면에서 다음 설정 방법을 안내합니다.
+## 주요 기능
 
-```bash
-# GitHub CLI를 사용하는 경우
-gh auth login
+- **팀 Git 로스터**: 빈 Git 저장소 하나로 팀을 시작하고 기존 저장소 권한을 그대로 사용.
+- **선택적 스킬 발행**: `SKILL.md`를 기본으로 발행하고, 참고 파일은 사용자가 직접 고른 경우에만 포함.
+- **작성자 평가와 동료 평가**: 두 평가를 화면에서 구분하고 팀 순위에는 서로 다른 비중으로 반영.
+- **프로젝트별 스킬 구성**: 기술 태그와 팀 평가를 참고해 정확한 스킬 버전을 추가하거나 제외.
+- **도구별 설치**: 같은 버전을 OpenCode·Codex·Claude Code 프로젝트 경로에 복사.
+- **Git 변경 이력**: 스킬·평가·프로젝트 문서를 commit과 diff로 검토하고 이전 상태로 복구.
+- **프로젝트 Git 연결**: 선택한 스킬 목록을 프로젝트 저장소의 `.skillroster/project.yaml`에 기록.
+- **실행 기록 기반 순위**: 동료 평가, 최근 사용, 프로젝트 채택, OpenCode 실행 상태를 함께 계산.
 
-# SSH 키 연결을 확인하는 경우
-ssh -T git@github.com
-```
+## 도구별 지원 범위
 
-| 에이전트 | 기본 탐색 경로 |
+| 기능 | OpenCode | Codex | Claude Code |
+|---|:---:|:---:|:---:|
+| 기본 로컬 경로 탐색 | 지원 | 지원 | 지원 |
+| 팀 스킬 발행과 평가 | 지원 | 지원 | 지원 |
+| 프로젝트 경로에 설치 | `.opencode/skills` | `.agents/skills` | `.claude/skills` |
+| 자동 실행 기록 | 지원 | 예정 | 예정 |
+
+평가·프로젝트 구성·Git 이력은 특정 에이전트와 관계없이 사용할 수 있습니다. 자동 실행 기록만 현재 OpenCode의 안정화된 플러그인 훅을 사용합니다.
+
+## 기록 범위
+
+| Git에 기록함 | 기본적으로 기록하지 않음 |
 |---|---|
-| Codex | `~/.codex/skills` |
-| OpenCode | `~/.config/opencode/skills` |
-| Claude Code | `~/.claude/skills` |
-| Agent Skills 공통 경로 | `~/.agents/skills` |
+| 발행한 `SKILL.md`와 정확한 버전 | 프롬프트와 에이전트 응답 |
+| 사용자가 직접 포함한 참고 파일 | 프로젝트 소스 코드와 파일 내용 |
+| 평가 점수, 후기, 작성자 | 환경 변수와 인증정보 |
+| 프로젝트 태그와 선택한 스킬 | 선택하지 않은 이웃 파일과 폴더 |
+| 스킬·프로젝트·세션 식별자, 실행 상태 | 검사 명령의 출력 내용 |
+| 검사 통과 여부와 변경 파일 수 | Git 비밀번호와 접근 토큰 |
 
-프로젝트 전용 `.opencode/skills`, `.claude/skills`, `.agents/skills` 경로도 직접 추가할 수 있습니다. 탐색기는 선택한 폴더 아래의 `SKILL.md`만 최대 4단계까지 찾고, 이름과 설명 메타데이터만 읽습니다. 발행 기본 범위도 `SKILL.md`입니다. 관련 자료는 링크·경로만 남기거나, 공유 가능한 파일에 한해 ‘파일 포함’을 직접 선택할 수 있습니다. 선택하지 않은 이웃 파일과 폴더는 업로드하지 않습니다.
+실행 기록 스키마는 `promptStored: false`, `sourceStored: false`만 허용합니다. 다만 로컬 플러그인을 변조한 경우까지 막는 보안 장치는 아니므로 설치할 스킬과 플러그인의 Git 변경 내용을 먼저 확인해야 합니다.
 
-설정이 끝나면 대시보드가 바로 열립니다. 팀 Git 저장소는 기본적으로
-`~/.skillspace/teams/<team>`에 clone되고, 클라이언트 연결 정보는 `~/.skillspace/config.yaml`에
-저장됩니다. 둘 다 일반 파일과 Git 저장소이므로 특정 SaaS에 종속되지 않습니다.
+## 동작 방식
 
-프로덕션 방식으로 로컬 실행하려면 다음 명령을 사용합니다.
-
-```bash
-pnpm build
-pnpm start
+```mermaid
+flowchart LR
+  A[팀원 로컬 스킬] -->|선택해 발행| B[SkillRoster 클라이언트]
+  B <-->|pull · 검사 · commit · push| C[(팀 Git 저장소)]
+  C --> D[평가와 실행 기록]
+  C --> E[프로젝트 스킬 구성]
+  E --> F[설치 대상 선택]
+  F --> G[OpenCode]
+  F --> H[Codex]
+  F --> I[Claude Code]
 ```
 
-CLI만으로도 동일한 초기화를 할 수 있습니다. 팀장이 빈 원격 Git 저장소를 준비한 뒤:
+대시보드와 CLI는 각 팀원의 로컬 clone을 읽습니다. 내용을 저장할 때는 `작업 폴더 확인 → pull --rebase → 문서 작성 → 전체 문서 검사 → commit → push` 순서를 지킵니다. 중간에 실패하면 시작 시점으로 되돌리고, push가 끝난 뒤에만 저장 완료로 표시합니다.
 
-```bash
-pnpm skillroster team init \
-  --name backend \
-  --display-name "Backend Guild" \
-  --owner hong \
-  --remote git@github.com:your-org/backend-skillroster.git
-```
+자세한 구성은 [시스템 구조](docs/ARCHITECTURE.md), 파일 경로와 스키마는 [저장 형식](docs/REGISTRY_FORMAT.md)에서 확인할 수 있습니다.
 
-팀원은 같은 저장소에 연결합니다.
+## CLI
 
-```bash
-pnpm skillroster team join git@github.com:your-org/backend-skillroster.git \
-  --member kim \
-  --display-name "Kim"
-```
-
-스킬 발행, 프로젝트 등록, 추천 스킬 장착:
-
-```bash
-pnpm skillroster publish ./my-skill --version 1.0.0 --tags typescript,api
-
-cd my-project
-pnpm --dir ../skill-roster skillroster project init --name checkout-api
-pnpm --dir ../skill-roster skillroster project add hong/api-contract-check
-pnpm --dir ../skill-roster skillroster sync
-```
-
-`project init`은 다음을 함께 설치합니다.
-
-- `.opencode/plugins/skillspace.js`: OpenCode의 `skill` tool 사용 이벤트 수집
-- `.git/hooks/post-commit`: 커밋 후 검증 및 Git registry 반영
-- `.skillspace/project.yaml`: 프로젝트 태그와 검증 명령
-
-이미 CLI로 팀을 초기화했다면 시각화 클라이언트를 실행합니다.
-
-```bash
-pnpm skillroster dashboard
-```
-
-브라우저에서 팀 랭킹, 리뷰, 최근 검증 근거, 프로젝트별 추천과 Skill Set을 볼 수 있습니다. 기본 주소는 `http://127.0.0.1:3210`입니다.
-
-## 주요 명령
+현재 배포물은 저장소에서 실행하는 개발자용 버전입니다. 주요 명령은 다음과 같습니다.
 
 | 명령 | 역할 |
 |---|---|
-| `team init` | 빈 Git remote를 팀 레지스트리로 초기화 |
-| `team join` | 팀 clone 생성, 사용자 등록, 로컬 Git 신원 연결 |
-| `publish` | 로컬 스킬과 불변 버전 snapshot 발행 |
-| `review` | 다른 팀원의 특정 스킬 버전 평가 |
-| `project init` | 기술 탐지, 프로젝트 등록, OpenCode/Git 연동 설치 |
-| `project add` | 프로젝트 Skill Set에 특정 스킬 버전 추가 |
-| `sync` | Skill Set을 `.opencode/skills`에 설치 |
-| `evidence flush` | 대기 중인 사용 이벤트를 검증하고 Git에 반영 |
-| `rank` | evidence-weighted 팀 순위 출력 |
-| `dashboard` | 로컬 시각화 클라이언트 실행 |
-| `demo` | 인증 없이 임시 Git과 샘플 대시보드 실행 |
+| `team init` | 빈 원격 Git 저장소를 팀 로스터로 초기화 |
+| `team join` | 기존 로스터 clone과 팀원 정보 등록 |
+| `publish` | 로컬 스킬과 변경되지 않는 버전 스냅샷 발행 |
+| `review` | 특정 스킬 버전 평가 |
+| `project init` | 프로젝트 등록과 OpenCode 실행 기록 연동 설치 |
+| `project add` | 프로젝트에 사용할 스킬 버전 추가 |
+| `sync` | 선택한 도구의 프로젝트 경로에 스킬 설치 |
+| `evidence flush` | 대기 중인 실행 기록을 확인하고 팀 Git에 반영 |
+| `rank` | 팀 스킬 순위 출력 |
+| `dashboard` | 로컬 대시보드 실행 |
+| `demo` | 임시 Git과 샘플 자료로 데모 실행 |
 
-전체 옵션은 `pnpm skillroster <command> --help`로 확인할 수 있습니다.
-
-## 자동 평가가 의미하는 것
-
-OpenCode가 설치된 팀 스킬을 불러오면 로컬 큐에는 아래 식별 정보만 기록됩니다.
-
-- 스킬과 버전
-- OpenCode session ID
-- 사용 시각
-- `promptStored: false`, `sourceStored: false`
-
-다음 Git commit이 만들어지면 프로젝트에 명시된 검증 명령을 실행합니다. 성공은 `verified`, 실패는 `failed`, 검증 명령이 없으면 `used` evidence가 됩니다. 같은 세션에서 함께 사용한 스킬도 `coUsedSkills`로 기록됩니다. 검증 실패는 개발자의 커밋을 막지 않으며, 근거 상태로만 남습니다.
-
-랭킹 점수는 Bayesian 동료 평가 65%, 실행 기록 20%, 최근성 10%, 프로젝트 채택 보너스로 구성됩니다. 작성자 평가는 낮은 가중치로 반영하고, 동료 평가가 없거나 실행 기록이 없는 스킬에는 해당 점수를 임의로 부여하지 않습니다. 새 스킬이 별점 하나만으로 1위를 독점하지 않도록 사전 평균을 적용합니다.
-
-## Docker 대시보드
-
-Docker Compose는 외부 인증 없는 MVP 대시보드를 localhost에만 바인딩합니다.
+전체 옵션은 다음 명령으로 확인합니다.
 
 ```bash
-export SKILLSPACE_REGISTRY_HOST=/absolute/path/to/your/team-clone
-export SKILLSPACE_MEMBER=kim
-docker compose up --build
+pnpm skillroster <command> --help
 ```
 
-Windows PowerShell:
+CLI 빌드와 실제 팀 초기화·참여·발행 예시는 [시작하기](docs/GETTING_STARTED.md)에 정리되어 있습니다.
 
-```powershell
-$env:SKILLSPACE_REGISTRY_HOST = "C:\path\to\team-clone"
-$env:SKILLSPACE_MEMBER = "kim"
-docker compose up --build
-```
+## 보안 경계
 
-## 저장소 구조
+- 대시보드는 인증 기능이 없는 로컬 클라이언트이며 기본 주소는 `127.0.0.1`입니다.
+- 팀 권한은 Git 원격 저장소의 접근 설정을 따릅니다. 화면의 팀 역할은 별도 권한 체계가 아닙니다.
+- 프로젝트 검사 명령과 발행된 스킬은 로컬에서 실행될 수 있는 신뢰 대상입니다. 적용 전에 변경 내용을 확인해야 합니다.
+- 외부 네트워크에 공개하려면 인증 프록시와 별도의 접근 제한이 필요합니다.
 
-```text
-apps/cli                  팀 init/join, 발행, 평가, 프로젝트, 대시보드 CLI
-apps/web                  React + Vite 시각화 클라이언트와 Git write API
-packages/core             파일 저장소, 기술 탐지, 추천·랭킹 알고리즘
-packages/git              clone/pull/commit/rebase/push 트랜잭션
-packages/opencode-plugin  OpenCode plugin과 기존 훅 보존형 Git hook 설치기
-packages/schemas          공개 TypeScript 타입과 JSON Schema
-examples                  데모 스킬과 프로젝트
-docs                      아키텍처, 형식, 데모 문서
-```
+취약점 제보와 알려진 제한은 [보안 정책](SECURITY.md)을 참고하세요.
 
-상세 설계는 [Architecture](docs/ARCHITECTURE.md), 공개 형식과 Git 트랜잭션 복구 원칙은 [Registry format](docs/REGISTRY_FORMAT.md), 발표 흐름은 [Demo](docs/DEMO.md)를 참고하세요. 대회 항목별 구현 증거는 [Contest scorecard](docs/CONTEST_SCORECARD.md), 운영 방식은 [Governance](docs/GOVERNANCE.md), 브랜드 자산은 [Brand guide](docs/BRAND.md), 의존성 근거는 [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)에 정리되어 있습니다.
+## 문서
 
-## 현재 MVP 경계
+- [시작하기](docs/GETTING_STARTED.md): 실제 로스터 생성, Git 인증, CLI, Docker
+- [시스템 구조](docs/ARCHITECTURE.md): 로컬 실행, 팀 Git 저장소, 프로젝트 설치 흐름
+- [저장 형식](docs/REGISTRY_FORMAT.md): 공개 YAML·JSON Schema와 복구 규칙
+- [기여 안내](CONTRIBUTING.md): 개발 환경, Issue, PR, 검증 방법
+- [프로젝트 운영](docs/GOVERNANCE.md): GitHub Flow, 역할, 릴리스 규칙
+- [로드맵](docs/ROADMAP.md): 현재 개발본과 다음 단계
+- [오픈소스 구성](docs/OPEN_SOURCE_COMPLIANCE.md): 사용 라이브러리와 라이선스 검사
+- [브랜드 가이드](docs/BRAND.md): 로고, 마스코트, 색상, 생성 자산 기록
 
-- 대시보드는 개인 clone 위에서 실행하는 로컬 클라이언트입니다. 원격 팀 서비스로 공개하려면 조직 인증 프록시를 앞에 두어야 합니다.
-- Git remote의 접근 제어가 팀 권한의 기준입니다. 세분화된 프로젝트 RBAC와 LDAP 연동은 후속 범위입니다.
-- OpenCode stable plugin API를 기준으로 하며 V2 beta API에는 의존하지 않습니다.
+## 현재 상태
 
-## 프로젝트 상태와 로드맵
+최신 태그는 `v0.1.0`입니다. `main`에는 다중 도구 설치, 프로젝트 Git 연결, CLI 빌드 보강 등 아직 새 태그로 배포하지 않은 변경이 포함되어 있습니다. 완료된 내용과 다음 릴리스 범위는 [CHANGELOG](CHANGELOG.md)와 [로드맵](docs/ROADMAP.md)에서 구분합니다.
 
-현재 `v0.1.0`은 해커톤 MVP이지만 핵심 흐름은 실제 Git 저장소에서 동작합니다.
+현재 구현 범위:
 
-- [x] 새 로스터 초기화와 기존 로스터 참여
-- [x] Codex·OpenCode·Claude Code·Agent Skills 로컬 경로 탐색
-- [x] 스킬 발행, 자기평가, 동료 평가와 팀 순위
-- [x] 프로젝트 태그 추천, 버전 연결, `.opencode/skills` 설치
-- [x] Git 충돌·인증·dirty worktree 오류 처리
+- [x] 새 로스터 생성과 기존 로스터 참여
+- [x] Codex·OpenCode·Claude Code·Agent Skills 경로 탐색
+- [x] 스킬 발행, 작성자 평가, 동료 평가와 팀 순위
+- [x] 프로젝트 태그 추천과 정확한 버전 연결
+- [x] OpenCode·Codex·Claude Code 대상별 설치
+- [x] Git 충돌·인증·작업 폴더 오류 처리
 - [x] Windows·macOS·Linux CI와 Docker 빌드
-- [ ] 설치형 `npx skillroster` 배포와 독립 실행 파일
-- [ ] GitHub/GitLab 조직 로그인 기반 관리자 화면
-- [ ] Codex·Claude Code용 실행 기록 어댑터
-- [ ] 프로젝트별 세분화 권한과 팀 레지스트리 보관 정책
+- [ ] npm 실행형 CLI와 운영체제별 독립 실행 파일
+- [ ] Codex·Claude Code 자동 실행 기록 연동
+- [ ] 조직 로그인과 프로젝트별 세부 권한
 
-버전별 수용 범위는 [Roadmap](docs/ROADMAP.md)에서 관리합니다.
+## 기여하기
 
-## 참여하기
+버그와 기능 제안은 [Issues](https://github.com/orqan137/skillroster/issues)에 남겨주세요. 저장 형식, 수집 범위, Git 쓰기 방식, 명령 실행 범위를 바꾸는 제안은 구현 전에 Issue에서 먼저 논의합니다.
 
-버그와 기능 제안은 [Issues](https://github.com/orqan137/skillroster/issues)에 남겨주세요. 저장 형식이나 보안 경계를 바꾸는 제안은 구현 전에 이슈에서 설계를 먼저 논의하면 좋습니다.
-
-- 개발 환경과 PR 기준: [CONTRIBUTING.md](CONTRIBUTING.md) · [English](CONTRIBUTING.en.md)
-- 보안 취약점 비공개 제보: [SECURITY.md](SECURITY.md)
-- 저장 형식과 트랜잭션 원칙: [Registry format](docs/REGISTRY_FORMAT.md)
-- 시스템 구조: [Architecture](docs/ARCHITECTURE.md)
-- 배점별 재현 증거: [Contest scorecard](docs/CONTEST_SCORECARD.md)
-- GitHub Flow와 release 정책: [Governance](docs/GOVERNANCE.md)
-- OSS와 license 검증: [Open source compliance](docs/OPEN_SOURCE_COMPLIANCE.md)
-- 로고·마스코트·대표 이미지: [Brand guide](docs/BRAND.md)
+개발 환경과 PR 규칙은 [기여 안내](CONTRIBUTING.md), 비공개 취약점 제보는 [보안 정책](SECURITY.md)에서 확인할 수 있습니다.
 
 SkillRoster는 Apache License 2.0으로 배포합니다.

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">SkillRoster 아키텍처</title>
+  <desc id="desc">팀원 PC, 팀 Git 레지스트리, 프로젝트 사이의 스킬 및 실행 기록 흐름</desc>
+  <defs>
+    <style>text{font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;fill:#0D1510}.section{font-size:18px;font-weight:700}.node{font-size:16px;font-weight:700}.small{font-size:13px;fill:#59635D}.edge-label{font-size:13px;font-weight:700}.on-dark{fill:#FFFFFF}.muted-dark{fill:#B9C5BD}</style>
+    <marker id="arrow-dark" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#0D1510"/></marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#00B85C"/></marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#0057FF"/></marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#59635D"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <text x="80" y="98" font-size="32" font-weight="800">SkillRoster 아키텍처</text>
+  <rect x="80" y="150" width="400" height="520" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <text x="110" y="201" class="section">팀원 PC</text>
+  <rect x="110" y="270" width="145" height="90" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="182.5" y="309" class="node" text-anchor="middle">로컬 스킬</text><text x="182.5" y="334" class="small" text-anchor="middle">SKILL.md</text>
+  <rect x="285" y="270" width="165" height="90" fill="#00E676" stroke="#0D1510" stroke-width="2"/>
+  <text x="367.5" y="321" class="node" text-anchor="middle">대시보드 · CLI</text>
+  <rect x="165" y="465" width="230" height="90" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <text x="280" y="516" class="node" text-anchor="middle">로컬 Git clone</text>
+  <path d="M255 315 H276" fill="none" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow-dark)"/><rect x="258" y="283" width="36" height="22" fill="#FFFFFF"/><text x="276" y="299" class="edge-label" text-anchor="middle">선택</text>
+  <path d="M367.5 360 V405 H280 V456" fill="none" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow-dark)"/><rect x="298" y="392" width="44" height="22" fill="#FFFFFF"/><text x="320" y="408" class="edge-label" text-anchor="middle">저장</text>
+  <rect x="600" y="220" width="400" height="380" fill="#0D1510" stroke="#0D1510" stroke-width="2"/>
+  <text x="800" y="280" font-size="20" font-weight="700" class="on-dark" text-anchor="middle">팀 Git 레지스트리</text>
+  <rect x="650" y="325" width="300" height="150" fill="#17231B" stroke="#00E676" stroke-width="2"/>
+  <text x="800" y="376" font-size="17" font-weight="700" class="on-dark" text-anchor="middle">스킬 · 평가 · 프로젝트</text><text x="800" y="404" font-size="17" font-weight="700" class="on-dark" text-anchor="middle">팀원 · 실행 기록</text><text x="800" y="444" font-size="13" class="muted-dark" text-anchor="middle">Markdown · YAML · JSON</text>
+  <text x="800" y="545" font-size="14" class="muted-dark" text-anchor="middle">commit · diff · rollback</text>
+  <path d="M395 490 H585" fill="none" stroke="#00B85C" stroke-width="3" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)"/><rect x="472" y="460" width="88" height="24" fill="#FFFFFF"/><text x="516" y="477" class="edge-label" text-anchor="middle">pull / push</text>
+  <rect x="1120" y="150" width="400" height="520" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <text x="1150" y="201" class="section">프로젝트</text>
+  <rect x="1150" y="260" width="155" height="90" fill="#FFFFFF" stroke="#0057FF" stroke-width="2"/>
+  <text x="1227.5" y="299" font-size="15" font-weight="700" text-anchor="middle">프로젝트 구성</text><text x="1227.5" y="325" font-size="11.5" fill="#59635D" text-anchor="middle">.skillroster/project.yaml</text>
+  <rect x="1335" y="260" width="155" height="90" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="1412.5" y="299" font-size="15" font-weight="700" text-anchor="middle">설치된 스킬</text><text x="1412.5" y="325" font-size="12" fill="#59635D" text-anchor="middle">.opencode/skills/</text>
+  <rect x="1150" y="450" width="155" height="80" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/><text x="1227.5" y="496" font-size="14.5" font-weight="700" text-anchor="middle">SkillRoster 플러그인</text>
+  <rect x="1335" y="450" width="155" height="80" fill="#0057FF" stroke="#0D1510" stroke-width="2"/><text x="1412.5" y="496" class="node on-dark" text-anchor="middle">OpenCode</text>
+  <path d="M1000 305 H1141" fill="none" stroke="#0057FF" stroke-width="3" marker-end="url(#arrow-blue)"/><rect x="1051" y="274" width="42" height="23" fill="#FFFFFF"/><text x="1072" y="291" class="edge-label" text-anchor="middle">구성</text>
+  <path d="M1305 305 H1326" fill="none" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow-dark)"/><rect x="1305" y="272" width="40" height="22" fill="#FFFFFF"/><text x="1325" y="288" class="edge-label" text-anchor="middle">설치</text>
+  <path d="M1412.5 350 V441" fill="none" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow-dark)"/><rect x="1422" y="385" width="40" height="22" fill="#FFFFFF"/><text x="1442" y="401" class="edge-label" text-anchor="middle">사용</text>
+  <path d="M1335 490 H1314" fill="none" stroke="#0D1510" stroke-width="2" marker-end="url(#arrow-dark)"/>
+  <path d="M1150 490 H1060 V550 H1009" fill="none" stroke="#59635D" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow-gray)"/><rect x="1020" y="514" width="72" height="23" fill="#FFFFFF"/><text x="1056" y="531" class="edge-label" text-anchor="middle">실행 기록</text>
+  <rect x="80" y="740" width="700" height="100" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/><text x="108" y="780" font-size="16" font-weight="700">팀 Git에 저장</text><text x="108" y="811" font-size="14">선택한 스킬 · 평가 · 프로젝트 구성 · 최소 실행 기록</text>
+  <rect x="820" y="740" width="700" height="100" fill="#F5F6F5" stroke="#7A847E" stroke-width="2"/><text x="848" y="780" font-size="16" font-weight="700">로컬에 유지</text><text x="848" y="811" font-size="14">프롬프트 · 소스 코드 · 인증정보</text>
+</svg>

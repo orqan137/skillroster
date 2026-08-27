@@ -1,9 +1,8 @@
-import { access, copyFile, cp, lstat, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { access, copyFile, cp, lstat, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import {
   API_VERSION,
   DocumentValidationError,
-  validateDocument,
   type EvidenceDocument,
   type MemberDocument,
   type ProjectDocument,
@@ -12,6 +11,7 @@ import {
   type SkillSetDocument,
   type TeamDocument,
   type Visibility,
+  validateDocument,
 } from "@skillspace/schemas";
 import { parse, stringify } from "yaml";
 import { assertSlug, createEventId } from "./ids.js";
@@ -543,27 +543,89 @@ export interface InstalledProjectSkill {
   version: string;
 }
 
+export const PROJECT_SKILL_INSTALL_TARGETS = ["opencode", "codex", "claude"] as const;
+export type ProjectSkillInstallTarget = (typeof PROJECT_SKILL_INSTALL_TARGETS)[number];
+
+const PROJECT_SKILL_TARGET_INFO: Record<
+  ProjectSkillInstallTarget,
+  { label: string; segments: string[]; relativePath: string }
+> = {
+  opencode: {
+    label: "OpenCode",
+    segments: [".opencode", "skills"],
+    relativePath: ".opencode/skills",
+  },
+  codex: {
+    label: "Codex · Agent Skills",
+    segments: [".agents", "skills"],
+    relativePath: ".agents/skills",
+  },
+  claude: {
+    label: "Claude Code",
+    segments: [".claude", "skills"],
+    relativePath: ".claude/skills",
+  },
+};
+
+export interface ProjectSkillInstallation {
+  target: ProjectSkillInstallTarget;
+  label: string;
+  relativePath: string;
+  directory: string;
+  skills: InstalledProjectSkill[];
+}
+
+export function normalizeProjectSkillInstallTargets(
+  targets: readonly string[] | undefined,
+): ProjectSkillInstallTarget[] {
+  const values = targets ?? ["opencode"];
+  if (values.length === 0) throw new Error("설치 대상을 하나 이상 선택해주세요.");
+  const supported = new Set<string>(PROJECT_SKILL_INSTALL_TARGETS);
+  const normalized = [...new Set(values.map((target) => target.trim().toLowerCase()))];
+  const unknown = normalized.find((target) => !supported.has(target));
+  if (unknown) {
+    throw new Error(
+      `지원하지 않는 설치 대상입니다: ${unknown} (opencode, codex, claude 중 선택)`,
+    );
+  }
+  return normalized as ProjectSkillInstallTarget[];
+}
+
 export async function installProjectSkills(
   registryRoot: string,
   project: string,
   projectRoot: string,
-): Promise<InstalledProjectSkill[]> {
+  requestedTargets?: readonly string[],
+): Promise<ProjectSkillInstallation[]> {
   assertSlug(project, "project");
+  const targets = normalizeProjectSkillInstallTargets(requestedTargets);
   const skillset = await readYaml<SkillSetDocument>(
     within(registryRoot, "projects", project, "skillset.yaml"),
   );
-  const installed: InstalledProjectSkill[] = [];
-  for (const reference of skillset.spec.skills) {
-    const [owner, name, extra] = reference.skill.split("/");
-    if (!owner || !name || extra) throw new Error(`Invalid skill reference: ${reference.skill}`);
-    assertSlug(owner, "skill owner");
-    assertSlug(name, "skill name");
-    const source = within(registryRoot, "releases", owner, name, reference.version);
-    const target = within(projectRoot, ".opencode", "skills", name);
-    await rm(target, { recursive: true, force: true });
-    await mkdir(target, { recursive: true });
-    await cp(source, target, { recursive: true });
-    installed.push({ name, skill: reference.skill, version: reference.version });
+  const installations: ProjectSkillInstallation[] = [];
+  for (const installTarget of targets) {
+    const info = PROJECT_SKILL_TARGET_INFO[installTarget];
+    const directory = within(projectRoot, ...info.segments);
+    const installed: InstalledProjectSkill[] = [];
+    for (const reference of skillset.spec.skills) {
+      const [owner, name, extra] = reference.skill.split("/");
+      if (!owner || !name || extra) throw new Error(`Invalid skill reference: ${reference.skill}`);
+      assertSlug(owner, "skill owner");
+      assertSlug(name, "skill name");
+      const source = within(registryRoot, "releases", owner, name, reference.version);
+      const target = within(directory, name);
+      await rm(target, { recursive: true, force: true });
+      await mkdir(target, { recursive: true });
+      await cp(source, target, { recursive: true });
+      installed.push({ name, skill: reference.skill, version: reference.version });
+    }
+    installations.push({
+      target: installTarget,
+      label: info.label,
+      relativePath: info.relativePath,
+      directory,
+      skills: installed,
+    });
   }
-  return installed;
+  return installations;
 }

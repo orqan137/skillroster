@@ -2,7 +2,7 @@
 
 [한국어](CONTRIBUTING.md) · **English**
 
-Bug reports, documentation fixes, agent adapters, and code contributions are welcome. SkillRoster uses a team Git repository as its database, so schema compatibility, path safety, privacy, and recoverable Git operations are core product requirements.
+Bug reports, documentation improvements, agent integrations, and code contributions are welcome. Because SkillRoster writes team data to Git, schema compatibility, path safety, privacy, and recoverable Git operations are core requirements.
 
 ## Development setup
 
@@ -17,19 +17,17 @@ pnpm verify
 pnpm dev
 ```
 
-The dashboard opens at `http://127.0.0.1:3210`. Use an empty temporary remote for Git integration tests. Never use a production roster or a personal project as a test fixture.
+The dashboard opens at `http://127.0.0.1:3210`. See [Getting started](docs/GETTING_STARTED.en.md) for the full setup. Use an empty temporary remote for Git integration tests; never use a production roster or personal project as a fixture.
 
 ## Discuss before implementation
 
-Open an Issue before changing any of the following:
+Every pull request must reference an Issue. Discuss scope and security impact before implementing any of the following:
 
 - `v1alpha1` YAML or JSON Schema
 - ranking weights or recommendation rules
 - collected execution-record fields
 - Git hooks, authentication, pull/rebase, or push behavior
 - local file access or command-execution permissions
-
-Small UI fixes, typos, and test improvements may go directly to a Pull Request.
 
 ## Verification
 
@@ -39,7 +37,7 @@ Run the complete check before opening a Pull Request:
 pnpm verify
 ```
 
-Changes to path handling, privacy fields, Git concurrency, ranking, or hook preservation need regression tests. Frontend changes should also be checked with Windows and macOS-style paths and at desktop, tablet, and mobile widths.
+Changes to path handling, privacy fields, Git concurrency, ranking, or existing-hook preservation need regression tests. Check frontend changes at desktop, tablet, and mobile widths, including long Windows- and macOS-style paths.
 
 ## Git and code rules
 
@@ -60,4 +58,4 @@ Include:
 3. the verification commands you ran;
 4. screenshots for UI changes or migration notes for registry-format changes.
 
-Contributions are accepted under the Apache License 2.0. See [Governance](docs/GOVERNANCE.md), [Security policy](SECURITY.md), and the [Code of Conduct](CODE_OF_CONDUCT.md) for the complete project rules.
+Contributions are accepted under the Apache License 2.0. See [Governance](docs/GOVERNANCE.en.md), [Security policy](SECURITY.md), and the [Code of Conduct](CODE_OF_CONDUCT.en.md) for the complete project rules.

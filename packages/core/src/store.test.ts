@@ -1,7 +1,8 @@
-import { access, mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { rankSkills, recommendSkills } from "./ranking.js";
 import {
   addMember,
   addProjectSkill,
@@ -13,12 +14,11 @@ import {
   loadTeamSnapshot,
   publishSkill,
   removeProjectSkill,
-  updateProject,
   updateMember,
+  updateProject,
   writeEvidence,
   writeReview,
 } from "./store.js";
-import { rankSkills, recommendSkills } from "./ranking.js";
 
 async function fixture(): Promise<{ root: string; skill: string }> {
   const root = await mkdtemp(join(tmpdir(), "skillspace-core-"));
@@ -138,9 +138,30 @@ describe("team store", () => {
 
     const localProject = join(root, "local-project");
     await mkdir(localProject);
-    await expect(installProjectSkills(root, "shopping-api", localProject)).resolves.toEqual([{ name: "spring-review", skill: "hong/spring-review", version: "1.0.0" }]);
+    await expect(installProjectSkills(root, "shopping-api", localProject)).resolves.toMatchObject([
+      {
+        target: "opencode",
+        relativePath: ".opencode/skills",
+        skills: [{ name: "spring-review", skill: "hong/spring-review", version: "1.0.0" }],
+      },
+    ]);
     await expect(readFile(join(localProject, ".opencode", "skills", "spring-review", "SKILL.md"), "utf8")).resolves.toContain("# Review");
     await expect(readFile(join(localProject, ".opencode", "skills", "spring-review", "attachments", "review-guide.txt"), "utf8")).resolves.toContain("검토 기준");
+
+    const multiAgentProject = join(root, "multi-agent-project");
+    await mkdir(multiAgentProject);
+    const installations = await installProjectSkills(root, "shopping-api", multiAgentProject, [
+      "opencode",
+      "codex",
+      "claude",
+      "codex",
+    ]);
+    expect(installations.map((item) => item.target)).toEqual(["opencode", "codex", "claude"]);
+    await expect(readFile(join(multiAgentProject, ".opencode", "skills", "spring-review", "SKILL.md"), "utf8")).resolves.toContain("# Review");
+    await expect(readFile(join(multiAgentProject, ".agents", "skills", "spring-review", "SKILL.md"), "utf8")).resolves.toContain("# Review");
+    await expect(readFile(join(multiAgentProject, ".claude", "skills", "spring-review", "SKILL.md"), "utf8")).resolves.toContain("# Review");
+    await expect(installProjectSkills(root, "shopping-api", multiAgentProject, [])).rejects.toThrow("설치 대상을 하나 이상");
+    await expect(installProjectSkills(root, "shopping-api", multiAgentProject, ["unknown"])).rejects.toThrow("지원하지 않는 설치 대상");
 
     await removeProjectSkill(root, "shopping-api", "hong/spring-review", now);
     expect((await loadTeamSnapshot(root)).skillsets[0]?.spec.skills).toHaveLength(0);

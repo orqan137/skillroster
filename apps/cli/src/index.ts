@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import { basename, join, resolve } from "node:path";
 import { homedir } from "node:os";
-import { Command } from "commander";
+import { basename, join, resolve } from "node:path";
 import {
   addProjectSkill,
   createProject,
@@ -19,12 +18,13 @@ import {
   writeInstalledSkillManifest,
 } from "@skillspace/opencode-plugin";
 import type { Visibility } from "@skillspace/schemas";
+import { Command } from "commander";
+import { resolveTeamConnection, saveTeamConnection } from "./config.js";
 import { launchDashboard } from "./dashboard.js";
 import { createDemoRegistry } from "./demo.js";
 import { flushEvidence } from "./evidence.js";
 import { discoverGitIdentity } from "./identity.js";
 import { readLocalProjectConfig, writeLocalProjectConfig } from "./project-config.js";
-import { resolveTeamConnection, saveTeamConnection } from "./config.js";
 
 const program = new Command();
 program
@@ -252,23 +252,32 @@ project
 
 program
   .command("sync")
-  .description("Install the current project's Skill Set into OpenCode")
+  .description("Install the current project's Skill Set into one or more AI coding agents")
   .option("--directory <path>", "code project directory", process.cwd())
   .option("--team <slug>", "team override")
+  .option("-t, --target <target...>", "install target: opencode, codex, or claude", ["opencode"])
   .action(async (options) => {
     const projectRoot = resolve(options.directory);
     const localProject = await readLocalProjectConfig(projectRoot);
     const { repository } = await activeRepository(options.team);
     await repository.sync();
-    const installed = await installProjectSkills(
+    const installations = await installProjectSkills(
       repository.directory,
       localProject.metadata.name,
       projectRoot,
+      options.target,
     );
-    await writeInstalledSkillManifest(projectRoot, installed);
-    await installSkillSpaceIntegration(projectRoot);
-    console.log(`Installed ${installed.length} skill(s) into ${join(projectRoot, ".opencode", "skills")}`);
-    for (const skill of installed) console.log(`  ${skill.skill}@${skill.version}`);
+    const openCode = installations.find((item) => item.target === "opencode");
+    if (openCode) {
+      await writeInstalledSkillManifest(projectRoot, openCode.skills);
+      await installSkillSpaceIntegration(projectRoot);
+    }
+    for (const installation of installations) {
+      console.log(
+        `Installed ${installation.skills.length} skill(s) for ${installation.label} into ${installation.directory}`,
+      );
+      for (const skill of installation.skills) console.log(`  ${skill.skill}@${skill.version}`);
+    }
   });
 
 program
