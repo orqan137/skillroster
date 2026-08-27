@@ -19,7 +19,7 @@ SkillRoster의 기존 GitHub Flow는 Conventional Commit과 CI는 강제했지�
 3. CI가 branch·title·Issue 번호 일치를 검사
 4. 경로 기반 label로 담당 영역과 release note 자동 분류
 5. squash merge만 허용해 `main`의 linear history 유지
-6. `vX.Y.Z` tag와 package version 일치 및 전체 검증 후 release 자동 발행
+6. `vX.Y.Z` 태그와 패키지 버전 일치 여부를 검사한 뒤 GitHub Release 자동 공개
 
 Dependabot은 서비스가 관리하는 branch 이름을 사용하므로 명시적으로 예외 처리함. 긴급 보안 수정도 공개 Issue를 만들지 않고 private advisory branch와 maintainer 승인으로 처리하며, 공개 후 보안 공지에 추적 정보를 남김.
 

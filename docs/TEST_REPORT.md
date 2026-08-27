@@ -46,4 +46,4 @@
 
 ## 심사 기준 연결
 
-공식 1차 30점·2차 70점의 세부 항목은 [Contest scorecard](CONTEST_SCORECARD.md)에 저장소 증거와 함께 연결함. 구현하지 않은 SSO·세부 RBAC·npm 전역 배포는 완료 기능으로 주장하지 않음.
+공식 1차 30점·2차 70점의 세부 항목과 확인 자료는 [대회 배점 대응표](CONTEST_SCORECARD.md)에 정리함. 구현하지 않은 SSO·세부 RBAC·npm 전역 배포는 완료 기능에 포함하지 않음.
