@@ -4,12 +4,12 @@
   <style>
     @media (prefers-color-scheme: dark) { .word { fill: #FFFFFF; } }
   </style>
-  <rect x="4" y="8" width="64" height="64" rx="6" fill="#0D1510"/>
-  <g transform="translate(-2.5 0)">
+  <rect x="70" y="8" width="64" height="64" rx="6" fill="#0D1510"/>
+  <g transform="translate(63.5 0)">
     <path d="M22 23v34M22 28h15M22 40h22M22 52h15" fill="none" stroke="#00E676" stroke-width="5" stroke-linecap="square"/>
     <rect x="38" y="23" width="10" height="10" fill="#0057FF" stroke="#FFFFFF" stroke-width="3"/>
     <rect x="45" y="35" width="10" height="10" fill="#00E676" stroke="#FFFFFF" stroke-width="3"/>
     <rect x="38" y="47" width="10" height="10" fill="#0D1510" stroke="#FFFFFF" stroke-width="3"/>
   </g>
-  <text class="word" x="88" y="54" fill="#0D1510" font-family="Pretendard, Inter, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="-1.5">SkillRoster</text>
+  <text class="word" x="154" y="54" fill="#0D1510" font-family="Pretendard, Inter, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="-1.5">SkillRoster</text>
 </svg>
