@@ -1,60 +1,105 @@
-# Architecture
+# 시스템 구성
 
-## Design principle
+**한국어** · [English](ARCHITECTURE.en.md)
 
-SkillRoster separates three planes.
+SkillRoster는 개인 작업 환경과 팀 공유 자료를 섞지 않기 위해 세 영역을 나눠 처리한다.
 
-1. **Local execution plane** — OpenCode, source files, prompts, credentials, and pending evidence stay on each developer machine.
-2. **Git knowledge plane** — explicitly published `SKILL.md` files, opt-in attachments, reference locations, reviews, projects, loadouts, and minimal evidence are ordinary files in a team Git repository.
-3. **Local client plane** — CLI and dashboard read a developer's clone and write through pull/rebase/commit/push transactions. Read-only screens load the local clone immediately; users explicitly pull remote-only changes from Settings.
+1. **로컬 실행 영역**: AI 코딩 도구, 소스 코드, 프롬프트, 인증정보, 아직 반영하지 않은 실행 기록은 각 팀원의 컴퓨터에 둔다.
+2. **팀 Git 영역**: 사용자가 발행한 `SKILL.md`, 직접 고른 첨부 파일과 참고 위치, 평가, 프로젝트 구성, 최소한의 실행 기록만 팀 Git 저장소에 둔다.
+3. **로컬 클라이언트 영역**: CLI와 대시보드는 팀원의 로컬 clone을 읽고 `pull → 문서 검사 → commit → push` 순서로 변경 내용을 기록한다.
 
 ```text
-Developer project
-├─ OpenCode
-├─ .opencode/skills/*       installed team skills
-├─ .opencode/plugins/*      privacy-preserving event hook
-├─ .skillspace/project.yaml explicit tags and verification commands
-└─ .skillspace/events/*     ignored local queue
-              │ accepted Git commit
-              ▼
-SkillRoster CLI ── verify ── commit/push
-              │
-              ▼
-Team registry Git remote
-├─ skills/ and releases/
-├─ reviews/
-├─ evidence/
-└─ projects/*/skillset.yaml
-              ▲
-              │ read/write via local clone
-       Visual dashboard
-              │ selected skill IDs and versions
-              ▼
-Project Git remote
-└─ .skillroster/project.yaml
+팀원 컴퓨터
+├─ 로컬 에이전트 스킬
+├─ SkillRoster CLI·대시보드
+└─ 팀 Git 저장소 clone
+          │ pull · 검사 · commit · push
+          ▼
+팀 Git 원격 저장소
+├─ skills/와 releases/       발행된 스킬과 버전
+├─ reviews/                  작성자·동료 평가
+├─ evidence/                 최소 실행 기록
+└─ projects/*/skillset.yaml  프로젝트별 스킬 구성
+          │ 선택한 ID와 버전
+          ▼
+프로젝트
+├─ .opencode/skills/         OpenCode 설치 대상
+├─ .agents/skills/           Codex·Agent Skills 설치 대상
+├─ .claude/skills/           Claude Code 설치 대상
+├─ .opencode/plugins/        OpenCode 실행 기록 플러그인
+├─ .skillspace/project.yaml  로컬 검사 명령과 기술 태그
+└─ .skillroster/project.yaml 프로젝트 Git에 공유하는 스킬 목록
 ```
 
-## Trust and ranking
+## 구성 요소
 
-Peer review and execution evidence answer different questions:
+| 구성 | 역할 |
+|---|---|
+| `apps/cli` | 팀 생성·참여, 스킬 발행·평가, 프로젝트 구성, 설치, 실행 기록 반영 |
+| `apps/web` | React·Vite 대시보드와 로컬 Git 쓰기 API |
+| `packages/core` | 파일 저장소, 스킬 탐색, 추천과 순위 계산 |
+| `packages/git` | clone, pull, rebase, commit, push와 실패 복구 |
+| `packages/opencode-plugin` | OpenCode 사용 이벤트와 기존 훅 보존형 `post-commit` 설치 |
+| `packages/schemas` | 공개 TypeScript 형식과 JSON Schema |
 
-- A review says a teammate found a precise version useful, correct, or reproducible.
-- Evidence says that version was loaded in a named project and whether the project's declared verification commands passed after an accepted commit.
-- Project adoption says a maintainer deliberately included it in a loadout.
+## 저장과 동기화
 
-The score combines a Bayesian peer rating, evidence success, freshness, and adoption. Recommendations add a deterministic project-tag overlap bonus. No LLM is required for ranking, so a team can inspect and reproduce every result.
+화면 조회는 로컬 clone을 바로 읽는다. 원격 변경은 설정 화면의 가져오기 기능이나 다음 쓰기 작업의 `pull --rebase`에서 반영한다.
 
-## Concurrency
+변경 작업은 다음 순서를 지킨다.
 
-Every mutation follows `clean check → pull --rebase → write files → validate the complete snapshot → commit → push`, and the client reports success only after push finishes. Writes targeting the same clone are serialized in-process. Push races retry up to three times after rebasing. A failed mutation restores its starting revision, so an uncommitted partial package cannot leak into a later commit. Reviews use one file per reviewer and skill version, making an update an explicit replacement rather than an accumulating duplicate.
+1. 관리 중인 작업 폴더가 깨끗한지 확인
+2. 원격 변경을 `pull --rebase`로 반영
+3. 요청한 문서 작성
+4. 팀 Git 저장소의 전체 문서 검사
+5. commit과 push 완료
 
-## Privacy boundary
+같은 clone에 대한 쓰기는 한 프로세스 안에서 차례로 처리한다. push 경합은 rebase 후 최대 세 번 다시 시도한다. 중간에 실패하면 시작 시점의 revision으로 되돌리고, 해당 작업이 새로 만든 파일만 지운다. 화면은 push가 끝난 뒤에만 저장 완료를 표시한다.
 
-The OpenCode plugin handles only the native `skill` tool. It records the winning installed skill ID and version, session ID, timestamp, and fixed privacy flags. It does not read or persist tool output, prompts, source code, environment variables, or credentials. Verification output is displayed locally but is not copied into evidence. Skill publication copies `SKILL.md` by default; each optional reference stays location-only unless the user explicitly selects that file for inclusion.
+## 평가와 추천
 
-## Extension points
+평가와 실행 기록은 서로 다른 사실을 나타낸다.
 
-- Add another agent adapter that emits the same local queue event shape.
-- Add another UI over the registry schemas without using the TypeScript packages.
-- Replace Git hosting while retaining standard clone/pull/push behavior.
-- Add an authenticated organization gateway without changing the registry format.
+- **동료 평가**: 특정 버전을 사용한 팀원의 정확성·유용성·재현성에 대한 의견
+- **작성자 평가**: 발행자가 남긴 자기평가. 화면에서 따로 표시하고 순위 반영 비중을 낮춤
+- **실행 기록**: 지정된 프로젝트에서 해당 버전을 불러왔는지, 검사 명령이 통과했는지에 대한 기록
+- **프로젝트 채택**: 프로젝트 구성원이 특정 버전을 실제 구성에 포함한 기록
+
+순위는 Bayesian 동료 평가, 실행 기록, 최근성, 프로젝트 채택을 조합한다. 프로젝트 추천에는 기술 태그가 겹치는 정도를 추가한다. LLM을 사용하지 않으므로 같은 자료에서 같은 결과를 다시 계산할 수 있다.
+
+## 도구 연동
+
+같은 스킬 release를 선택한 도구의 프로젝트 경로에 복사한다.
+
+| 도구 | 설치 경로 | 자동 실행 기록 |
+|---|---|:---:|
+| OpenCode | `.opencode/skills` | 지원 |
+| Codex | `.agents/skills` | 예정 |
+| Claude Code | `.claude/skills` | 예정 |
+
+OpenCode 플러그인은 설치된 스킬 ID와 버전, 세션 ID, 사용 시각, 고정된 개인정보 플래그만 로컬 대기열에 남긴다. 프롬프트, 도구 출력, 소스 코드, 환경 변수, 인증정보는 읽거나 저장하지 않는다. 검사 명령의 출력도 화면에만 보여주고 실행 기록에는 넣지 않는다.
+
+## 두 프로젝트 설정 파일의 차이
+
+- `.skillspace/project.yaml`: 개발자 프로젝트 안에서 OpenCode 실행 기록에 사용할 기술 태그와 검사 명령을 설정한다. 초기 이름과의 호환을 위해 경로를 유지한다.
+- `.skillroster/project.yaml`: 프로젝트 Git 저장소에 팀이 선택한 스킬 ID와 정확한 버전을 공유한다. 첨부 파일 내용은 넣지 않는다.
+
+`.skillspace/project.yaml`의 검사 명령은 현재 사용자 권한으로 실행된다. 이 파일을 추적하는 프로젝트의 다른 기여자도 명령을 바꿀 수 있으므로 pull이나 commit 전에 변경 내용을 확인해야 한다. SkillRoster는 해당 명령을 별도 보안 공간에서 실행하지 않는다.
+
+## 권한과 보안 경계
+
+- 팀 자료를 읽고 쓸 수 있는지는 원격 Git 저장소 권한으로 결정한다.
+- 로스터 안의 `owner`, `member` 같은 역할은 표시와 운영을 위한 정보이며 별도 권한 체계가 아니다.
+- 대시보드는 인증 기능이 없는 로컬 클라이언트다. 외부에 공개할 때는 조직 인증 프록시와 네트워크 제한이 필요하다.
+- 발행된 스킬, 포함한 첨부 파일, 프로젝트 검사 명령은 팀이 검토해야 하는 신뢰 대상이다.
+- 실행 기록의 비수집 플래그는 정상 클라이언트가 지키는 자료 형식이며, 변조된 로컬 플러그인까지 막는 보안 장치는 아니다.
+
+## 확장 지점
+
+- 같은 로컬 대기열 형식을 쓰는 Codex·Claude Code 실행 기록 어댑터
+- JSON Schema를 읽는 다른 대시보드와 분석 도구
+- 표준 clone·pull·push를 지원하는 사내 Git 호스팅
+- 저장 형식을 바꾸지 않고 앞단에 붙이는 조직 인증 게이트웨이
+- 개인·팀·프로젝트 메모리의 평가, 권한, 연결·해제, 보관·회수
+
+파일 경로와 공개 스키마는 [저장 형식](REGISTRY_FORMAT.md)에서 확인할 수 있다.

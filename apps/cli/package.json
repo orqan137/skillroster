@@ -4,14 +4,14 @@
   "private": true,
   "type": "module",
   "bin": {
-    "skillroster": "dist/index.js",
-    "skillspace": "dist/index.js"
+    "skillroster": "dist/index.cjs",
+    "skillspace": "dist/index.cjs"
   },
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup --config tsup.config.ts && node dist/index.cjs --cli-version",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest",

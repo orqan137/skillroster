@@ -35,4 +35,4 @@ Dependabot은 서비스가 관리하는 branch 이름을 사용하므로 명시�
 - Issue와 PR의 왕복 추적이 자동 보장됨
 - 작고 설명 가능한 PR을 유도함
 - tag 하나로 동일한 품질 검증과 release note 생성 가능
-- 사소한 변경도 Issue가 필요해지는 비용이 있으므로 typo·보안 예외를 Governance에 명시함
+- 사소한 변경도 Issue가 필요한 비용이 있지만, 모든 Pull Request에 같은 규칙을 적용해 자동 검사의 예외를 줄임

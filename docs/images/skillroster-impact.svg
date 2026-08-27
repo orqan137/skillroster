@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">SkillRoster 기대효과 및 활용분야</title>
+  <desc id="desc">개인별로 분산된 에이전트 스킬을 팀이 평가하고 프로젝트에 적용할 때의 기대효과와 활용분야</desc>
+  <defs>
+    <style>text{font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;fill:#0D1510}.section{font-size:18px;font-weight:800}.item{font-size:16px;font-weight:700}.sub{font-size:14px;fill:#59635D}.white{fill:#FFFFFF}.green{fill:#00E676}</style>
+    <marker id="arrow-green" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L11,5.5 L0,11 Z" fill="#00B85C"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <text x="80" y="98" font-size="32" font-weight="800">기대효과 및 활용분야</text>
+  <path d="M80 160 H1520" stroke="#0D1510" stroke-width="2"/>
+
+  <text x="80" y="225" class="section">현재 방식</text>
+  <rect x="80" y="260" width="360" height="82" fill="#F5F6F5" stroke="#7A847E" stroke-width="2"/>
+  <text x="106" y="309" class="item">스킬이 개인 로컬에 분산</text>
+  <rect x="80" y="362" width="360" height="82" fill="#F5F6F5" stroke="#7A847E" stroke-width="2"/>
+  <text x="106" y="411" class="item">효과를 비교할 기준 부족</text>
+  <rect x="80" y="464" width="360" height="82" fill="#F5F6F5" stroke="#7A847E" stroke-width="2"/>
+  <text x="106" y="513" class="item">프로젝트마다 구성 반복</text>
+
+  <rect x="600" y="235" width="400" height="340" fill="#0D1510" stroke="#0D1510" stroke-width="2"/>
+  <text x="800" y="295" font-size="22" font-weight="800" class="white" text-anchor="middle">SkillRoster</text>
+  <path d="M650 325 H950" stroke="#00E676" stroke-width="2"/>
+  <text x="660" y="372" class="item white">팀 Git 레지스트리</text>
+  <text x="660" y="418" class="item white">평가 · 후기</text>
+  <text x="660" y="464" class="item white">태그 · 순위 추천</text>
+  <text x="660" y="510" class="item white">프로젝트별 스킬 구성</text>
+
+  <path d="M440 405 H581" fill="none" stroke="#00B85C" stroke-width="3" marker-end="url(#arrow-green)"/>
+  <path d="M1000 405 H1131" fill="none" stroke="#00B85C" stroke-width="3" marker-end="url(#arrow-green)"/>
+
+  <text x="1150" y="225" class="section">기대효과</text>
+  <rect x="1150" y="260" width="370" height="70" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="1176" y="302" class="item">스킬 선택 기준 확보</text>
+  <rect x="1150" y="346" width="370" height="70" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="1176" y="388" class="item">초기 구성 시간 단축</text>
+  <rect x="1150" y="432" width="370" height="70" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="1176" y="474" class="item">중복 조사와 설정 감소</text>
+  <rect x="1150" y="518" width="370" height="70" fill="#F4FFF8" stroke="#00B85C" stroke-width="2"/>
+  <text x="1176" y="560" class="item">변경 이력과 사용 기록 확인</text>
+
+  <rect x="80" y="675" width="1440" height="135" fill="#FFFFFF" stroke="#0D1510" stroke-width="2"/>
+  <rect x="80" y="675" width="190" height="135" fill="#00E676"/>
+  <text x="175" y="751" class="section" text-anchor="middle">활용 분야</text>
+  <path d="M580 700 V785 M950 700 V785 M1320 700 V785" stroke="#B4BCB7" stroke-width="1.5"/>
+  <text x="425" y="738" class="item" text-anchor="middle">신규 프로젝트 구성</text>
+  <text x="425" y="768" class="sub" text-anchor="middle">추천 스킬 선택 및 설치</text>
+  <text x="765" y="738" class="item" text-anchor="middle">팀 개발 규칙 관리</text>
+  <text x="765" y="768" class="sub" text-anchor="middle">공통 스킬 평가 및 갱신</text>
+  <text x="1135" y="738" class="item" text-anchor="middle">신규 팀원 인수인계</text>
+  <text x="1135" y="768" class="sub" text-anchor="middle">기존 후기와 구성 확인</text>
+  <text x="1420" y="738" class="item" text-anchor="middle">반복 문제 대응</text>
+  <text x="1420" y="768" class="sub" text-anchor="middle">사용했던 스킬 재활용</text>
+</svg>

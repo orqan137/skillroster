@@ -1,6 +1,8 @@
-# Hackathon demo script
+# 데모 실행 안내
 
-## 인증 없는 심사용 데모
+**한국어** · [English](DEMO.en.md)
+
+## Git 계정 없이 실행
 
 ```bash
 corepack enable
@@ -9,55 +11,57 @@ pnpm verify
 pnpm demo
 ```
 
-외부 remote나 credential 없이 임시 Git worktree에 샘플을 생성함. 기본 주소는 `http://127.0.0.1:3211`이며 terminal에 registry 절대 경로가 출력됨. 아래 상태가 보이면 준비 완료임.
+명령을 실행하면 임시 Git 작업 폴더에 샘플 로스터가 만들어지고 `http://127.0.0.1:3211`이 열린다. 다음 자료가 보이면 정상이다.
 
 - 팀원 3명
 - 공유 스킬 3개
-- 프로젝트 2개와 각 프로젝트의 연결 스킬 2개
-- 평가 4개(동료 3개, 작성자 1개)
-- 개인정보를 담지 않은 verified 실행 기록 2개
+- 프로젝트 2개와 각 프로젝트에 연결된 스킬 2개
+- 평가 4개: 동료 평가 3개, 작성자 평가 1개
+- 프롬프트와 소스 코드를 담지 않은 실행 기록 2개
 
-데모는 별도 `sources.yaml`을 사용하고 `examples/skills`만 연결함. 심사자의 실제 `~/.codex/skills`, `~/.config/opencode/skills` 등은 탐색하지 않음.
+데모는 별도 `sources.yaml`과 `examples/skills`만 사용한다. 사용자의 실제 `~/.codex/skills`, `~/.config/opencode/skills`, `~/.claude/skills`는 탐색하지 않는다.
 
-## Before the demo
+## 발표에서 보여줄 흐름
 
-1. Prepare an empty bare or hosted Git repository.
-2. Open two terminals with separate `SKILLSPACE_CONFIG` paths to represent two teammates.
-3. Keep the example skills in `examples/skills` and the sample project in `examples/projects/shopping-api`.
+1. **로스터 개요**: 팀원, 공유 스킬, 프로젝트 수와 최근 평가 확인
+2. **스킬 평가**: 작성자 평가와 동료 평가의 구분, 후기, 순위 확인
+3. **프로젝트 구성**: 기술 태그와 팀 평가를 참고해 정확한 스킬 버전 선택
+4. **도구별 설치**: OpenCode·Codex·Claude Code 설치 대상 확인
+5. **Git 기록**: YAML 문서와 commit 이력에서 같은 변경 확인
 
-## 2-minute flow
+## 실제 원격 Git 시연을 준비할 때
 
-### 0:00–0:25 — A team registry, not a public marketplace
+1. 팀 로스터용 빈 원격 저장소와 프로젝트용 빈 원격 저장소를 준비한다.
+2. 서로 다른 `SKILLSPACE_CONFIG` 경로를 쓰는 터미널 두 개로 팀장과 팀원을 나눈다.
+3. 팀장이 새 로스터를 만들고 첫 commit이 원격에 반영됐는지 GitHub 새로고침으로 확인한다.
+4. 팀원이 기존 로스터에 참여하고 팀원 commit을 원격 이력에서 확인한다.
+5. 프로젝트를 만들고 프로젝트 저장소의 `.skillroster/project.yaml`을 확인한다.
 
-Initialize as Hong, then join as Kim. Show the remote Git tree: there is no database and no source repository mirror.
+실제 원격 저장소를 쓰는 장면과 샘플 자료를 보여주는 장면을 자막에서 구분한다. 저장 버튼이나 표를 가리지 않도록 자막은 브라우저 화면 밖의 별도 영역에 둔다.
 
-### 0:25–0:50 — Publish and review
+## 자주 받는 질문
 
-Publish `spring-review` as Hong and `api-contract-check` as Kim. Review the other person's exact version. 작성자도 자기평가를 남길 수 있지만 화면과 랭킹에서 동료 평가와 분리됨을 보여줌. 모든 평가는 Git 작성자와 파일 이력으로 추적 가능함.
+**공개 스킬 마켓과 무엇이 다른가?**
 
-### 0:50–1:20 — 프로젝트 생성과 추천
+커뮤니티 전체의 인기보다 같은 팀이 남긴 평가, 프로젝트 채택, 실행 기록을 보여준다. 평가 대상도 스킬 이름이 아니라 정확한 버전이다.
 
-프로젝트 화면의 `프로젝트 추가`에서 표시 이름과 영문 ID를 입력함. `api`, `typescript` 태그를 선택하면 태그 일치와 팀 평가 순위가 함께 반영되는 추천을 확인함. `api-contract-check`, `docker-debug`를 선택해 프로젝트를 실제 생성하고 Git에 프로젝트 문서와 skillset이 함께 커밋됐는지 확인함.
+**왜 별도 데이터베이스 대신 Git을 쓰는가?**
 
-### 1:20–1:45 — Evidence, not surveillance
+팀이 이미 쓰는 접근 권한, 변경 이력, 검토, 백업, 복구 방법을 그대로 활용할 수 있다. SkillRoster가 없어져도 Markdown·YAML 자료는 남는다.
 
-Load a team skill in OpenCode and commit an accepted result. The hook runs the declared verification command and creates `verified` evidence. Open the YAML to show that it contains no prompt or source, only the commit and status.
+**소스 코드나 프롬프트도 올라가는가?**
 
-### 1:45–2:00 — Visual payoff
+기본 수집 대상이 아니다. 사용자가 발행한 `SKILL.md`, 직접 포함한 파일, 평가와 최소 실행 기록만 팀 Git에 남는다.
 
-Run `skillroster dashboard`. Show that a peer-reviewed, verified, adopted skill rises above an untested skill, and that a new project receives tag-based recommendations.
+**검사에 실패하면 commit도 막히는가?**
 
-## Judge questions
+개발자의 commit은 막지 않는다. 실패 상태를 실행 기록에 남겨 다음 평가와 수정에 참고한다.
 
-**Is this another skill marketplace?** No. Public marketplaces rank global popularity. SkillRoster ranks exact versions against a private team's reviews, accepted commits, and project context.
+**Codex와 Claude Code도 지원하는가?**
 
-**Why Git instead of a database?** The team already has access control, audit history, review workflows, backups, and rollback in Git. The format remains usable even if this application disappears.
+로컬 탐색, 발행, 평가, 프로젝트 구성, 설치를 지원한다. 자동 실행 기록은 현재 OpenCode만 지원한다.
 
-**Does it send source code to a central service?** No. Source and prompts remain local; the evidence schema forbids storing them.
-
-**What happens when verification fails?** The developer commit is not blocked. A failed evidence record lowers trust and remains auditable.
-
-## 발표 직전 점검
+## 발표 직전 확인
 
 ```bash
 git status --short
@@ -65,4 +69,4 @@ pnpm verify
 git log --oneline -5
 ```
 
-화면 순서는 개요 → 스킬 상세 → 프로젝트 → 설정의 Git 상태로 고정함. 실시간 데이터를 새로 입력하는 구간은 스킬 평가 하나로 제한하고, 나머지는 샘플 데이터로 재현성을 확보함.
+인터넷이나 GitHub 인증을 사용할 수 없으면 `pnpm demo`로 전환한다. 3211 포트를 이미 사용 중이거나 브라우저가 자동으로 열리지 않으면 터미널에 나온 주소와 오류를 확인한다.

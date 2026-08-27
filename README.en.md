@@ -14,80 +14,36 @@
   <img alt="Git native" src="https://img.shields.io/badge/storage-Git-111b15">
 </p>
 
-> A self-hosted, Git-native team registry for publishing AI agent skills, reviewing them with teammates, and assembling project-ready skill sets.
-
-SkillRoster does not collect every local file or prompt into a central service. It stores only explicitly published `SKILL.md` files, user-selected attachments and reference locations, team reviews, project skill sets, and minimal execution records in an ordinary Git repository. Each teammate works from their own clone, while OpenCode consumes selected skills directly from `.opencode/skills/`.
+> A self-hosted, Git-backed roster for sharing team AI-agent skills, reviewing real usage, and assembling project-specific skill sets.
 
 <p align="center">
-  <img src="./docs/brand/skillroster-hero.png" width="900" alt="SkillRoster organizes local skills through a Git registry into project-specific rosters">
+  <a href="#quick-demo">Quick demo</a> ·
+  <a href="./docs/GETTING_STARTED.en.md">Getting started</a> ·
+  <a href="./docs/ARCHITECTURE.en.md">Architecture</a> ·
+  <a href="./docs/REGISTRY_FORMAT.en.md">Registry format</a> ·
+  <a href="https://youtu.be/ATZtox9RLIQ">Demo video</a>
 </p>
 
-## The problem
+SkillRoster keeps agent skills scattered across individual machines in a shared team Git repository. Teammates publish only what they choose, leave reviews after using a skill, and pin exact versions when assembling a project. The same release can then be installed for OpenCode, Codex, or Claude Code.
 
-AI coding skills usually stay scattered across individual machines. Even when a skill looks useful, a team cannot easily tell where it worked, whether it is still current, or which exact version a project adopted. A shared file server loses provenance; a public marketplace's download count says little about a private team's environment.
-
-| Team question | SkillRoster answer |
-|---|---|
-| Which skills do we actually use? | Browse skills and immutable versions that teammates chose to publish. |
-| Which skill should a project adopt? | Compare peer reviews, author self-reviews, project adoption, and execution evidence separately. |
-| What fits a new project? | Combine detected technology tags with the team's evidence-weighted ranking. |
-| Who changed this knowledge? | Trace YAML and Markdown through Git commits, diffs, and blame. |
-| Are source code and prompts uploaded? | No by default. Only `SKILL.md`, explicitly selected attachments, and reference locations are shared. |
-
-## Real product screens
-
-These are full 1440×900 captures from the actual `pnpm demo` Git registry, not design mockups.
+Prompts, source code, and credentials are not collected by default. The repository contains published `SKILL.md` files, explicitly selected attachments or reference locations, reviews, project selections, and minimal execution records.
 
 <p align="center">
-  <img src="./docs/images/screenshots/01-start.png" width="900" alt="Choose between creating a new roster and joining an existing roster">
+  <img src="./docs/brand/skillroster-hero.png" width="900" alt="SkillRoster takes selected local skills through a team Git repository into project-specific sets">
 </p>
 
-<p align="center">
-  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="SkillRoster dashboard with ranked skills, reviews, and project adoption">
-</p>
+## At a glance
 
-<table>
-  <tr>
-    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="Shared and local skill directory"></td>
-    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="Project creation with tag and ranking recommendations"></td>
-  </tr>
-  <tr>
-    <td><b>Shared versus local</b><br>See what stays on this machine and what the team can reuse.</td>
-    <td><b>Project recommendations</b><br>Select exact skill versions using tag fit and team ranking.</td>
-  </tr>
-</table>
+| Step | Action | Recorded result |
+|---:|---|---|
+| 1 | Discover local skills from Codex, OpenCode, Claude Code, or another folder | Name and description stay local while browsing |
+| 2 | Publish a selected skill version | `SKILL.md`, chosen references, author, and Git history |
+| 3 | Add author or peer reviews and project outcomes | Ratings, notes, execution status, and project adoption |
+| 4 | Pin versions for a project and select install targets | Skill IDs and exact versions |
 
-<p align="center">
-  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="New project with two recommended skills connected">
-</p>
+The ranking reflects this team's reviews and project history, not global marketplace popularity. All shared data remains ordinary Markdown, YAML, and JSON that can be inspected, diffed, blamed, and rolled back with Git.
 
-## How it works
-
-```mermaid
-flowchart LR
-  A[Local agent skills] -->|explicit publish| B[SkillRoster client]
-  B <-->|pull · validate · commit · push| C[(Team Git registry)]
-  C --> D[Peer reviews and ranking]
-  C --> E[Project skill set]
-  E -->|sync| F[.opencode/skills]
-  F --> G[OpenCode project]
-```
-
-Start a roster with one empty remote repository. Teammates use the repository's existing access control and their own clones. The local React dashboard reads and writes the Git documents without a separate database. Reads use the local clone immediately; Settings provides an explicit `Pull Git changes` action. Every review, skill, or project mutation waits for pull, full-registry validation, commit, and push before reporting success.
-
-## What makes it different
-
-- **Team context, not marketplace popularity:** rankings reflect your team's reviews, recent usage, and project adoption.
-- **Git is the database:** reviews, evidence, and project loadouts remain inspectable, diffable, and reversible.
-- **Reviews plus evidence:** a five-star score is not treated as proof. The UI separates opinions from recorded project outcomes.
-- **Honest self-review:** authors may evaluate their own skill, but the UI marks it as an author review and applies a lower ranking weight.
-- **Versioned project loadouts:** projects adopt an exact skill version and sync it into OpenCode.
-- **Project Git integration:** creating a project links its own Git repository and commits the selected roster to `.skillroster/project.yaml`.
-- **Explicit reference scope:** links and paths remain location-only by default; a file is copied only when the user deliberately selects “include file.”
-- **Private by default:** the public schema rejects prompt or source payloads in execution evidence.
-- **Tool-readable format:** Markdown, YAML, and JSON Schema are usable beyond OpenCode.
-
-## Two-minute demo
+## Quick demo
 
 Requirements: Node.js 22+, pnpm 11+, and Git.
 
@@ -97,119 +53,151 @@ pnpm install
 pnpm demo
 ```
 
-The demo creates a temporary local Git registry with three members, three skills, two projects, four reviews, and two execution records. It opens at `http://127.0.0.1:3211`, uses only its isolated settings and `examples/skills`, and does not scan the user's real agent skills or require remote credentials.
+The command creates an isolated temporary roster and opens `http://127.0.0.1:3211`. It contains three members, three skills, two projects, four reviews, and two execution records. The demo scans only `examples/skills`; it does not inspect your actual agent directories or production data.
 
-To configure your own roster instead:
+See [Getting started](docs/GETTING_STARTED.en.md) to create a real roster or use the CLI.
 
-```bash
-corepack enable
-pnpm install
-pnpm dev
-```
+## Product screens
 
-Open `http://127.0.0.1:3210`, then choose one path:
+These are captures from the running `pnpm demo` application, not design mockups.
 
-- **Create a new roster:** connect an empty GitHub, GitLab, Gitea, or internal Git repository. SkillRoster creates the registry structure and pushes the first commit.
-- **Join an existing roster:** connect a repository initialized by a teammate. SkillRoster clones it and commits your member record.
+<p align="center">
+  <img src="./docs/images/screenshots/01-start.png" width="900" alt="Choose whether to create a new roster or join an existing one">
+</p>
 
-Both flows require clone and push access. SkillRoster never stores a Git password or token. It reuses Git Credential Manager on Windows, Keychain on macOS, or the user's SSH agent, and checks write access with a non-mutating `git push --dry-run`.
+<p align="center">
+  <img src="./docs/images/screenshots/02-dashboard.png" width="900" alt="Roster overview with skill rankings, recent reviews, and projects">
+</p>
 
-Default local discovery paths:
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/images/screenshots/03-skills.png" alt="Shared skills and local-only skills"></td>
+    <td width="50%"><img src="./docs/images/screenshots/04-project-create.png" alt="Choose project skills using technology tags and team reviews"></td>
+  </tr>
+  <tr>
+    <td><b>Shared and local skills</b><br>See what has been published and what remains on this machine.</td>
+    <td><b>Project setup</b><br>Compare tag fit and team reviews, then pin exact versions.</td>
+  </tr>
+</table>
 
-| Agent | Default path |
+<p align="center">
+  <img src="./docs/images/screenshots/05-project-ready.png" width="900" alt="A project with two pinned skills">
+</p>
+
+## Core features
+
+- **Git-backed team roster:** start with one empty remote and keep the access controls your team already uses.
+- **Explicit publishing:** publish `SKILL.md` by default; include a reference file only after selecting it deliberately.
+- **Author and peer reviews:** show them separately and give peer feedback more weight in team rankings.
+- **Project skill sets:** use technology tags and team reviews to choose exact skill versions.
+- **Multiple install targets:** copy the same release into OpenCode, Codex, or Claude Code project paths.
+- **Auditable changes:** inspect and restore skills, reviews, and projects through commits and diffs.
+- **Project-repository link:** write the selected roster to `.skillroster/project.yaml` in a project's own Git repository.
+- **Usage-aware ranking:** combine reviews, recency, project adoption, and OpenCode execution status.
+
+## Agent support
+
+| Capability | OpenCode | Codex | Claude Code |
+|---|:---:|:---:|:---:|
+| Default local-directory discovery | Yes | Yes | Yes |
+| Publishing and team reviews | Yes | Yes | Yes |
+| Project installation path | `.opencode/skills` | `.agents/skills` | `.claude/skills` |
+| Automatic execution records | Yes | Planned | Planned |
+
+Reviews, project composition, and Git history are agent-independent. Automatic execution records currently use OpenCode's stable plugin hook.
+
+## Data boundary
+
+| Stored in Git | Not stored by default |
 |---|---|
-| Codex | `~/.codex/skills` |
-| OpenCode | `~/.config/opencode/skills` |
-| Claude Code | `~/.claude/skills` |
-| Agent Skills | `~/.agents/skills` |
+| Published `SKILL.md` and exact release | Prompts and agent responses |
+| References explicitly included by the user | Project source and file contents |
+| Review score, note, and author | Environment variables and credentials |
+| Project tags and pinned skill versions | Unselected neighboring files |
+| Skill, project, session ID, and execution status | Verification-command output |
+| Verification result and changed-file count | Git passwords and access tokens |
 
-The scanner looks for `SKILL.md` up to four levels below a selected directory. It reads name and description metadata only. Publishing includes `SKILL.md` by default; optional references may stay location-only or include an explicitly selected safe file. Neighboring files and folders are never copied automatically.
+The execution-record schema accepts only `promptStored: false` and `sourceStored: false`. This is a data-format boundary, not a sandbox against a modified local plugin. Review changes before installing a skill or plugin.
 
-## CLI workflow
+## How it works
 
-```bash
-# Team lead: initialize an empty remote
-pnpm skillroster team init \
-  --name backend \
-  --display-name "Backend Guild" \
-  --owner hong \
-  --remote git@github.com:your-org/backend-skillroster.git
-
-# Teammate: join the same registry
-pnpm skillroster team join git@github.com:your-org/backend-skillroster.git \
-  --member kim \
-  --display-name "Kim"
-
-# Publish and assemble a project loadout
-pnpm skillroster publish ./my-skill --version 1.0.0 --tags typescript,api
-cd my-project
-pnpm --dir ../skill-roster skillroster project init --name checkout-api
-pnpm --dir ../skill-roster skillroster project add hong/api-contract-check
-pnpm --dir ../skill-roster skillroster sync
+```mermaid
+flowchart LR
+  A[Local agent skills] -->|selected publish| B[SkillRoster client]
+  B <-->|pull · validate · commit · push| C[(Team Git repository)]
+  C --> D[Reviews and execution records]
+  C --> E[Project skill set]
+  E --> F[Choose install targets]
+  F --> G[OpenCode]
+  F --> H[Codex]
+  F --> I[Claude Code]
 ```
 
-`project init` installs an OpenCode event plugin, a preservation-aware Git `post-commit` hook, and `.skillspace/project.yaml`. `sync` then installs the selected immutable versions into `.opencode/skills/`.
+The dashboard and CLI operate on each teammate's local clone. A write follows `clean check → pull --rebase → write → validate the full snapshot → commit → push`. Failed writes roll back to their starting revision, and the UI reports success only after the push completes.
+
+See [Architecture](docs/ARCHITECTURE.en.md) for the system boundary and [Registry format](docs/REGISTRY_FORMAT.en.md) for paths and schemas.
+
+## CLI
+
+The current release is a developer-oriented source distribution.
 
 | Command | Purpose |
 |---|---|
-| `team init` / `team join` | Create or join a Git-backed roster. |
-| `publish` | Publish a local skill and immutable version snapshot. |
-| `review` | Review a specific skill version. |
-| `project init` / `project add` | Register a project and build its skill set. |
-| `sync` | Install the project skill set into `.opencode/skills`. |
-| `evidence flush` | Validate queued usage events and commit them to Git. |
-| `rank` | Print the evidence-weighted team ranking. |
-| `dashboard` / `demo` | Open the real registry dashboard or a temporary demo. |
-
-Use `pnpm skillroster <command> --help` for all options.
-
-## Ranking and privacy boundary
-
-When OpenCode loads an installed skill, the local queue records only the skill and version, session identifier, timestamp, and explicit `promptStored: false` / `sourceStored: false` flags. The next Git commit runs the project's configured verification command and records `verified`, `failed`, or `used`. A failed verification does not block the developer's commit.
-
-Ranking combines a Bayesian peer rating (65%), execution records (20%), recency (10%), and project adoption. Author reviews have a lower weight, missing peer reviews or execution records do not receive free points, and the prior mean prevents a brand-new skill with a single rating from immediately taking first place.
-
-## Cross-platform and Docker
-
-The source client runs the same way on Windows, macOS, and Linux. Paths are resolved through Node.js OS APIs rather than hard-coded home directories. The current MVP is a developer-oriented source distribution; an `npx skillroster` package and standalone binaries remain roadmap items.
-
-The Docker dashboard binds to localhost by default:
+| `team init` | Initialize an empty remote as a team roster |
+| `team join` | Clone an existing roster and register a teammate |
+| `publish` | Publish a local skill and immutable release snapshot |
+| `review` | Review a specific skill version |
+| `project init` | Register a project and install OpenCode execution-record integration |
+| `project add` | Pin a skill version to a project |
+| `sync` | Install pinned skills for selected agents |
+| `evidence flush` | Validate queued execution records and write them to Git |
+| `rank` | Print the team skill ranking |
+| `dashboard` | Run the local dashboard |
+| `demo` | Run an isolated sample roster |
 
 ```bash
-export SKILLSPACE_REGISTRY_HOST=/absolute/path/to/your/team-clone
-export SKILLSPACE_MEMBER=kim
-docker compose up --build
+pnpm skillroster <command> --help
 ```
 
-## Repository map
+## Security boundary
 
-```text
-apps/cli                  Team, publish, review, project, and dashboard CLI
-apps/web                  React + Vite dashboard and Git write API
-packages/core             File repository, detection, recommendation, ranking
-packages/git              Clone/pull/commit/rebase/push transactions
-packages/opencode-plugin  OpenCode plugin and preservation-aware Git hook
-packages/schemas          Public TypeScript types and JSON Schema
-examples                  Demo skills and projects
-docs                      Architecture, registry format, demo, and brand docs
-```
+- The dashboard is an unauthenticated local client and binds to `127.0.0.1` by default.
+- Git remote access is the actual team authorization boundary; roles displayed in the roster are metadata.
+- Published skills and project verification commands may execute locally. Inspect repository changes before running them.
+- Any remote deployment needs an authentication proxy and explicit network restrictions.
 
-See [Architecture](docs/ARCHITECTURE.md), [Registry format](docs/REGISTRY_FORMAT.md), [Demo](docs/DEMO.md), [Contest scorecard](docs/CONTEST_SCORECARD.md), and the [brand guide](docs/BRAND.md).
+See [SECURITY.md](SECURITY.md) for reporting and known limitations.
 
-## Current MVP boundary
+## Documentation
 
-- The dashboard is a local client running over a personal clone. A remotely exposed team service still needs an organizational authentication proxy.
-- Git remote access is the team authorization boundary. Fine-grained project RBAC and LDAP integration are roadmap items.
-- The OpenCode stable plugin API is supported; the V2 beta API is not required.
+- [Getting started](docs/GETTING_STARTED.en.md)
+- [Architecture](docs/ARCHITECTURE.en.md)
+- [Registry format](docs/REGISTRY_FORMAT.en.md)
+- [Contributing](CONTRIBUTING.en.md)
+- [Governance](docs/GOVERNANCE.en.md)
+- [Roadmap](docs/ROADMAP.en.md)
+- [Open-source compliance](docs/OPEN_SOURCE_COMPLIANCE.en.md)
+- [Brand guide](docs/BRAND.en.md)
+
+## Project status
+
+The latest tag is `v0.1.0`. `main` also contains unreleased work, including multiple agent install targets, project-repository linking, and CLI build fixes. [CHANGELOG.md](CHANGELOG.md) and the [roadmap](docs/ROADMAP.en.md) keep released and upcoming work separate.
+
+Implemented today:
+
+- [x] Create a roster or join an existing one
+- [x] Discover Codex, OpenCode, Claude Code, and Agent Skills directories
+- [x] Publish skills and collect author and peer reviews
+- [x] Recommend and pin exact versions for projects
+- [x] Install for OpenCode, Codex, and Claude Code
+- [x] Handle Git conflicts, credentials, and dirty worktrees
+- [x] Run CI on Windows, macOS, and Linux; build the Docker image
+- [ ] Publish an npm-executable CLI and standalone binaries
+- [ ] Add Codex and Claude Code execution-record adapters
+- [ ] Add organization login and project-level authorization
 
 ## Contributing
 
-Bug reports and feature proposals are welcome in [GitHub Issues](https://github.com/orqan137/skillroster/issues). Discuss registry-format or security-boundary changes before implementation.
+Bug reports and feature proposals are welcome in [GitHub Issues](https://github.com/orqan137/skillroster/issues). Discuss changes to schemas, collection scope, Git writes, or command execution before implementation.
 
-- Development and pull requests: [CONTRIBUTING.en.md](CONTRIBUTING.en.md) · [한국어](CONTRIBUTING.md)
-- Private vulnerability reports: [SECURITY.md](SECURITY.md)
-- Governance and releases: [docs/GOVERNANCE.md](docs/GOVERNANCE.md)
-- Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
-- Brand assets and usage: [docs/BRAND.md](docs/BRAND.md)
-
-SkillRoster is licensed under the Apache License 2.0.
+Read [CONTRIBUTING.en.md](CONTRIBUTING.en.md) for setup and pull-request rules. SkillRoster is licensed under Apache License 2.0.

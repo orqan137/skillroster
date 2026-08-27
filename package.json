@@ -16,7 +16,7 @@
     "test:policy": "node --test scripts/*.test.mjs",
     "test:run": "pnpm test:policy && pnpm -r --if-present test:run",
     "typecheck": "pnpm -r --if-present typecheck",
-    "lint": "biome lint .",
+    "lint": "biome lint apps packages scripts",
     "license:check": "node scripts/check-licenses.mjs",
     "verify": "pnpm lint && pnpm license:check && pnpm typecheck && pnpm test:run && pnpm build"
   },

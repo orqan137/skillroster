@@ -1,5 +1,21 @@
-# Code of Conduct
+# 커뮤니티 행동 수칙
 
-We are committed to a welcoming, harassment-free community. Be respectful, assume good intent while discussing ideas, and criticize code or decisions rather than people. Maintainers may remove abusive, discriminatory, threatening, or privacy-violating content and restrict participation when necessary.
+**한국어** · [English](CODE_OF_CONDUCT.en.md)
 
-Report conduct concerns privately to the project maintainers. They will review reports promptly, protect reporter privacy where possible, and apply proportionate corrective action.
+SkillRoster는 누구나 안전하게 질문하고 기여할 수 있는 커뮤니티를 지향합니다.
+
+## 기본 원칙
+
+- 사람보다 코드와 제안의 내용을 중심으로 이야기해 주세요.
+- 다른 사람의 경험과 배경이 다를 수 있음을 고려해 주세요.
+- 의견이 다를 때는 근거와 재현 방법을 제시해 주세요.
+- 개인정보, 회사 내부 자료, 인증정보를 공개 Issue나 Pull Request에 올리지 마세요.
+- 모욕, 차별, 위협, 괴롭힘, 신상 공개, 반복적인 대화 방해를 허용하지 않습니다.
+
+이 수칙은 저장소의 Issue, Pull Request, Discussion, 커밋, 공식 발표와 프로젝트 이름을 사용한 공개 활동에 적용됩니다.
+
+## 운영
+
+유지관리자는 수칙을 어긴 글이나 자료를 수정·숨김·삭제할 수 있으며, 사안에 따라 경고하거나 참여를 제한할 수 있습니다. 조치는 내용의 심각성, 반복 여부, 다른 참여자에게 끼친 영향을 고려해 정합니다.
+
+행동 수칙 위반은 공개 Issue에 적지 말고 유지관리자에게 비공개로 알려 주세요. 현재 비공개 연락 방법은 저장소의 [보안 정책](SECURITY.md)에 안내된 경로를 함께 사용합니다. 유지관리자는 제보자의 개인정보를 가능한 범위에서 보호하고, 제보와 관련된 이해관계가 있으면 해당 판단에서 빠집니다.

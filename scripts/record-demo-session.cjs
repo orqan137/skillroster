@@ -337,7 +337,7 @@ async function main() {
   await goto(`${demoUrl}/projects/notification-center`);
   await page.getByRole("heading", { name: "고객 알림 센터", level: 1 }).waitFor();
   await click(page.getByRole("tab", { name: /연결된 스킬/ }), 250);
-  await setCaption("06", "프로젝트 구성을 실제 .opencode/skills 폴더에 설치", 91);
+  await setCaption("06", "화면은 OpenCode 설치 시연 · Codex와 Claude Code도 프로젝트별 설치 지원", 91);
   fs.mkdirSync(installPath, { recursive: true });
   await type(page.getByRole("textbox", { name: "로컬 프로젝트 폴더" }), installPath, 8);
   await click(page.getByRole("button", { name: "선택한 스킬 설치" }), 0);

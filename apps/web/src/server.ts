@@ -1,15 +1,17 @@
-import { createReadStream } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { promisify } from "node:util";
-import { addProjectSkill, createProject, deleteProject, installProjectSkills, publishSkill, removeProjectSkill, updateMember, updateProject, writeReview } from "@skillspace/core";
+import { addProjectSkill, createProject, deleteProject, installProjectSkills, normalizeProjectSkillInstallTargets, publishSkill, removeProjectSkill, updateMember, updateProject, writeReview } from "@skillspace/core";
+import { ApiInputError, ApiNotFoundError, classifyApiError, PayloadTooLargeError } from "./lib/api-errors.js";
 import { activeMember, dashboardData, projectData, repository, skillData } from "./lib/data.js";
+import { checkGitRemoteAccess } from "./lib/git-access.js";
 import {
-  defaultTeamDirectory,
   activateTeam,
+  defaultTeamDirectory,
   listTeamConnections,
   localConfigPath,
   readLocalSourcesConfig,
@@ -17,12 +19,10 @@ import {
   saveLocalSources,
 } from "./lib/local-config.js";
 import { createLocalSkill, resolveConnectedLocalSkill, scanLocalSkills } from "./lib/local-skills.js";
-import { checkGitRemoteAccess } from "./lib/git-access.js";
-import { ApiInputError, ApiNotFoundError, classifyApiError, PayloadTooLargeError } from "./lib/api-errors.js";
 import { syncProjectRepository } from "./lib/project-repository.js";
+import { moveActiveTeamDirectory } from "./lib/settings-service.js";
 import { initializeTeam, joinTeam } from "./lib/setup-service.js";
 import { parseTags } from "./lib/tags.js";
-import { moveActiveTeamDirectory } from "./lib/settings-service.js";
 
 const appDirectory = resolve(process.cwd());
 const development = process.argv.includes("--dev");
@@ -489,10 +489,18 @@ async function api(request: IncomingMessage, response: ServerResponse): Promise<
       if (!String(input.projectRoot ?? "").trim()) throw new ApiInputError("스킬을 설치할 로컬 프로젝트 폴더가 필요합니다.");
       const info = await stat(projectRoot).catch(() => null);
       if (!info?.isDirectory()) throw new ApiInputError(`로컬 프로젝트 폴더를 찾을 수 없습니다: ${projectRoot}`);
+      let targets: ReturnType<typeof normalizeProjectSkillInstallTargets>;
+      try {
+        targets = normalizeProjectSkillInstallTargets(
+          Array.isArray(input.targets) ? input.targets.map(String) : undefined,
+        );
+      } catch (error) {
+        throw new ApiInputError(error instanceof Error ? error.message : String(error));
+      }
       const repo = await repository();
       await repo.sync();
-      const installed = await installProjectSkills(repo.directory, name, projectRoot);
-      json(response, 200, { ok: true, project: name, projectRoot, installed });
+      const installations = await installProjectSkills(repo.directory, name, projectRoot, targets);
+      json(response, 200, { ok: true, project: name, projectRoot, installations });
       return true;
     }
     if (request.method === "DELETE" && projectSkillMatch) {
