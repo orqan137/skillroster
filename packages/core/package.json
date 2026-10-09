@@ -15,7 +15,7 @@
   "dependencies": {
     "@skillspace/schemas": "workspace:*",
     "gray-matter": "^4.0.3",
-    "yaml": "^2.8.2"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^24.19.0",
